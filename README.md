@@ -1,33 +1,37 @@
-# dapa-frontend
+# DAPA Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+This repository contains a frontend web application developed using **VueJS**, as well as its setup and execution using **Docker**.
 
-## Recommended IDE Setup
+## Getting started
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+1. Clone the repository 
 
-## Type Support for `.vue` Imports in TS
+```sh
+git clone https://github.com/JuanDsm04/dapa-frontend
+cd dapa-frontend
+```
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+2. Install dependencies
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+## Project Setup
 
+1. Make sure to configure your ```.env``` file containing the base URL for the API.
 ```sh
-npm run dev
+BASE_URL=https://your-api-url.com
 ```
 
-### Type-Check, Compile and Minify for Production
+### Build and serve through Docker
 
 ```sh
-npm run build
+docker compose up --build
+```
+
+### Stop Docker Compose
+
+```sh
+docker compose down
 ```
