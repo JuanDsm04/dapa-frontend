@@ -5,8 +5,9 @@ const respuesta = ref('Cargando...')
 
 onMounted(async () => {
   try {
-    const res = await fetch(`${import.meta.env.BASE_URL}/ping`)
+    const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/ping`)
     const data = await res.json()
+    console.log(data.message)
     respuesta.value = data.message
   } catch (error) {
     respuesta.value = 'Error al conectar con el backend'
