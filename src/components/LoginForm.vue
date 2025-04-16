@@ -8,11 +8,36 @@
   const togglePassVisibility = () => {
     showPassword.value = !showPassword.value
   }
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.value,
+          password: password.value
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Usuario o contraseña incorrectos')
+      }
+
+      const data = await response.json()
+      console.log(data)
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
 </script>
 
 <template>
   <main>
-    <form @submit.prevent>
+    <form @submit.prevent="handleLogin">
       <div class="field">
         <label for="Email">Email</label>
         <input type="text" id="Email" name="Email" v-model="email">
