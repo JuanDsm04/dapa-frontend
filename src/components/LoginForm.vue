@@ -35,7 +35,7 @@
 
 <style scoped>
   main {
-    width: 450px;
+    width: 500px;
   }
 
   form, .field {
@@ -45,11 +45,10 @@
   }
 
   form {
-    gap: 1.5rem;
+    gap: 1.75rem;
   }
 
   label {
-    font-size: 0.95rem;
     margin-bottom: 0.1rem;
   }
 
@@ -70,7 +69,7 @@
     padding: 15px 0;
     border-radius: 32px;
     background-color: var(--color-form-button);
-    font-size: 1.10rem;
+    font-size: 1.25rem;
     font-weight: 500;
   }
 
