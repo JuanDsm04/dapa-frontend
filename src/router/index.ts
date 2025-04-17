@@ -1,7 +1,9 @@
-import { createRouter, createWebHistory } from "vue-router";
-import LoginView from "@/views/LoginView.vue";
+import CarouselClientsView from "@/views/CarouselClientsView.vue";
 import HomepageView from "@/views/HomepageView.vue";
+import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
+import { createRouter, createWebHistory } from "vue-router";
+
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,7 +22,12 @@ const router = createRouter({
       path: "/users",
       name: "Users",
       component: RegisterView
-    }
+    },
+    {
+      path: "/carousel",
+      name: "CarouselClients",
+      component: CarouselClientsView
+    }    
   ],
 });
 
