@@ -43,7 +43,6 @@ const handleRegister = async () => {
 
 <template>
     <main>
-        <h3 class="title">Agregar usuario</h3>
         <form @submit.prevent="handleRegister">
             <div class="field-group">
                 <div class="field">
@@ -94,13 +93,9 @@ main {
     flex-direction: column;
 }
 
-.title{
-    width: 100%;
-    font-size: 1.5rem;
-    text-align: center;
-}
-
 form {
+    display: flex;
+    flex-direction: column;
     gap: 1.75rem;
 }
 
