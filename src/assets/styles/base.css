@@ -4,6 +4,12 @@
   /* Color Scheme */
   --color-form-button: #FFB601;
 
+  /* Navbar for Admin */
+  --sidebar-bg: #3B4E5C;
+  --sidebar-active-bg: #6e7478;
+  --sidebar-hover-bg: #26333d;
+  --sidebar-icon-size: 24px;
+
   /* Font and typography */
   --font-base: 'Poppins';
 }

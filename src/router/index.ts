@@ -1,4 +1,4 @@
-import CarouselClientsView from "@/views/CarouselClientsView.vue";
+import AdminView from "@/views/AdminView.vue";
 import HomepageView from "@/views/HomepageView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
@@ -24,9 +24,9 @@ const router = createRouter({
       component: RegisterView
     },
     {
-      path: "/carousel",
-      name: "CarouselClients",
-      component: CarouselClientsView
+      path: "/admin",
+      name: "Admin",
+      component: AdminView
     }    
   ],
 });
