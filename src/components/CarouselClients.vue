@@ -29,10 +29,12 @@ onMounted(() => {
       <div class="carousel-shadow"></div>
     </div>
     <div class="carousel-overlay">
-      <img src="@/assets/images/logo_2.png" alt="Logo adicional" class="overlay-img" />
+      <img src="@/assets/images/logo_2.png" alt="Company logo" class="logo-img">
       <h1>De aquí para allá</h1>
-      <h3>Mudanzas, fletes y traslados</h3>
-      <button @click="() => console.log('Ordenar')">Cotizar</button>
+      <p>Mudanzas, fletes y traslados</p>
+      <nav>
+          <button @click="$router.push('/#')">Cotizar</button>
+      </nav>
     </div>
   </div>
 </template>
@@ -41,7 +43,7 @@ onMounted(() => {
 .carousel {
   position: relative;
   width: 100%;
-  height: 500px;
+  height: 100%;
   overflow: hidden;
 }
 
@@ -84,9 +86,9 @@ onMounted(() => {
 }
 
 .overlay-img {
-  width: 70px; 
+  width: 150px;
   height: auto;
-  margin-bottom: 10px; 
+  margin-bottom: 15px;
 }
 
 .carousel-overlay h1 {
@@ -95,22 +97,23 @@ onMounted(() => {
   font-weight: bold;
 }
 
-.carousel-overlay h3 {
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
+.carousel-overlay p {
+  color: white;
+  font-size: 40px;
+  margin-bottom: 30px;
 }
 
-.carousel-overlay button {
-  padding: 0.75rem 2rem;
-  font-size: 1rem;
+.carousel-overlay nav button {
   background-color: #FFB601;
-  color: #000000;
   border: none;
-  border-radius: 8px;
+  padding: 10px 20px;
+  text-align: center;
+  font-size: 25px;
   cursor: pointer;
+  border-radius: 5px;
 }
 
-.carousel-overlay button:hover {
+.carousel-overlay nav button:hover {
   background-color: #FFB601;
 }
 </style>

@@ -1,15 +1,34 @@
 <script setup>
+import CarouselClients from '@/components/CarouselClients.vue';
+
+const slides = [
+  {
+    src: new URL('@/assets/images/camion1.jpeg', import.meta.url).href,
+    alt: 'Camión 1'
+  },
+  {
+    src: new URL('@/assets/images/camion2.jpeg', import.meta.url).href,
+    alt: 'Camión 2'
+  },
+  {
+    src: new URL('@/assets/images/camion3.jpeg', import.meta.url).href,
+    alt: 'Camión 3'
+  },
+  {
+    src: new URL('@/assets/images/camion4.jpeg', import.meta.url).href,
+    alt: 'Camión 4'
+  },
+  {
+    src: new URL('@/assets/images/camion5.jpeg', import.meta.url).href,
+    alt: 'Camión 5'
+  }
+]
 </script>
 
 <template>
     <main>
         <header class="hero">
-            <img src="@/assets/images/logo_2.png" alt="Company logo" class="logo-img">
-            <h1>De aquí para allá</h1>
-            <p>Mudanzas, fletes y traslados</p>
-            <nav>
-                <button @click="$router.push('/#')">Cotizar</button>
-            </nav>
+            <CarouselClients :slides="slides" />
         </header>
 
         <section>
@@ -102,29 +121,6 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-    }
-
-    header h1 {
-        color: white;
-        font-size: 80px;
-        margin-bottom: 10px;
-        font-weight: bold;
-    }
-
-    header p {
-        color: white;
-        font-size: 40px;
-        margin-bottom: 30px;
-    }
-
-    nav button {
-        background-color: #FFB601;
-        border: none;
-        padding: 10px 20px;
-        text-align: center;
-        font-size: 25px;
-        cursor: pointer;
-        border-radius: 5px;
     }
 
     nav button:hover {
