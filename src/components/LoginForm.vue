@@ -1,5 +1,6 @@
 <script setup>
   import { ref } from 'vue'
+  import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
 
   const email = ref('')
   const password = ref('')
@@ -48,13 +49,16 @@
         <div class="pass-row">
           <label for="Password">Contraseña</label>
           <button type="button" class="toggle-visibility-btn" @click="togglePassVisibility">
-            <span class="icon">o</span> 
+            <div class="icon-wrapper">
+              <EyeIcon v-if="showPassword" />
+              <EyeSlashIcon v-else />
+            </div>
             <span class="toggle-label">{{ showPassword ? 'Ocultar' : 'Ver' }}</span>
           </button>
         </div>
-        <input type="password" id="Password" name="Password" v-model="password">
+        <input :type="showPassword ? 'text' : 'password'" id="Password" name="Password" v-model="password" />
       </div>
-      <button type="submit">Iniciar sesión</button>
+      <button type="submit" class="submit-btn">Iniciar sesión</button>
       <a href="">¿Olvidaste tu contraseña?</a>
     </form>
   </main>
@@ -110,9 +114,20 @@
     padding: 0;
   }
 
+  .icon-wrapper {
+    display: flex;
+    align-items: center;
+    height: 1rem;
+    width: 1rem;
+  }
+
   .toggle-label {
     font-weight: lighter;
     font-size: 0.90rem;
+  }
+
+  .submit-btn {
+    cursor: pointer;
   }
 
   a {

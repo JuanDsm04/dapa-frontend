@@ -91,18 +91,6 @@ onMounted(() => {
   margin-bottom: 15px;
 }
 
-.carousel-overlay h1 {
-  font-size: 2.5rem;
-  margin-bottom: 0.2rem;
-  font-weight: bold;
-}
-
-.carousel-overlay p {
-  color: white;
-  font-size: 40px;
-  margin-bottom: 30px;
-}
-
 .carousel-overlay nav button {
   background-color: #FFB601;
   border: none;
@@ -115,5 +103,24 @@ onMounted(() => {
 
 .carousel-overlay nav button:hover {
   background-color: #FFB601;
+}
+
+.logo-img {
+  width: 150px;
+  height: auto;
+  margin-bottom: 15px;
+}
+
+h1 {
+  color: white;
+  font-size: 80px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+p {
+  color: white;
+  font-size: 40px;
+  margin-bottom: 30px;
 }
 </style>

@@ -101,18 +101,6 @@ const slides = [
 </template>
 
 <style scoped>
-    * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
-
-    img {
-        width: 150px;
-        height: auto;
-        margin-bottom: 15px;
-    }
-
     header {
         width: 100%;
         height: 100vh;

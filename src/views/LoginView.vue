@@ -22,6 +22,7 @@
   .demo-img {
     height: 100%;
     width: 45%;
+    object-fit: cover;
   }
 
   .login-form-container {
@@ -29,11 +30,36 @@
     flex-direction: column;
     align-items: center;
     flex: 1;
-    padding: 50px 200px;
+    padding: 50px 250px;
   }
 
   .logo-img {
     width: auto;
     height: 400px;
+    transform: translateY(50px);
+  }
+
+  @media (max-width: 770px) {
+    main {
+      height: 100dvh;
+      width: auto;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .demo-img {
+      display: none;
+    }
+
+    .login-form-container {
+      width: 100%;
+      height: 100%;
+      padding: 40px 30px;
+    }
+
+    .logo-img {
+      height: 300px;
+      transform: translateY(0);
+    }
   }
 </style>
