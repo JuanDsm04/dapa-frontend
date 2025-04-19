@@ -1,40 +1,27 @@
-<template>
-    <div>
-      <VerticalNav />
-  <!--
-      <div class="main-content">
-        <section id="home">
-          <h2>Inicio</h2>
-          <p>Esta es la sección de inicio de la vista temporal.</p>
-        </section>
-  
-        <section id="news">
-          <h2>Noticias</h2>
-          <p>Aquí van las noticias relevantes.</p>
-        </section>
-  
-        <section id="contact">
-          <h2>Contacto</h2>
-          <p>Datos de contacto y formulario.</p>
-        </section>
-  
-        <section id="about">
-          <h2>Acerca de</h2>
-          <p>Información sobre el proyecto o sitio.</p>
-        </section>
-      </div>
-    -->
-    </div>
-  </template>
-  
-  <script setup>
+<script setup>
   import VerticalNav from '@/components/NavBarAdmin.vue';
-  </script>
-  
-  <style scoped>
-  .main-content {
-    margin-left: 25%; /* Espacio para la barra lateral */
-    padding: 16px;
+</script>
+
+<template>
+  <div class="layout">
+    <VerticalNav />
+    <main class="main-content">
+      <header>
+        <h1>Solicitudes</h1>
+      </header>
+    </main>
+  </div>
+</template>
+
+<style scoped>
+  .layout {
+    display: flex;
+    min-height: 100vh;
   }
-  </style>
-  
+
+  .main-content {
+    margin-left: 80px; 
+    padding: 16px;
+    flex: 1;
+  }
+</style>
