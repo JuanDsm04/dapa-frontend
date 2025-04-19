@@ -29,7 +29,7 @@
       const data = await response.json()
       console.log(data)
       //Guardar el token en localStorage
-      localStorage.setItem(token, data.data)
+      localStorage.setItem("token", data.data)
 
     } catch (e) {
       console.log(e)

@@ -3,6 +3,7 @@ import HomepageView from "@/views/HomepageView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisterView from "@/views/RegisterView.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import { getUserRole, isTokenExpired } from '@/utils/auth';
 
 
 const router = createRouter({
@@ -21,14 +22,39 @@ const router = createRouter({
     {
       path: "/users",
       name: "Users",
-      component: RegisterView
+      component: RegisterView,
+      meta: { requiresAuth: true, roles: ['admin'] }
     },
     {
       path: "/admin",
       name: "Admin",
-      component: AdminView
+      component: AdminView,
+      meta: { requiresAuth: true, roles: ['admin'] }
     }    
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+  const isAuthenticated = !!token;
+
+  if (token && isTokenExpired(token)) {
+    localStorage.removeItem('token');
+    return next('/login');
+  }
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next('/login');
+  } else if (to.meta.roles) {
+    const userRole = getUserRole();
+    if (userRole && (to.meta.roles as string[]).includes(userRole)) {
+      next();
+    } else {
+      next('/homepage');
+    }
+  } else {
+    next();
+  }
 });
 
 export default router;
