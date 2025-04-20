@@ -1,6 +1,9 @@
 <script setup>
   import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
   import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
+import router from '@/router'
+import { getUserRole } from '@/utils/auth'
 
   const email = ref('')
   const password = ref('')
@@ -29,11 +32,18 @@
 
       const data = await response.json()
       console.log(data)
-      //Guardar el token en localStorage
       localStorage.setItem("token", data.data)
+      alert('Inicio de sesión exitoso')
+
+      if (getUserRole() === 'admin') {
+        router.push('/admin')
+      } else {
+        router.push('/home')
+      }
 
     } catch (e) {
       console.log(e)
+      alert(e.message || 'Ocurrió un error al iniciar sesión')
     }
   }
 </script>
