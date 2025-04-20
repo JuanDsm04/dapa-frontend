@@ -6,6 +6,7 @@ const lastName = ref('')
 const phone = ref('')
 const email = ref('')
 const password = ref('')
+const role = ref('driver')
 const showPassword = ref(false)
 
 const togglePassVisibility = () => {
@@ -14,17 +15,20 @@ const togglePassVisibility = () => {
 
 const handleRegister = async () => {
     try {
-        const response = await fetch(`${import.meta.env.BASE_URL}/api/register`, {
+        const token = localStorage.getItem('token')
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
             },
             body: JSON.stringify({
                 name: name.value,
                 lastName: lastName.value,
-                phone: phone.value,
                 email: email.value,
-                password: password.value
+                phone: phone.value,
+                password: password.value,
+                role: role.value
             }),
         })
 
@@ -32,11 +36,11 @@ const handleRegister = async () => {
             throw new Error('Error al registrar un nuevo usuario')
         }
 
-        const data = await response.json()
-        console.log(data)
+        alert('¡Usuario creado exitosamente!')
 
     } catch (e) {
         console.log(e)
+        alert(e.message || 'Ocurrió un error al agregar al usuario')
     }
 }
 </script>
@@ -71,6 +75,13 @@ const handleRegister = async () => {
                     </button>
                 </div>
                 <input type="password" id="Password" name="Password" v-model="password">
+            </div>
+            <div class="field">
+                <label for="Role">Rol</label>
+                <select name="Role" id="Role" v-model="role">
+                  <option value="driver">Driver</option>
+                  <option value="admin">Admin</option>
+                </select>
             </div>
             <button type="submit">Registrar</button>
         </form>
