@@ -1,4 +1,5 @@
 <script setup>
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
 import { ref } from 'vue'
 
 const name = ref('')
@@ -70,27 +71,30 @@ const handleRegister = async () => {
                 <div class="pass-row">
                     <label for="Password">Contraseña</label>
                     <button type="button" class="toggle-visibility-btn" @click="togglePassVisibility">
-                        <span class="icon">o</span>
+                        <div class="icon-wrapper">
+                            <EyeIcon v-if="showPassword" />
+                            <EyeSlashIcon v-else />
+                        </div>
                         <span class="toggle-label">{{ showPassword ? 'Ocultar' : 'Ver' }}</span>
                     </button>
                 </div>
-                <input type="password" id="Password" name="Password" v-model="password">
-            </div>
-            <div class="field">
-                <label for="Role">Rol</label>
-                <select name="Role" id="Role" v-model="role">
-                  <option value="driver">Driver</option>
-                  <option value="admin">Admin</option>
-                </select>
-            </div>
-            <button type="submit">Registrar</button>
+                <input :type="showPassword ? 'text' : 'password'" id="Password" name="Password" v-model="password" />
+                </div>
+                <div class="field">
+                    <label for="Role">Rol</label>
+                    <select name="Role" id="Role" v-model="role">
+                        <option value="driver">Driver</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <button type="submit">Registrar</button>
         </form>
     </main>
 </template>
 
 <style scoped>
 main {
-    width: 500px;
+    max-width: 500px;
 }
 
 .field-group {
@@ -119,12 +123,21 @@ label {
     justify-content: space-between;
 }
 
-input {
+input,
+select {
     padding: 0.75rem 1rem;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 1rem;
 }
+
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    height: 1rem;
+    width: 1rem;
+}
+
 
 button {
     border: 0;
@@ -149,5 +162,4 @@ button {
     font-weight: lighter;
     font-size: 0.90rem;
 }
-
 </style>

@@ -7,7 +7,7 @@
     <VerticalNav />
     <main class="main-content">
       <header>
-        <h1>Solicitudes</h1>
+        <h1>Cotizaciones</h1>
       </header>
     </main>
   </div>

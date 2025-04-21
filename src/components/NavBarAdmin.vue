@@ -5,12 +5,9 @@
     </li>
 
     <li v-for="section in sections" :key="section.id">
-      <a
-        :href="'#' + section.id"
-        :class="{ active: activeSection === section.id }"
-        @click.prevent="handleClick(section.id)"
-      >
-        <img :src="section.icon" class="icon" :alt="section.id" />
+      <a :href="'#' + section.id" :class="{ active: activeSection === section.id }"
+        @click.prevent="handleClick(section.id)">
+        <span class="material-symbols-outlined">{{ section.icon }}</span>
       </a>
     </li>
   </ul>
@@ -20,13 +17,13 @@
 import { onMounted, ref } from 'vue'
 
 const sections = [
-  { id: 'notifications', icon: new URL('@/assets/images/icon-notifications.png', import.meta.url).href },
-  { id: 'user',          icon: new URL('@/assets/images/icon-id.png', import.meta.url).href },
-  { id: 'team',          icon: new URL('@/assets/images/icon-people.png', import.meta.url).href },
-  { id: 'delivery',      icon: new URL('@/assets/images/icon-truck.png', import.meta.url).href },
-  { id: 'to-do',         icon: new URL('@/assets/images/icon-checklist.png', import.meta.url).href },
-  { id: 'review',        icon: new URL('@/assets/images/icon-review.png', import.meta.url).href }
-]
+  { id: 'notifications', icon: 'notifications' },
+  { id: 'user', icon: 'account_circle' },
+  { id: 'team', icon: 'people' },
+  { id: 'delivery', icon: 'local_shipping' },
+  { id: 'to-do', icon: 'checklist' },
+  { id: 'review', icon: 'rate_review' }
+];
 
 const activeSection = ref('notifications')
 
@@ -74,7 +71,7 @@ onMounted(() => {
 
 .side-nav li a {
   display: block;
-  padding: 20px 0;
+  padding: 5px 0;
   transition: background-color 0.3s ease;
 }
 
@@ -86,8 +83,9 @@ onMounted(() => {
   background-color: var(--sidebar-hover-bg);
 }
 
-.icon {
-  height: var(--sidebar-icon-size);
-  width: auto;
+li span {
+  font-size: 32px;
+  color: #fff;
+  margin-bottom: 20px;
 }
 </style>

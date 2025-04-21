@@ -1,7 +1,7 @@
-import AdminView from "@/views/AdminView.vue";
+import QuotesView from "@/views/QuotesView.vue";
 import HomepageView from "@/views/HomepageView.vue";
 import LoginView from "@/views/LoginView.vue";
-import RegisterView from "@/views/RegisterView.vue";
+import UsersView from "@/views/UsersView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { getUserRole, isTokenExpired } from '@/utils/auth';
 
@@ -22,13 +22,13 @@ const router = createRouter({
     {
       path: "/users",
       name: "Users",
-      component: RegisterView,
+      component: UsersView,
       meta: { requiresAuth: true, roles: ['admin'] }
     },
     {
-      path: "/admin",
-      name: "Admin",
-      component: AdminView,
+      path: "/quotes",
+      name: "Quotes",
+      component: QuotesView,
       meta: { requiresAuth: true, roles: ['admin'] }
     }    
   ],

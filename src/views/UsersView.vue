@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import RegisterForm from '@/components/RegisterForm.vue';
+import VerticalNav from '@/components/NavBarAdmin.vue';
 
 const showModal = ref(false);
 
@@ -15,34 +16,45 @@ const closeModal = () => {
 </script>
 
 <template>
-  <main class="register-view">
-    <div class="header-container">
-      <h2>Usuarios</h2>
-      <button class="add-user-btn" @click="openModal">
-        + Agregar Usuario
-      </button>
-    </div>
-    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3>Agregar usuarios</h3>
-          <button class="close-btn" @click="closeModal">&times;</button>
-        </div>
-        <div class="modal-body">
-          <RegisterForm />
+  <div class="layout">
+    <VerticalNav />
+    <main class="users-view">
+      <div class="header-container">
+        <h1>Usuarios</h1>
+        <button class="add-user-btn" @click="openModal">
+          + Agregar Usuario
+        </button>
+      </div>
+      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Agregar usuarios</h3>
+            <button class="close-btn" @click="closeModal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <RegisterForm />
+          </div>
         </div>
       </div>
-    </div>
 
-  </main>
+    </main>
+  </div>
 </template>
 
 <style scoped>
-.register-view {
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+.users-view {
   width: 100%;
   min-height: 100dvh;
   padding: 2rem;
   box-sizing: border-box;
+  margin-left: 80px; 
+  flex: 1;
 }
 
 .header-container {
@@ -103,7 +115,7 @@ const closeModal = () => {
   font-size: 1.25rem;
 }
 
-.modal-body{
+.modal-body {
   display: flex;
   height: 100%;
   justify-content: center;
