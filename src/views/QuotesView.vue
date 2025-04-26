@@ -1,5 +1,5 @@
 <script setup>
-  import VerticalNav from '@/components/NavBarAdmin.vue';
+  import VerticalNav from '@/components/NavBar.vue';
 </script>
 
 <template>

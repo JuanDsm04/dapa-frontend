@@ -1,5 +1,5 @@
 <script setup>
-import CarouselClients from '@/components/CarouselClients.vue';
+import CarouselClients from '@/components/Carousel.vue';
 
 const slides = [
   {
@@ -104,17 +104,8 @@ const slides = [
     header {
         width: 100%;
         height: 100vh;
-        background-color: #1e211eb7;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
     }
 
-    nav button:hover {
-        background-color: #e2a200;
-    }
-    
     section {
         background-color: #D9D9D9;
         text-align: center;
@@ -160,7 +151,7 @@ const slides = [
 
     section span {
         font-size: 60px; 
-        color: #000000;
+        color: var(--text-on-light);
         margin-bottom: 20px;
     }
 
@@ -217,27 +208,6 @@ const slides = [
     }
 
     @media (max-width: 770px) {
-        footer div {
-            flex-direction: column;
-        }
-        
-        img {
-            width: 100px;
-        }
-
-        header h1 {
-            font-size: 40px;
-        }
-
-        header p {
-            font-size: 20px;
-        }
-
-        nav button {
-            font-size: 18px;
-            padding: 8px 16px;
-        }
-
         section > p {
             font-size: 16px;
             padding: 30px;
@@ -257,6 +227,10 @@ const slides = [
 
         section span {
             font-size: 40px;
+        }
+
+        footer div {
+            flex-direction: column;
         }
 
         footer > p {

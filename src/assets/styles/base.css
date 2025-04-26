@@ -1,13 +1,35 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Color Scheme */
-  --color-form-button: #FFB601;
+  /* Base colors */
+  --white: #ffffff;
+  --black: #000000;
 
-  /* Navbar for Admin */
+  /* Color scheme */
+  --primary: #FFB601;
+  --primary-dark: #E2A200;
+  --secondary: #42B983;
+  --secondary-dark: #369F6B;
+
+  /* Text colors*/
+  --text-on-dark: var(--white);
+  --text-on-light: var(--black);
+
+  /* Form */
+  --border-input: #CCC;
+  --button-secondary: #808080;
+
+  /* Modal */
+  --modal-bg: var(--white);
+  --close-btn: #666;
+  --close-btn-hover: #333;
+
+  /* Navbar */
   --sidebar-bg: #3B4E5C;
   --sidebar-active-bg: #6e7478;
   --sidebar-hover-bg: #26333d;
+  --sidebar-text-color: var(--white);
+  --sidebar-icon-color: var(--white);
   --sidebar-icon-size: 24px;
 
   /* Font and typography */

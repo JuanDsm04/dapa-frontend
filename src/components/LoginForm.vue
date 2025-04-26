@@ -48,11 +48,13 @@
 
 <template>
   <main>
+
     <form @submit.prevent="handleLogin">
       <div class="field">
         <label for="Email">Email</label>
         <input type="text" id="Email" name="Email" v-model="email">
       </div>
+
       <div class="field">
         <div class="pass-row">
           <label for="Password">Contraseña</label>
@@ -66,9 +68,11 @@
         </div>
         <input :type="showPassword ? 'text' : 'password'" id="Password" name="Password" v-model="password" />
       </div>
+
       <button type="submit" class="submit-btn">Iniciar sesión</button>
       <a href="">¿Olvidaste tu contraseña?</a>
     </form>
+
   </main>
 </template>
 
@@ -99,7 +103,7 @@
   input {
     padding: 0.75rem 1rem;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border-input);
     font-size: 1rem;
   }
 
@@ -107,15 +111,19 @@
     border: 0;
     padding: 15px 0;
     border-radius: 32px;
-    background-color: var(--color-form-button);
+    background-color: var(--primary);
     font-size: 1.25rem;
     font-weight: 500;
+  }
+
+  form > button:hover {
+    background-color: var(--primary-dark);
   }
 
   .toggle-visibility-btn {
     display: flex;
     gap: 10px;
-    color: gray;
+    color: var(--button-secondary);
     align-items: center;
     margin-right: 10px;
     background-color: transparent;
@@ -139,7 +147,7 @@
   }
 
   a {
-    color: black;
+    color: var(--text-on-light);
     align-self: center;
   }
 </style>

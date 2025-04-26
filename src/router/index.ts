@@ -1,5 +1,5 @@
 import QuotesView from "@/views/QuotesView.vue";
-import HomepageView from "@/views/HomepageView.vue";
+import LandingPageView from "@/views/LandingPageView.vue";
 import LoginView from "@/views/LoginView.vue";
 import UsersView from "@/views/UsersView.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -10,14 +10,14 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
+      path: "/",
+      name: "LandingPage",
+      component: LandingPageView
+    },
+    {
       path: "/login",
       name: "Login",
       component: LoginView,
-    },
-    {
-      path: "/homepage",
-      name: "Homepage",
-      component: HomepageView
     },
     {
       path: "/users",
@@ -50,7 +50,7 @@ router.beforeEach((to, from, next) => {
     if (userRole && (to.meta.roles as string[]).includes(userRole)) {
       next();
     } else {
-      next('/homepage');
+      next('/');
     }
   } else {
     next();

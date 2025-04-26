@@ -79,87 +79,90 @@ const handleRegister = async () => {
                     </button>
                 </div>
                 <input :type="showPassword ? 'text' : 'password'" id="Password" name="Password" v-model="password" />
-                </div>
-                <div class="field">
-                    <label for="Role">Rol</label>
-                    <select name="Role" id="Role" v-model="role">
-                        <option value="driver">Driver</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <button type="submit">Registrar</button>
+            </div>
+            <div class="field">
+                <label for="Role">Rol</label>
+                <select name="Role" id="Role" v-model="role">
+                    <option value="driver">Driver</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+
+            <button type="submit">Registrar</button>
         </form>
     </main>
 </template>
 
 <style scoped>
-main {
-    max-width: 500px;
-}
+    main {
+        max-width: 500px;
+    }
 
-.field-group {
-    display: flex;
-    gap: 5px;
-}
+    .field-group {
+        display: flex;
+        gap: 5px;
+    }
 
-.field {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
+    .field {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+    }
 
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-}
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.75rem;
+    }
 
-label {
-    margin-bottom: 0.1rem;
-}
+    label {
+        margin-bottom: 0.1rem;
+    }
 
-.pass-row {
-    display: flex;
-    justify-content: space-between;
-}
+    .pass-row {
+        display: flex;
+        justify-content: space-between;
+    }
 
-input,
-select {
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-}
+    input, select {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border-input);
+        font-size: 1rem;
+    }
 
-.icon-wrapper {
-    display: flex;
-    align-items: center;
-    height: 1rem;
-    width: 1rem;
-}
+    .icon-wrapper {
+        display: flex;
+        align-items: center;
+        height: 1rem;
+        width: 1rem;
+    }
 
+    button {
+        border: 0;
+        padding: 15px 0;
+        border-radius: 32px;
+        background-color: var(--primary);
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
 
-button {
-    border: 0;
-    padding: 15px 0;
-    border-radius: 32px;
-    background-color: var(--color-form-button);
-    font-size: 1.25rem;
-    font-weight: 500;
-}
+    form > button:hover {
+        background-color: var(--primary-dark);
+    }
 
-.toggle-visibility-btn {
-    display: flex;
-    gap: 10px;
-    color: gray;
-    align-items: center;
-    margin-right: 10px;
-    background-color: transparent;
-    padding: 0;
-}
+    .toggle-visibility-btn {
+        display: flex;
+        gap: 10px;
+        color: var(--button-secondary);
+        align-items: center;
+        margin-right: 10px;
+        background-color: transparent;
+        padding: 0;
+    }
 
-.toggle-label {
-    font-weight: lighter;
-    font-size: 0.90rem;
-}
+    .toggle-label {
+        font-weight: lighter;
+        font-size: 0.90rem;
+    }
 </style>
