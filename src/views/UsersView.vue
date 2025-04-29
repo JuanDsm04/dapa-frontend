@@ -1,21 +1,58 @@
 <script setup>
 import { ref } from 'vue';
-import RegisterForm from '@/components/UserForm.vue';
+import UserForm from '@/components/UserForm.vue';
 import VerticalNav from '@/components/NavBar.vue';
 import TableUsers from '@/components/Table.vue'
 
 const showModal = ref(false);
+const selectedUser = ref(null);
 const users = [
   { id: 1, name: 'Juan', lastName: 'Pérez', email: 'juan@example.com', phone: '1234567890' },
   { id: 2, name: 'Ana', lastName: 'López', email: 'ana@example.com', phone: '0987654321' },
 ]
 
 const openModal = () => {
+  selectedUser.value = null;
   showModal.value = true;
 };
 
 const closeModal = () => {
+  selectedUser.value = null;
   showModal.value = false;
+};
+
+const handleEditUser = (user) => {
+  selectedUser.value = { ...user };
+  showModal.value = true;
+};
+
+const handleDeleteUser = (user) => {
+  selectedUser.value = { ...user };
+  //Pendiente
+};
+
+const handleRegisterOrUpdate = async (payload) => {
+  const token = localStorage.getItem('token')
+  try {
+    if (payload.id) {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${payload.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+        body: JSON.stringify(payload),
+      })
+      console.log('Usuario actualizado')
+    } else {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+        body: JSON.stringify(payload),
+      })
+      console.log('Usuario creado')
+    }
+    closeModal()
+  } catch (error) {
+    console.error('Error al guardar usuario:', error)
+  }
 };
 
 </script>
@@ -45,11 +82,11 @@ const closeModal = () => {
       <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal-content">
           <div class="modal-header">
-            <h3>Agregar usuarios</h3>
+            <h3>{{ selectedUser ? 'Editar usuario' : 'Agregar usuario' }}</h3>
             <button class="close-btn" @click="closeModal">&times;</button>
           </div>
           <div class="modal-body">
-            <RegisterForm />
+            <UserForm :initialData="selectedUser" @submit="handleRegisterOrUpdate" :updating="selectedUser" />
           </div>
         </div>
       </div>
@@ -80,7 +117,7 @@ const closeModal = () => {
   margin-bottom: 2rem;
 }
 
-.body-container{
+.body-container {
   display: flex;
   width: 100%;
   height: calc(100dvh-150px);
@@ -135,8 +172,9 @@ const closeModal = () => {
 }
 
 .modal-header h3 {
-  margin: 0;
-  font-size: 1.25rem;
+  margin: 0 25px;
+  font-weight: 500;
+  font-size: 1.5rem;
 }
 
 .modal-body {

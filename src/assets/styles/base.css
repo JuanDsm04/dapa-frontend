@@ -32,6 +32,14 @@
   --sidebar-icon-color: var(--white);
   --sidebar-icon-size: 24px;
 
+  /* Row */
+  --delete-btn: #ee4d42;
+  --delete-btn-hover: #a1342c;
+  --row-hover: #dadada;
+
+  /* Table */
+  --border: #898989;
+
   /* Font and typography */
   --font-base: 'Poppins';
 }

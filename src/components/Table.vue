@@ -28,8 +28,7 @@ const handleDelete = (item: any) => {
         <th v-for="col in columns" :key="col.field">
           {{ col.label }}
         </th>
-        <th>Editar</th>
-        <th>Eliminar</th>
+        <th>Opciones</th>
       </tr>
     </thead>
     <tbody>
@@ -53,7 +52,7 @@ const handleDelete = (item: any) => {
 }
 
 .data-table thead {
-  background-color: var(--primary);
+  background-color: var(--sidebar-bg);
   color: white;
 }
 
@@ -65,21 +64,12 @@ const handleDelete = (item: any) => {
 }
 
 .data-table tbody tr {
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border);
   transition: all 0.2s ease;
 }
 
 .data-table tbody tr:last-child {
   border-bottom: none;
-}
-
-.data-table tbody tr:hover {
-  background-color: #f8fafc;
-}
-
-.data-table td {
-  padding: 14px 24px;
-  color: #334155;
 }
 
 </style>

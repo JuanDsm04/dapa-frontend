@@ -22,18 +22,18 @@ const handleDelete = () => {
 </script>
 
 <template>
-  <tr>
+  <tr class="data-row">
     <td v-for="column in columns" :key="column">
       {{ item[column] }}
     </td>
     <td class="action-buttons">
-      <button @click="handleEdit">
+      <button @click="handleEdit" class="btn-edit"> 
         <PencilSquareIcon class="icon" />
+        Editar
       </button>
-    </td>
-    <td class="action-buttons">
-      <button @click="handleDelete">
+      <button @click="handleDelete" class="btn-delete">
         <TrashIcon class="icon" />
+        Eliminar
       </button>
     </td>
   </tr>
@@ -41,32 +41,59 @@ const handleDelete = () => {
 
 
 <style scoped>
-tr{
-  padding: 15px 0;
-}
 
 td{
+  padding: 12px 18px;
   text-align: center;
+  font-weight: 400;
+  letter-spacing: 0.5px;
 }
 
 .action-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
   text-align: center;
+  gap: 10px;
 }
 
 button {
+  border: none;
+  color: var(--white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
     background: none;
-    border: none;
     cursor: pointer;
-    padding: 0;
+    padding: 8px;
 }
 
 .icon {
     width: 24px;
     height: 24px;
-    color: var(--primary);
+    color: var(--white);
 }
 
-button:hover .icon {
-    color: var(--primary-dark);
+.btn-edit{
+  background-color: var(--primary);
+  border-radius: 8px;
+}
+
+.btn-delete{
+  background-color: var(--delete-btn);
+  border-radius: 8px;
+}
+
+.btn-edit:hover{
+  background-color: var(--primary-dark);
+}
+
+.btn-delete:hover{
+  background-color: var(--delete-btn-hover);
+}
+
+.data-row:hover{
+  background-color: var(--row-hover);
 }
 </style>
