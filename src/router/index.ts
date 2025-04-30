@@ -2,6 +2,7 @@ import QuotesView from "@/views/QuotesView.vue";
 import LandingPageView from "@/views/LandingPageView.vue";
 import LoginView from "@/views/LoginView.vue";
 import UsersView from "@/views/UsersView.vue";
+import ProfileView from "@/views/ProfileView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { getUserRole, isTokenExpired } from '@/utils/auth';
 
@@ -30,6 +31,12 @@ const router = createRouter({
       name: "Quotes",
       component: QuotesView,
       meta: { requiresAuth: true, roles: ['admin'] }
+    },
+    {
+      path: "/profile",
+      name: "Profile",
+      component: ProfileView,
+      meta: { requiresAuth: true, roles: ['admin', 'driver']}
     }    
   ],
 });
