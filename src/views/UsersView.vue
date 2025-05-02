@@ -1,19 +1,13 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import UserForm from '@/components/UserForm.vue';
 import VerticalNav from '@/components/NavBar.vue';
 import TableUsers from '@/components/Table.vue'
-import { onMounted } from 'vue';
 
 const showModal = ref(false);
 const selectedUser = ref(null);
 const users = ref([])
-/*
-const users = [
-  { id: 1, name: 'Juan', lastName: 'Pérez', email: 'juan@example.com', phone: '1234567890' },
-  { id: 2, name: 'Ana', lastName: 'López', email: 'ana@example.com', phone: '0987654321' },
-]
-*/
+const activeUsers = computed(() => users.value.filter(user => user.isActive))
 
 const openModal = () => {
   selectedUser.value = null;
@@ -30,9 +24,20 @@ const handleEditUser = (user) => {
   showModal.value = true;
 };
 
-const handleDeleteUser = (user) => {
+const handleDeleteUser = async (user) => {
   selectedUser.value = { ...user };
-  //Pendiente
+  const userID = selectedUser.value.id
+  try {
+    const token = localStorage.getItem('token') 
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userID}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+    })
+
+    await getUsers()
+  } catch (error) {
+    console.log("Error eliminando usuario:", error)
+  }
 };
 
 const getUsers = async () => {
@@ -65,8 +70,9 @@ const handleRegisterOrUpdate = async (payload) => {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
         body: JSON.stringify(payload),
       })
-      console.log('Usuario creado')
     }
+
+    getUsers()
     closeModal()
   } catch (error) {
     console.error('Error al guardar usuario:', error)
@@ -93,7 +99,7 @@ onMounted(() => {
       </div>
 
       <div class="body-container">
-        <TableUsers :items="users" :columns="[
+        <TableUsers :items="activeUsers" :columns="[
           { label: 'Nombre', field: 'name' },
           { label: 'Apellido', field: 'lastName' },
           { label: 'Email', field: 'email' },
