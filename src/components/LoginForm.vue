@@ -34,7 +34,7 @@
       alert('Inicio de sesión exitoso')
 
       if (getUserRole() === 'admin') {
-        router.push('/admin')
+        router.push('/users')
       } else {
         router.push('/homepage')
       }

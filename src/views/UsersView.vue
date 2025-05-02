@@ -3,13 +3,17 @@ import { ref } from 'vue';
 import UserForm from '@/components/UserForm.vue';
 import VerticalNav from '@/components/NavBar.vue';
 import TableUsers from '@/components/Table.vue'
+import { onMounted } from 'vue';
 
 const showModal = ref(false);
 const selectedUser = ref(null);
+const users = ref([])
+/*
 const users = [
   { id: 1, name: 'Juan', lastName: 'Pérez', email: 'juan@example.com', phone: '1234567890' },
   { id: 2, name: 'Ana', lastName: 'López', email: 'ana@example.com', phone: '0987654321' },
 ]
+*/
 
 const openModal = () => {
   selectedUser.value = null;
@@ -30,6 +34,20 @@ const handleDeleteUser = (user) => {
   selectedUser.value = { ...user };
   //Pendiente
 };
+
+const getUsers = async () => {
+  try {
+    const token = localStorage.getItem('token') 
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+    })
+    const data = await response.json()
+    users.value = data
+  } catch (error) {
+    console.log("Error obteniendo usuarios de la base de datos:", error)
+  }
+}
 
 const handleRegisterOrUpdate = async (payload) => {
   const token = localStorage.getItem('token')
@@ -54,6 +72,10 @@ const handleRegisterOrUpdate = async (payload) => {
     console.error('Error al guardar usuario:', error)
   }
 };
+
+onMounted(() => {
+  getUsers()
+})
 
 </script>
 
