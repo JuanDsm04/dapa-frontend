@@ -24,6 +24,17 @@ export function getUserRole(): string | null {
   }
 }
 
+export function getUserID(): number | null {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+  try {
+    const decoded = jwtDecode<TokenPayload>(token);
+    return decoded.id;
+  } catch (err) {
+    return null;
+  }
+}
+
 export function isTokenExpired(token: string): boolean {
     try {
       const decoded = jwtDecode<TokenPayload>(token);
