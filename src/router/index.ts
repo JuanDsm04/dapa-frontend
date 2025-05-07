@@ -37,7 +37,7 @@ const router = createRouter({
       name: "Profile",
       component: ProfileView,
       meta: { requiresAuth: true, roles: ['admin', 'driver']}
-    }    
+    }
   ],
 });
 
