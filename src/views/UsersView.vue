@@ -88,15 +88,14 @@ onMounted(() => {
 <template>
   <div class="layout">
     <VerticalNav />
+    <main>
 
-    <main class="users-view">
-
-      <div class="header-container">
+      <header>
         <h1>Usuarios</h1>
-        <button class="add-user-btn" @click="openModal">
-          + Agregar Usuario
+        <button class="add-btn" @click="openModal">
+          + Agregar
         </button>
-      </div>
+      </header>
 
       <div class="body-container">
         <TableUsers :items="activeUsers" :columns="[
@@ -110,7 +109,7 @@ onMounted(() => {
       <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
         <div class="modal-content">
           <div class="modal-header">
-            <h3>{{ selectedUser ? 'Editar usuario' : 'Agregar usuario' }}</h3>
+            <h3>{{ selectedUser ? 'Editar' : 'Agregar' }}</h3>
             <button class="close-btn" @click="closeModal">&times;</button>
           </div>
           <div class="modal-body">
@@ -129,7 +128,7 @@ onMounted(() => {
   min-height: 100vh;
 }
 
-.users-view {
+main{
   width: 100%;
   min-height: 100dvh;
   padding: 2rem;
@@ -138,7 +137,7 @@ onMounted(() => {
   flex: 1;
 }
 
-.header-container {
+header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -153,7 +152,7 @@ onMounted(() => {
   align-items: center;
 }
 
-.add-user-btn {
+.add-btn {
   padding: 0.75rem 1.5rem;
   background-color: var(--secondary);
   color: var(--text-on-dark);
