@@ -1,5 +1,73 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import VerticalNav from '@/components/NavBar.vue';
+import TableUsers from '@/components/Table.vue';
+import VehicleForm from '@/components/VehicleForm.vue';
+
+const showModal = ref(false)
+const selectedVehicle = ref(null)
+const vehicles = ref([])
+
+const toggleModal = () => {
+	selectedVehicle.value = null
+	showModal.value = !showModal.value
+}
+
+const getVehicles = async () => {
+  try {
+    const token = localStorage.getItem('token') 
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+    })
+    const data = await response.json()
+    vehicles.value = data
+
+	console.log("data: ", data)
+		
+  } catch (error) {
+    console.log("Error obteniendo vehículos de la base de datos:", error)
+  }
+}
+
+const handleCreationOrUpdate = async (payload) => {
+  const token = localStorage.getItem('token')
+
+  try {
+    if (payload.id) {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${payload.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+        body: JSON.stringify(payload),
+      })
+
+    } else {
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+        body: JSON.stringify(payload),
+      })
+    }
+
+    getVehicles()
+    toggleModal()
+
+  } catch (error) {
+    console.error('Error: ', error)
+  }
+}
+
+const handleEditVehicle = () => {
+	console.log("Edit")
+}
+
+const handleDeleteVehicle = () => {
+	console.log("delete")
+}
+
+onMounted(() => {
+	getVehicles()
+})
 </script>
 
 <template>
@@ -9,13 +77,13 @@ import VerticalNav from '@/components/NavBar.vue';
 
       <header>
         <h1>Vehículos</h1>
-        <button class="add-btn" @click="openModal">
+        <button class="add-btn" @click="toggleModal">
           + Agregar
         </button>
       </header>
 
       <div class="body-container">
-        <TableUsers :items="activeVehicles" :columns="[
+        <TableUsers :items="vehicles" :columns="[
           { label: 'Marca', field: 'brand' },
           { label: 'Modelo', field: 'model' },
           { label: 'Placa', field: 'licensePlate' },
@@ -26,21 +94,20 @@ import VerticalNav from '@/components/NavBar.vue';
         ]" @edit="handleEditVehicle" @delete="handleDeleteVehicle" />
       </div>
 
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <div v-if="showModal" class="modal-overlay" @click.self="toggleModal">
         <div class="modal-content">
           <div class="modal-header">
             <h3>{{ selectedVehicle ? 'Editar' : 'Agregar' }}</h3>
-            <button class="close-btn" @click="closeModal">&times;</button>
+            <button class="close-btn" @click="toggleModal">&times;</button>
           </div>
           <div class="modal-body">
-            <UserForm :initialData="selectedVehicle" @submit="handleRegisterOrUpdate" :updating="selectedVehicle" />
+            <VehicleForm :initialData="selectedVehicle" @submit="handleCreationOrUpdate" :updating="selectedVehicle" />
           </div>
         </div>
       </div>
 
     </main>
   </div>
-  
 </template>
 
 <style scoped>
