@@ -33,14 +33,15 @@ const handleCreationOrUpdate = async (payload) => {
 
   try {
     if (payload.id) {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${payload.id}`, {
+		const { id, ...newPayload } = payload
+		await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${payload.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(newPayload),
       })
 
     } else {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
         body: JSON.stringify(payload),
