@@ -3,10 +3,12 @@ import { ref, onMounted } from 'vue';
 import VerticalNav from '@/components/NavBar.vue';
 import TableUsers from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
+import { computed } from 'vue';
 
 const showModal = ref(false)
 const selectedVehicle = ref(null)
 const vehicles = ref([])
+const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive))
 
 const toggleModal = () => {
 	selectedVehicle.value = null
@@ -61,13 +63,25 @@ const handleEditVehicle = (vehicle) => {
 	showModal.value = true
 }
 
-const handleDeleteVehicle = () => {
-	console.log("delete")
+const handleDeleteVehicle = async (vehicle) => {
+  selectedVehicle.value = { ...vehicle }
+  const vehicleID = selectedVehicle.value.id
+  try {
+    const token = localStorage.getItem('token')
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${vehicleID}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, }, 
+    })
+
+    await getVehicles()
+  } catch (error) {
+    console.log("Error eliminando vehículo:", error)
+  }
 }
 
-onMounted(() => {
+onMounted(() => 
 	getVehicles()
-})
+)
 </script>
 
 <template>
@@ -83,7 +97,7 @@ onMounted(() => {
       </header>
 
       <div class="body-container">
-        <TableUsers :items="vehicles" :columns="[
+        <TableUsers :items="activeVehicles" :columns="[
           { label: 'Marca', field: 'brand' },
           { label: 'Modelo', field: 'model' },
           { label: 'Placa', field: 'licensePlate' },
