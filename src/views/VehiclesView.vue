@@ -23,8 +23,6 @@ const getVehicles = async () => {
     const data = await response.json()
     vehicles.value = data
 
-	console.log("data: ", data)
-		
   } catch (error) {
     console.log("Error obteniendo vehículos de la base de datos:", error)
   }
@@ -57,8 +55,9 @@ const handleCreationOrUpdate = async (payload) => {
   }
 }
 
-const handleEditVehicle = () => {
-	console.log("Edit")
+const handleEditVehicle = (vehicle) => {
+	selectedVehicle.value = { ...vehicle }
+	showModal.value = true
 }
 
 const handleDeleteVehicle = () => {
