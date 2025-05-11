@@ -10,7 +10,7 @@
       </li>
 
       <li v-for="section in sections" :key="section.id">
-        <router-link
+        <router-link v-if="section.auth.includes(loggedRole)"
           :to="'/' + section.id"
           class="nav-link"
           :class="{ active: activeSection === section.id }"
@@ -33,19 +33,21 @@
 </template>
 
 <script setup>
+import { getUserRole } from '@/utils/auth';
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const loggedRole = getUserRole()
 
 const sections = [
-  { id: 'quotes', icon: 'notifications', description: 'Cotizaciones' },
-  { id: 'assignments', icon: 'pin_drop', description: 'Asignaciones' },
-  { id: 'users', icon: 'people', description: 'Usuarios' },
-  { id: 'vehicles', icon: 'local_shipping', description: 'Vehículos' },
-  { id: 'reports', icon: 'monitoring', description: 'Reportes' },
-  { id: 'reviews', icon: 'reviews', description: 'Reseñas' },
-  { id: 'forms', icon: 'description', description: 'Formularios'}
+  { id: 'quotes', icon: 'notifications', description: 'Cotizaciones', auth: ['admin'] },
+  { id: 'assignments', icon: 'pin_drop', description: 'Asignaciones', auth: ['admin', 'driver'] },
+  { id: 'users', icon: 'people', description: 'Usuarios', auth: ['admin']},
+  { id: 'vehicles', icon: 'local_shipping', description: 'Vehículos', auth: ['admin'] },
+  { id: 'reports', icon: 'monitoring', description: 'Reportes', auth: ['admin'] },
+  { id: 'reviews', icon: 'reviews', description: 'Reseñas', auth: ['admin'] },
+  { id: 'forms', icon: 'description', description: 'Formularios', auth: ['admin']}
 ];
 
 const activeSection = ref(route.path.replace('/', '') || 'quotes')
@@ -60,6 +62,7 @@ function closeMenu() {
 }
 
 onMounted(() => {
+  console.log(loggedRole)
   window.addEventListener('scroll', () => {
     for (const section of sections) {
       const el = document.getElementById(section.id)

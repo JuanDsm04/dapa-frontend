@@ -29,6 +29,7 @@ const getCurrentUserData = async () => {
       role: data.role,
     }
     user.value = currentUser
+    console.log(currentUser)
   } catch (error) {
     console.log("Error obteniendo al usuario loggeado:", error)
   }

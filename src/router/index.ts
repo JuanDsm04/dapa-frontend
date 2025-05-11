@@ -6,6 +6,7 @@ import ProfileView from "@/views/ProfileView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { getUserRole, isTokenExpired } from '@/utils/auth';
 import VehiclesView from "@/views/VehiclesView.vue";
+import AssignmentsView from "@/views/AssignmentsView.vue";
 
 
 const router = createRouter({
@@ -44,6 +45,12 @@ const router = createRouter({
       name: "Vehicles",
       component: VehiclesView,
       meta: { requiresAuth: true, roles: ['admin']}
+    },
+    {
+      path: "/assignments",
+      name: "Assignments",
+      component: AssignmentsView,
+      meta: { requiresAuth: true, roles: ['admin', 'driver']}
     }
   ],
 });

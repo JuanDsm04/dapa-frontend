@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import VerticalNav from '@/components/NavBar.vue';
-import TableUsers from '@/components/Table.vue';
+import TableVehicles from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
 import { computed } from 'vue';
 
@@ -97,7 +97,7 @@ onMounted(() =>
       </header>
 
       <div class="body-container">
-        <TableUsers :items="activeVehicles" :columns="[
+        <TableVehicles :items="activeVehicles" :columns="[
           { label: 'Marca', field: 'brand' },
           { label: 'Modelo', field: 'model' },
           { label: 'Placa', field: 'licensePlate' },
