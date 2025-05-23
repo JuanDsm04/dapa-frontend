@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import VerticalNav from '@/components/NavBar.vue';
 import TableVehicles from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
@@ -31,32 +33,48 @@ const getVehicles = async () => {
 }
 
 const handleCreationOrUpdate = async (payload) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
 
   try {
-    if (payload.id) {
-		const { id, ...newPayload } = payload
-		await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${payload.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-        body: JSON.stringify(newPayload),
-      })
+    let res;
 
+    if (payload.id) {
+      const { id, ...newPayload } = payload;
+
+      res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(newPayload),
+      });
+
+      if (!res.ok) throw new Error('Error al actualizar el vehículo');
+      toast.info('Vehículo actualizado exitosamente');
     } else {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
+      res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
-      })
+      });
+
+      if (!res.ok) throw new Error('Error al registrar el vehículo');
+      toast.success('Vehículo registrado exitosamente');
     }
 
-    getVehicles()
-    toggleModal()
-
+    getVehicles();
+    toggleModal();
   } catch (error) {
-    console.error('Error: ', error)
+    console.error('Error: ', error);
+    toast.error('Error al guardar el vehículo');
   }
-}
+};
+
+
 
 const handleEditVehicle = (vehicle) => {
 	selectedVehicle.value = { ...vehicle }
@@ -74,8 +92,10 @@ const handleDeleteVehicle = async (vehicle) => {
     })
 
     await getVehicles()
+    toast.warning('Vehículo eliminado')
   } catch (error) {
     console.log("Error eliminando vehículo:", error)
+    toast.error('Error eliminando vehículos')
   }
 }
 

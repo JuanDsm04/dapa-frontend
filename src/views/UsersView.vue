@@ -1,5 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import UserForm from '@/components/UserForm.vue';
 import VerticalNav from '@/components/NavBar.vue';
 import TableUsers from '@/components/Table.vue'
@@ -35,8 +37,10 @@ const handleDeleteUser = async (user) => {
     })
 
     await getUsers()
+    toast.warning('Usuario eliminado')
   } catch (error) {
     console.log("Error eliminando usuario:", error)
+    toast.error('Error eliminando usuario')
   }
 };
 
@@ -55,27 +59,40 @@ const getUsers = async () => {
 }
 
 const handleRegisterOrUpdate = async (payload) => {
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('token');
   try {
+    let response;
     if (payload.id) {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${payload.id}`, {
+      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${payload.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
-      })
-      console.log('Usuario actualizado')
+      });
+
+      if (!response.ok) throw new Error('Error al actualizar el usuario');
+      toast.info('Usuario modificado exitosamente');
     } else {
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
+      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(payload),
-      })
+      });
+
+      if (!response.ok) throw new Error('Error al registrar el usuario');
+      toast.success('Usuario agregado exitosamente');
     }
 
-    getUsers()
-    closeModal()
+    getUsers();
+    closeModal();
   } catch (error) {
-    console.error('Error al guardar usuario:', error)
+    console.error('Error al guardar usuario:', error);
+    toast.error(`Error al guardar usuario: ${error}`);
   }
 };
 

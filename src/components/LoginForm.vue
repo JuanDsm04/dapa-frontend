@@ -31,7 +31,6 @@
 
       const data = await response.json()
       localStorage.setItem("token", data.data)
-      alert('Inicio de sesión exitoso')
 
       if (getUserRole() === 'admin') {
         router.push('/users')
