@@ -59,9 +59,12 @@ const getUsers = async () => {
 }
 
 const handleRegisterOrUpdate = async (payload) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token')
+
   try {
-    let response;
+    let response
+    let data
+
     if (payload.id) {
       response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${payload.id}`, {
         method: 'PUT',
@@ -70,10 +73,15 @@ const handleRegisterOrUpdate = async (payload) => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-      });
+      })
 
-      if (!response.ok) throw new Error('Error al actualizar el usuario');
-      toast.info('Usuario modificado exitosamente');
+      data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.Message || 'Error al actualizar el usuario')
+      }
+
+      toast.info('Usuario modificado exitosamente')
     } else {
       response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
         method: 'POST',
@@ -82,19 +90,24 @@ const handleRegisterOrUpdate = async (payload) => {
           'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-      });
+      })
 
-      if (!response.ok) throw new Error('Error al registrar el usuario');
-      toast.success('Usuario agregado exitosamente');
+      data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.Message || 'Error al registrar el usuario')
+      }
+
+      toast.success('Usuario agregado exitosamente')
     }
 
-    getUsers();
-    closeModal();
+    getUsers()
+    closeModal()
   } catch (error) {
-    console.error('Error al guardar usuario:', error);
-    toast.error(`Error al guardar usuario: ${error}`);
+    console.error('Error al guardar usuario:', error)
+    toast.error(`Error: ${error.message}`)
   }
-};
+}
 
 onMounted(() => {
   getUsers()
