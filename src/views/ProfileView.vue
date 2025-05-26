@@ -4,7 +4,6 @@ import UserForm from '@/components/UserForm.vue'
 import VerticalNav from '@/components/NavBar.vue'
 import { getUserID } from "@/utils/auth";
 import { ref, onMounted } from 'vue';
-import { ArrowLeftEndOnRectangleIcon } from '@heroicons/vue/24/solid'
 
 const user = ref(null)
 const getCurrentUserData = async () => {
@@ -27,6 +26,7 @@ const getCurrentUserData = async () => {
       phone: data.phone,
       email: data.email,
       password: data.password,
+      licenseExpirationDate: data.licenseExpirationDate,
       role: data.role,
     }
     user.value = currentUser
