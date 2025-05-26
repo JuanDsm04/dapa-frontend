@@ -41,35 +41,56 @@ const handleDelete = (item: any) => {
         @delete="handleDelete"
       />
     </tbody>
+    <tfoot>
+      <tr>
+        <td :colspan="columns.length + 1" class="footer-cell"></td>
+      </tr>
+    </tfoot>
   </table>
 </template>
 
 <style scoped>
 
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
 
-.data-table thead {
-  background-color: var(--sidebar-bg);
-  color: white;
-}
+  .data-table thead {
+    background-color: var(--table-header);
+    color: var(--text-on-light);
+    border-bottom: 3px solid var(--border);
+  }
 
-.data-table th {
-  padding: 16px 24px;
-  text-align: center;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
+  .data-table thead th:first-child {
+    border-top-left-radius: 10px;
+  }
 
-.data-table tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: all 0.2s ease;
-}
+  .data-table thead th:last-child {
+    border-top-right-radius: 10px;
+  }
 
-.data-table tbody tr:last-child {
-  border-bottom: none;
-}
+  .data-table th {
+    padding: 16px 24px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
 
+  .data-table tbody tr {
+    border-bottom: 3px solid var(--border);
+    transition: all 0.2s ease;
+  }
+
+  .data-table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .data-table tfoot .footer-cell {
+    height: 20px;
+    background-color: var(--table-footer);
+    border-top: 3px solid var(--border);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
 </style>

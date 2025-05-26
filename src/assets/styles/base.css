@@ -8,12 +8,25 @@
   /* Color scheme */
   --primary: #FFB601;
   --primary-dark: #E2A200;
+
+  --edit-btn: #d2fdd4;
+  --edit-btn-hover: #bafbbe;
+  --on-edit-btn: #349137;
+
+  --delete-btn: #FCDBDB;
+  --delete-btn-hover: #f6cbcb;
+  --on-delete-btn: #CC2D44;
+
+  --add-btn: #3F74BD;
+  --add-btn-hover: #3c6caf;
+
   --secondary: #42B983;
   --secondary-dark: #369F6B;
 
   /* Text colors*/
   --text-on-dark: var(--white);
   --text-on-light: var(--black);
+  --text-on-add-btn: var(--white);
 
   /* Form */
   --border-input: #CCC;
@@ -25,23 +38,29 @@
   --close-btn-hover: #333;
 
   /* Navbar */
-  --sidebar-bg: #3B4E5C;
-  --sidebar-active-bg: #6e7478;
-  --sidebar-hover-bg: #26333d;
-  --sidebar-text-color: var(--white);
-  --sidebar-icon-color: var(--white);
+  --sidebar-bg: #ffffff;
+  --sidebar-active-bg: #3F74BD;
+  --sidebar-hover-bg: #f4f4f4;
+  --sidebar-text-color: #2d4d7a;
+  --sidebar-active-text-color: var(--white);
+  --sidebar-icon-color: #2d4d7a;
+  --sidebar-active-icon-color: var(--white);
   --sidebar-icon-size: 24px;
 
   /* Row */
-  --delete-btn: #ee4d42;
-  --delete-btn-hover: #a1342c;
   --row-hover: #dadada;
 
   /* Table */
-  --border: #898989;
+  --border: #F6F6F6;
+  --table-header: var(--white);
+  --table-footer: var(--white);
+  --table-row: var(--white);
 
   /* Font and typography */
   --font-base: 'Poppins';
+
+  /* Views */
+  --bg-general: #eeeded;
 }
 
 *,

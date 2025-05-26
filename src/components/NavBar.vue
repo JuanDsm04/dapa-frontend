@@ -1,6 +1,13 @@
 <template>
   <div>
-    <button class="menu-toggle" @click="toggleMenu">☰</button>
+    <button
+      class="menu-toggle"
+      :class="{ open: isMenuOpen }"
+      @click="toggleMenu"
+    >
+      ☰
+    </button>
+
     <div v-if="isMenuOpen" class="overlay" @click="closeMenu"></div>
 
     <ul class="side-nav" :class="{ open: isMenuOpen }">
@@ -10,14 +17,22 @@
       </li>
 
       <li v-for="section in sections" :key="section.id">
-        <router-link v-if="section.auth.includes(loggedRole)"
+        <router-link
+          v-if="section.auth.includes(loggedRole)"
           :to="'/' + section.id"
           class="nav-link"
           :class="{ active: activeSection === section.id }"
           @click="closeMenu()"
         >
-          <span class="material-symbols-outlined">{{ section.icon }}</span>
-          <p>{{ section.description }}</p>
+          <span
+            class="material-symbols-outlined"
+            :class="{ active: activeSection === section.id }"
+          >
+            {{ section.icon }}
+          </span>
+          <p :class="{ active: activeSection === section.id }">
+            {{ section.description }}
+          </p>
         </router-link>
       </li>
 
@@ -85,18 +100,17 @@ onMounted(() => {
     flex-direction: column;
     margin: 0;
     padding: 0;
-    width: 80px;
 
     background-color: var(--sidebar-bg);
     position: fixed;
-    height: 100%;
+    height: 100dvh;
     overflow: auto;
     text-align: center;
     z-index: 1000;
   }
 
   .side-nav li:first-child {
-    padding: 20px 0;
+    padding: 20px;
   }
 
   .side-nav li:first-child img {
@@ -126,26 +140,40 @@ onMounted(() => {
   li span {
     font-size: 32px;
     color: var(--sidebar-icon-color);
-    padding-top: 5px;
+    padding: 20px;
+  }
+
+  li span.active {
+    color: var(--sidebar-active-icon-color);
   }
 
   li p {
+    display: none;
     font-size: 10px;
     color: var(--sidebar-text-color);
     margin: 0 auto;
     padding-bottom: 10px
   }
 
+  li p.active {
+    color: var(--sidebar-active-text-color);
+  }
+
   .menu-toggle {
     display: none;
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 2.2rem;
+    left: 1rem;
     font-size: 28px;
     background: none;
     border: none;
-    color: var(--sidebar-bg);
+    color: var(--black);
+    transition: color 0.3s ease;
     z-index: 1001;
+  }
+
+  .menu-toggle.open {
+    color: var(--white);
   }
 
   .overlay {
@@ -157,7 +185,7 @@ onMounted(() => {
     z-index: 999;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 770px) {
     .menu-toggle {
       display: block;
     }
@@ -183,7 +211,7 @@ onMounted(() => {
     }
 
     li span {
-      padding-top: 0px;
+      padding: 10px 0;
     }
 
     li p {

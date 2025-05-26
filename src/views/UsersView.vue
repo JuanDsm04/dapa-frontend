@@ -118,140 +118,145 @@ onMounted(() => {
 <template>
   <div class="layout">
     <VerticalNav />
+    
     <main>
-
       <header>
         <h1>Usuarios</h1>
-        <button class="add-btn" @click="openModal">
-          + Agregar
-        </button>
+        <button class="add-btn" @click="openModal">+ Agregar</button>
       </header>
 
-      <div class="body-container">
-        <TableUsers :items="activeUsers" :columns="[
-          { label: 'Nombre', field: 'name' },
-          { label: 'Apellido', field: 'lastName' },
-          { label: 'Email', field: 'email' },
-          { label: 'Teléfono', field: 'phone' }
-        ]" @edit="handleEditUser" @delete="handleDeleteUser" />
-      </div>
-
-      <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>{{ selectedUser ? 'Editar' : 'Agregar' }}</h3>
-            <button class="close-btn" @click="closeModal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <UserForm :initialData="selectedUser" @submit="handleRegisterOrUpdate" :updating="selectedUser" />
-          </div>
-        </div>
-      </div>
-
+      <section>
+        <TableUsers
+          :items="activeUsers"
+          :columns="[
+            { label: 'Nombre', field: 'name' },
+            { label: 'Apellido', field: 'lastName' },
+            { label: 'Email', field: 'email' },
+            { label: 'Teléfono', field: 'phone' }
+          ]"
+          @edit="handleEditUser"
+          @delete="handleDeleteUser"
+        />
+      </section>
     </main>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+    <article>
+      <header>
+        <h3>{{ selectedUser ? 'Editar' : 'Agregar' }}</h3>
+        <button class="close-btn" @click="closeModal">&times;</button>
+      </header>
+
+      <section>
+        <UserForm :initialData="selectedUser" @submit="handleRegisterOrUpdate" :updating="selectedUser" />
+      </section>
+    </article>
   </div>
 </template>
 
 <style scoped>
-.layout {
-  display: flex;
-  min-height: 100vh;
-}
+  .layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-general);
+  }
 
-main{
-  width: 100%;
-  min-height: 100dvh;
-  padding: 2rem;
-  box-sizing: border-box;
-  margin-left: 80px;
-  flex: 1;
-}
+  .layout main {
+    width: 100%;
+    padding: 2rem;
+    margin-left: 80px;
+    box-sizing: border-box;
+    background-color: var(--main-bg);
+  }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
+  main header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
 
-.body-container {
-  display: flex;
-  width: 100%;
-  height: calc(100dvh-150px);
-  justify-content: center;
-  align-items: center;
-}
+  header h1 {
+    font-weight: 600;
+  }
 
-.add-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: var(--secondary);
-  color: var(--text-on-dark);
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
+  main section {
+    width: 100%;
+    min-height: calc(100vh - 150px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
 
-.add-user-btn:hover {
-  background-color: var(--secondary-dark);
-}
+  .add-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--add-btn);
+    color: var(--text-on-add-btn);
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+  .add-btn:hover {
+    background-color: var(--add-btn-hover);
+  }
 
-.modal-content {
-  background: var(--modal-bg);
-  border-radius: 12px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border-input)
-}
+  article {
+    background: var(--modal-bg);
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+  }
 
-.modal-header h3 {
-  margin: 0 25px;
-  font-weight: 500;
-  font-size: 1.5rem;
-}
+  article header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-input);
+  }
 
-.modal-body {
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  padding: 25px 0;
-}
+  article header h3 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 0;
+  }
 
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: var(--close-btn);
-  padding: 0 0.5rem;
-}
+  article section {
+    padding: 1.5rem;
+  }
 
-.close-btn:hover {
-  color: var(--close-btn-hover);
-}
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--close-btn);
+    cursor: pointer;
+  }
+
+  .close-btn:hover {
+    color: var(--close-btn-hover);
+  }
+
 </style>

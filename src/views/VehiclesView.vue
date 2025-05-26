@@ -1,59 +1,70 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+
 import VerticalNav from '@/components/NavBar.vue';
 import TableVehicles from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
-import { computed } from 'vue';
 
-const showModal = ref(false)
-const selectedVehicle = ref(null)
-const vehicles = ref([])
-const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive))
+const showModal = ref(false);
+const selectedVehicle = ref(null);
+const vehicles = ref([]);
+const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
 
-const toggleModal = () => {
-	selectedVehicle.value = null
-	showModal.value = !showModal.value
-}
+const openModal = () => {
+  selectedVehicle.value = null;
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  selectedVehicle.value = null;
+  showModal.value = false;
+};
 
 const getVehicles = async () => {
   try {
-    const token = localStorage.getItem('token') 
+    const token = localStorage.getItem('token');
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-    })
-    const data = await response.json()
-    vehicles.value = data
-
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    vehicles.value = data;
   } catch (error) {
-    console.log("Error obteniendo vehículos de la base de datos:", error)
+    console.error("Error obteniendo vehículos:", error);
   }
-}
+};
 
 const handleCreationOrUpdate = async (payload) => {
   const token = localStorage.getItem('token');
 
   try {
-    let res;
+    let response;
+    let data;
 
     if (payload.id) {
-      const { id, ...newPayload } = payload;
-
-      res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${id}`, {
+      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${payload.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(newPayload),
+        body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Error al actualizar el vehículo');
+      data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.Message || 'Error al actualizar el vehículo');
+      }
+
       toast.info('Vehículo actualizado exitosamente');
     } else {
-      res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
+      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,85 +73,95 @@ const handleCreationOrUpdate = async (payload) => {
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Error al registrar el vehículo');
+      data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.Message || 'Error al registrar el vehículo');
+      }
+
       toast.success('Vehículo registrado exitosamente');
     }
 
     getVehicles();
-    toggleModal();
+    closeModal();
   } catch (error) {
-    console.error('Error: ', error);
-    toast.error('Error al guardar el vehículo');
+    console.error('Error al guardar vehículo:', error);
+    toast.error(`Error: ${error.message}`);
   }
 };
 
-
-
 const handleEditVehicle = (vehicle) => {
-	selectedVehicle.value = { ...vehicle }
-	showModal.value = true
-}
+  selectedVehicle.value = { ...vehicle };
+  showModal.value = true;
+};
 
 const handleDeleteVehicle = async (vehicle) => {
-  selectedVehicle.value = { ...vehicle }
-  const vehicleID = selectedVehicle.value.id
+  selectedVehicle.value = { ...vehicle };
+  const vehicleID = selectedVehicle.value.id;
+
   try {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
     await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${vehicleID}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, }, 
-    })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
 
-    await getVehicles()
-    toast.warning('Vehículo eliminado')
+    await getVehicles();
+    toast.warning('Vehículo eliminado');
   } catch (error) {
-    console.log("Error eliminando vehículo:", error)
-    toast.error('Error eliminando vehículos')
+    console.error("Error eliminando vehículo:", error);
+    toast.error('Error eliminando vehículo');
   }
-}
+};
 
-onMounted(() => 
-	getVehicles()
-)
+onMounted(() => {
+  getVehicles();
+});
 </script>
 
 <template>
   <div class="layout">
     <VerticalNav />
-    <main>
 
+    <main>
       <header>
         <h1>Vehículos</h1>
-        <button class="add-btn" @click="toggleModal">
-          + Agregar
-        </button>
+        <button class="add-btn" @click="openModal">+ Agregar</button>
       </header>
 
-      <div class="body-container">
-        <TableVehicles :items="activeVehicles" :columns="[
-          { label: 'Marca', field: 'brand' },
-          { label: 'Modelo', field: 'model' },
-          { label: 'Placa', field: 'licensePlate' },
-          { label: 'Capacidad (kg)', field: 'capacityKg' },
-          { label: 'Disponibilidad', field: 'available' },
-          { label: 'Kilometraje actual', field: 'currentMileage' },
-          { label: 'Próximo mantenimiento (km)', field: 'nextMaintenanceMileage' }
-        ]" @edit="handleEditVehicle" @delete="handleDeleteVehicle" />
-      </div>
-
-      <div v-if="showModal" class="modal-overlay" @click.self="toggleModal">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h3>{{ selectedVehicle ? 'Editar' : 'Agregar' }}</h3>
-            <button class="close-btn" @click="toggleModal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <VehicleForm :initialData="selectedVehicle" @submit="handleCreationOrUpdate" :updating="selectedVehicle" />
-          </div>
-        </div>
-      </div>
-
+      <section>
+        <TableVehicles
+          :items="activeVehicles"
+          :columns="[
+            { label: 'Marca', field: 'brand' },
+            { label: 'Modelo', field: 'model' },
+            { label: 'Placa', field: 'licensePlate' },
+            { label: 'Capacidad (kg)', field: 'capacityKg' },
+            { label: 'Disponibilidad', field: 'available' },
+            { label: 'Kilometraje actual', field: 'currentMileage' },
+            { label: 'Próximo mantenimiento (km)', field: 'nextMaintenanceMileage' }
+          ]"
+          @edit="handleEditVehicle"
+          @delete="handleDeleteVehicle"
+        />
+      </section>
     </main>
+  </div>
+
+  <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+    <article>
+      <header>
+        <h3>{{ selectedVehicle ? 'Editar' : 'Agregar' }}</h3>
+        <button class="close-btn" @click="closeModal">&times;</button>
+      </header>
+
+      <section>
+        <VehicleForm :initialData="selectedVehicle" @submit="handleCreationOrUpdate" :updating="selectedVehicle" />
+      </section>
+    </article>
   </div>
 </template>
 
@@ -148,45 +169,49 @@ onMounted(() =>
 .layout {
   display: flex;
   min-height: 100vh;
+  background-color: var(--bg-general);
 }
 
-main {
+.layout main {
   width: 100%;
-  min-height: 100dvh;
   padding: 2rem;
-  box-sizing: border-box;
   margin-left: 80px;
-  flex: 1;
+  box-sizing: border-box;
+  background-color: var(--main-bg);
 }
 
-header {
+main header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
 }
 
-.body-container {
-  display: flex;
+header h1 {
+  font-weight: 600;
+}
+
+main section {
   width: 100%;
-  height: calc(100dvh-150px);
+  min-height: calc(100vh - 150px);
+  display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .add-btn {
   padding: 0.75rem 1.5rem;
-  background-color: var(--secondary);
-  color: var(--text-on-dark);
+  background-color: var(--add-btn);
+  color: var(--text-on-add-btn);
   border: none;
   border-radius: 6px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease;
 }
 
 .add-btn:hover {
-  background-color: var(--secondary-dark);
+  background-color: var(--add-btn-hover);
 }
 
 .modal-overlay {
@@ -196,51 +221,48 @@ header {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
 }
 
-.modal-content {
+article {
   background: var(--modal-bg);
-  border-radius: 12px;
-  width: 90%;
+  border-radius: 10px;
   max-width: 600px;
+  width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
 }
 
-.modal-header {
+article header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-input)
+  border-bottom: 1px solid var(--border-input);
 }
 
-.modal-header h3 {
-  margin: 0 25px;
-  font-weight: 500;
+article header h3 {
   font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
 }
 
-.modal-body {
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  align-items: center;
-  padding: 25px 0;
+article section {
+  padding: 1.5rem;
 }
 
 .close-btn {
   background: none;
   border: none;
   font-size: 1.5rem;
-  cursor: pointer;
   color: var(--close-btn);
-  padding: 0 0.5rem;
+  cursor: pointer;
 }
 
 .close-btn:hover {

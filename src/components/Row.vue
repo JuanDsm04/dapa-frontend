@@ -29,11 +29,9 @@ const handleDelete = () => {
     <td class="action-buttons">
       <button @click="handleEdit" class="btn-edit"> 
         <PencilSquareIcon class="icon" />
-        Editar
       </button>
       <button @click="handleDelete" class="btn-delete">
         <TrashIcon class="icon" />
-        Eliminar
       </button>
     </td>
   </tr>
@@ -42,58 +40,69 @@ const handleDelete = () => {
 
 <style scoped>
 
-td{
-  padding: 12px 18px;
-  text-align: center;
-  font-weight: 400;
-  letter-spacing: 0.5px;
-}
+  .data-row {
+    background-color: var(--table-row);
+  }
 
-.action-buttons {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  text-align: center;
-  gap: 10px;
-}
+  td {
+    padding: 12px 18px;
+    text-align: center;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
 
-button {
-  border: none;
-  color: var(--white);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+  .action-buttons {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  button {
+    border: none;
+    color: var(--white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     background: none;
     cursor: pointer;
     padding: 8px;
-}
+    gap: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
 
-.icon {
+  .icon {
     width: 24px;
     height: 24px;
-    color: var(--white);
-}
+  }
 
-.btn-edit{
-  background-color: var(--primary);
-  border-radius: 8px;
-}
+  .btn-edit{
+    background-color: var(--edit-btn);
+    border-radius: 10px;
+  }
 
-.btn-delete{
-  background-color: var(--delete-btn);
-  border-radius: 8px;
-}
+  .btn-edit .icon {
+    color: var(--on-edit-btn);
+  }
 
-.btn-edit:hover{
-  background-color: var(--primary-dark);
-}
+  .btn-delete {
+    background-color: var(--delete-btn);
+    border-radius: 10px;
+  }
 
-.btn-delete:hover{
-  background-color: var(--delete-btn-hover);
-}
+  .btn-delete .icon {
+    color: var(--on-delete-btn);
+  }
 
-.data-row:hover{
-  background-color: var(--row-hover);
-}
+  .btn-edit:hover{
+    background-color: var(--edit-btn-hover);
+  }
+
+  .btn-delete:hover{
+    background-color: var(--delete-btn-hover);
+  }
+
 </style>

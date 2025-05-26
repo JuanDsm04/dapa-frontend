@@ -4,10 +4,12 @@
 
 <template>
   <main>
-    <img src="@/assets/images/demo-image.jpg" alt="Demo image of a company's truck" class="demo-img">
-    <section class="login-form-container">
-      <img src="@/assets/images/logo_1.png" alt="Company logo" class="logo-img">
-      <LoginForm />
+    <img src="@/assets/images/demo-image.jpg" alt="Demo image of a company's truck">
+    <section>
+      <div class="content-wrapper">
+        <img src="@/assets/images/logo_1.png" alt="Company logo" class="logo">
+        <LoginForm />
+      </div>
     </section>
   </main>
 </template>
@@ -15,51 +17,53 @@
 <style scoped>
   main {
     display: flex;
-    height: 100dvh;
+    max-height: 100dvh;
     width: 100%;
   }
 
-  .demo-img {
-    height: 100%;
+  main > img {
+    height: 100dvh;
     width: 45%;
     object-fit: cover;
   }
 
-  .login-form-container {
+  section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 55%;
+    max-height: 100dvh;
+    margin: 0;
+    padding: 0;
+  }
+
+  .content-wrapper {
+    width: 85%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 1;
-    padding: 50px 250px;
+    justify-content: center;
+    padding: 20px 0;
   }
 
-  .logo-img {
+  .logo {
     width: auto;
-    height: 400px;
-    transform: translateY(50px);
+    height: 150px;
+    margin-bottom: 50px;
   }
 
   @media (max-width: 770px) {
-    main {
-      height: 100dvh;
-      width: auto;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .demo-img {
+    main > img {
       display: none;
     }
 
-    .login-form-container {
+    section {
       width: 100%;
-      height: 100%;
-      padding: 40px 30px;
     }
 
-    .logo-img {
-      height: 300px;
-      transform: translateY(0);
+    .logo {
+      height: 100px;
+      margin: 100px 0 30px 0;
     }
   }
 </style>
