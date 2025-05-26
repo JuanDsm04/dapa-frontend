@@ -108,15 +108,17 @@
 
   button {
     border: 0;
-    padding: 15px 0;
-    border-radius: 32px;
-    background-color: var(--primary);
-    font-size: 1.25rem;
+    padding: 15px 35px;
+    border-radius: 10px;
+    background-color: var(--add-btn);
+    color: var(--white);
+    font-size: 1rem;
     font-weight: 500;
+    margin: 0 auto;
   }
 
   form > button:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--add-btn-hover);
   }
 
   .toggle-visibility-btn {
