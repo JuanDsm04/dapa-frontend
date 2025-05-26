@@ -4,6 +4,7 @@ import UserForm from '@/components/UserForm.vue'
 import VerticalNav from '@/components/NavBar.vue'
 import { getUserID } from "@/utils/auth";
 import { ref, onMounted } from 'vue';
+import { ArrowLeftEndOnRectangleIcon } from '@heroicons/vue/24/solid'
 
 const user = ref(null)
 const getCurrentUserData = async () => {
@@ -64,54 +65,91 @@ onMounted(() => {
 </script>
 
 <template>
-	<VerticalNav />
-	<main class="content">
-		<header>
-			<h1>Mi perfil</h1>
-		</header>
-		<UserForm :initialData="user" :updating="user" @submit="handleEditProfile"/>
-		<section>
-    		<button class="btn-logout" @click="handleLogout">Cerrar sesión</button>
-		</section>
-	</main>
+  <div class="layout">
+    <VerticalNav />
+    <main>
+      <header class="sticky-header">
+        <h1>Mi perfil</h1>
+        <button @click="handleLogout">
+          <span class="material-symbols-outlined">
+            power_settings_new
+          </span>
+        </button>
+      </header>
+      <div class="content">
+        <UserForm :initialData="user" :updating="user" @submit="handleEditProfile"/>
+      </div>
+    </main>
+  </div>
 </template>
 
 <style scoped>
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-general);
+}
+
+.layout main {
+  width: 100%;
+  padding: 0;
+  margin-left: 80px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  height: 100vh;
+  z-index: 1;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem;
+  background-color: var(--bg-general);
+  z-index: 1000;
+}
+
 .content {
-	margin-left: 80px;
-	padding: 2rem;
-    display: flex;
-	flex-direction: column;
-    justify-content: start;
-    align-items: center;
-    height: 100dvh;
-    width: calc(100% - 80px);
+  padding: 0 2rem 2rem 2rem;
 }
 
-header {
-	align-self: start;
-	padding: 0 0 30px 0;
+header h1 {
+  font-weight: 600;
 }
 
-.btn-logout{
-	width: 100%;
-    color: var(--white);
-    border: none;
-    border-radius: 32px;
-    padding: 15px 0;
-    font-weight: 500;
-	font-size: 1.25rem;
-    cursor: pointer;
-    background-color: var(--delete-btn);
+button {
+  width: 50px;
+  height: 50px;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--on-delete-btn);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn-logout:hover{
-    background-color: var(--delete-btn-hover);
+span {
+  color: var(--white);
 }
 
-section {
-	padding: 1.75rem 0;
-	max-width: 500px;
-	width: 100%;
+@media (max-width: 770px) {
+  .layout main {
+    margin-left: 0;
+    padding: 0;
+  }
+  
+  .sticky-header,
+  .content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  h1 {
+    margin-left: 3rem;
+  }
 }
 </style>
