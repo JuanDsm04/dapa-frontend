@@ -11,7 +11,7 @@ const props = defineProps<{
         email?: string
         password?: string
         role?: string
-        licenseExpiration?: string
+        licenseExpirationDate?: string
     },
     updating?: boolean
     isProfile?: boolean
@@ -23,7 +23,7 @@ const emit = defineEmits<{
 }>()
 
 const handleSubmit = () => {
-  const licenseDate = licenseExpiration.value ? new Date(licenseExpiration.value).toISOString() : undefined
+  const licenseDate = licenseExpirationDate.value ? new Date(licenseExpirationDate.value).toISOString() : undefined
 
   emit('submit', {
     id: props.initialData?.id,
@@ -44,7 +44,7 @@ const email = ref('')
 const password = ref('')
 const role = ref('driver')
 const showPassword = ref(false)
-const licenseExpiration = ref('')
+const licenseExpirationDate = ref('')
 
 const togglePassVisibility = () => {
     showPassword.value = !showPassword.value
@@ -59,7 +59,7 @@ watch(() => props.initialData, (newData) => {
         email.value = newData.email || ''
         password.value = newData.password || ''
         role.value = newData.role || 'driver'
-        licenseExpiration.value = newData.licenseExpiration || ''
+        licenseExpirationDate.value = newData.licenseExpirationDate || ''
     }
 }, { immediate: true })
 </script>
@@ -106,7 +106,7 @@ watch(() => props.initialData, (newData) => {
         </div>
         <div class="field" v-if="role === 'driver'">
             <label for="LicenseExpiration">Fecha de vencimiento de licencia</label>
-            <input type="date" id="LicenseExpiration" v-model="licenseExpiration">
+            <input type="date" id="LicenseExpiration" v-model="licenseExpirationDate">
         </div>
 
         <button type="submit">{{(!updating && !isProfile) ? 'Confirmar' : 'Actualizar'}}</button>

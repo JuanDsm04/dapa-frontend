@@ -1,10 +1,10 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import UserForm from '@/components/UserForm.vue';
 import VerticalNav from '@/components/NavBar.vue';
-import TableUsers from '@/components/Table.vue'
+import TableUsers, { type HighlightConfig } from '@/components/Table.vue'
 
 const showModal = ref(false);
 const selectedUser = ref(null);
@@ -19,6 +19,22 @@ const openModal = () => {
 const closeModal = () => {
   selectedUser.value = null;
   showModal.value = false;
+};
+
+const highlightUser = (item: any): HighlightConfig | undefined => {
+  const expiration = new Date(item.licenseExpirationDate)
+  const now = new Date()
+
+  const diffInMs = expiration.getTime() - now.getTime()
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
+
+  if (diffInDays <= 7) {
+    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' }
+  } else if (diffInDays <= 30) {
+    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' }
+  }
+
+  return undefined
 };
 
 const handleEditUser = (user) => {
@@ -134,6 +150,7 @@ onMounted(() => {
             { label: 'Email', field: 'email' },
             { label: 'Teléfono', field: 'phone' }
           ]"
+          :highlightFn="highlightUser"
           @edit="handleEditUser"
           @delete="handleDeleteUser"
         />
