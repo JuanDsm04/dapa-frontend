@@ -2,9 +2,15 @@
 import Row from './Row.vue'
 import { defineProps, defineEmits } from 'vue'
 
+export interface HighlightConfig {
+  borderColor?: string
+  backgroundColor?: string
+}
+
 const props = defineProps<{
   items: any[]
   columns: { label: string, field: string }[]
+  highlightFn?: (item: any) => HighlightConfig | undefined
 }>()
 
 const emit = defineEmits<{
@@ -18,6 +24,19 @@ const handleEdit = (item: any) => {
 
 const handleDelete = (item: any) => {
   emit('delete', item)
+}
+
+const getHighlightStyles = (item: any) => {
+  const h = props.highlightFn?.(item)
+  if (!h) return {}
+  return {
+    ...(h.borderColor
+      ? { borderLeft: `4px solid ${h.borderColor}`, paddingLeft: '12px' }
+      : {}),
+    ...(h.backgroundColor
+      ? { backgroundColor: h.backgroundColor }
+      : {})
+  }
 }
 </script>
 
@@ -37,6 +56,7 @@ const handleDelete = (item: any) => {
         :key="item.id"
         :item="item"
         :columns="columns.map(c => c.field)"
+        :highlight="highlightFn?.(item)"
         @edit="handleEdit"
         @delete="handleDelete"
       />
@@ -49,7 +69,7 @@ const handleDelete = (item: any) => {
   </table>
 
    <div class="data-cards">
-    <div v-for="item in items" :key="item.id" class="card">
+    <div v-for="item in items" :key="item.id" class="card" :style="getHighlightStyles(item)">
       <div v-for="col in columns" :key="col.field" class="card-row">
         <span class="card-label">{{ col.label }}: </span>
         <span class="card-value">{{ item[col.field] }}</span>

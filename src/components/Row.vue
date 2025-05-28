@@ -1,11 +1,28 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, computed } from 'vue'
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps<{
   item: Record<string, any>
   columns: string[]
+  highlight?: {
+    borderColor?: string
+    backgroundColor?: string
+  }
 }>()
+
+const highlightStyles = computed(() => {
+  const h = props.highlight
+  if (!h) return {}
+  return {
+    ...(h.borderColor
+      ? { borderLeft: `4px solid ${h.borderColor}`, paddingLeft: '14px' }
+      : {}),
+    ...(h.backgroundColor
+      ? { backgroundColor: h.backgroundColor }
+      : {})
+  }
+})
 
 const emit = defineEmits<{
   (e: 'edit', item: any): void
@@ -22,7 +39,7 @@ const handleDelete = () => {
 </script>
 
 <template>
-  <tr class="data-row">
+  <tr class="data-row" :style="highlightStyles">
     <td v-for="column in columns" :key="column">
       {{ item[column] }}
     </td>

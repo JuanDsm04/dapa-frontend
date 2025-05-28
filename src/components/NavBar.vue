@@ -29,6 +29,7 @@
             :class="{ active: activeSection === section.id }"
           >
             {{ section.icon }}
+            <span v-if="section.id === 'vehicles' && vehicleAlert" class="notification-badge"></span>
           </span>
           <p :class="{ active: activeSection === section.id }">
             {{ section.description }}
@@ -51,6 +52,11 @@
 import { getUserRole } from '@/utils/auth';
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useNotificationStore } from '@/stores/notifications'
+import { storeToRefs } from 'pinia'
+
+const notificationStore = useNotificationStore()
+const { vehicleAlert } = storeToRefs(notificationStore)
 
 const route = useRoute()
 const loggedRole = getUserRole()
@@ -184,6 +190,17 @@ onMounted(() => {
     height: 100vh;
     z-index: 999;
   }
+
+  .notification-badge {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+ }
 
   @media (max-width: 770px) {
     .menu-toggle {

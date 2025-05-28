@@ -149,7 +149,7 @@ onMounted(() => {
       </header>
 
       <section>
-        <UserForm :initialData="selectedUser" @submit="handleRegisterOrUpdate" :updating="selectedUser" />
+        <UserForm :initialData="selectedUser" @submit="handleRegisterOrUpdate" :updating="!!selectedUser" />
       </section>
     </article>
   </div>

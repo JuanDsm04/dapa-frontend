@@ -1,16 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
+import { useNotificationStore } from '@/stores/notifications'
 import VerticalNav from '@/components/NavBar.vue';
-import TableVehicles from '@/components/Table.vue';
+import TableVehicles, { HighlightConfig } from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
 
 const showModal = ref(false);
 const selectedVehicle = ref(null);
 const vehicles = ref([]);
 const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
+const notificationStore = useNotificationStore()
 
 const openModal = () => {
   selectedVehicle.value = null;
@@ -21,6 +23,15 @@ const closeModal = () => {
   selectedVehicle.value = null;
   showModal.value = false;
 };
+
+const highlightVeh = (item: any): HighlightConfig | undefined => {
+  if (item.currentMileage > 200000) {
+    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' }
+  }else if (item.currentMileage > 100000){
+    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' }
+  }
+  return undefined
+}
 
 const getVehicles = async () => {
   try {
@@ -33,7 +44,15 @@ const getVehicles = async () => {
       },
     });
     const data = await response.json();
+    const vehiculosCriticos = data.filter(v => v.currentMileage > 200000)
+    if (vehiculosCriticos.length > 0) {
+    toast.warning(`Hay ${vehiculosCriticos.length} vehículo(s) que necesitan atención`, {
+      autoClose: 5000,
+      position: toast.POSITION.TOP_CENTER,
+    })
+  }
     vehicles.value = data;
+    console.log(vehicles.value)
   } catch (error) {
     console.error("Error obteniendo vehículos:", error);
   }
@@ -117,8 +136,11 @@ const handleDeleteVehicle = async (vehicle) => {
   }
 };
 
-onMounted(() => {
+onMounted(async() => {
+  // notificationStore.clearVehicleAlert()
   getVehicles();
+  const alertNeeded = await activeVehicles.value.some(v => v.currentMileage > 200000)
+  // notificationStore.setVehicleAlert(alertNeeded)
 });
 </script>
 
@@ -144,6 +166,7 @@ onMounted(() => {
             { label: 'Kilometraje actual', field: 'currentMileage' },
             { label: 'Próximo mantenimiento (km)', field: 'nextMaintenanceMileage' }
           ]"
+          :highlightFn="highlightVeh"
           @edit="handleEditVehicle"
           @delete="handleDeleteVehicle"
         />
@@ -159,7 +182,7 @@ onMounted(() => {
       </header>
 
       <section>
-        <VehicleForm :initialData="selectedVehicle" @submit="handleCreationOrUpdate" :updating="selectedVehicle" />
+        <VehicleForm :initialData="selectedVehicle" @submit="handleCreationOrUpdate" :updating="!!selectedVehicle" />
       </section>
     </article>
   </div>
