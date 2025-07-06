@@ -4,20 +4,22 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import UserForm from '@/components/UserForm.vue';
 import VerticalNav from '@/components/NavBar.vue';
-import TableUsers, { type HighlightConfig } from '@/components/Table.vue'
+import TableUsers from '@/components/Table.vue'
+import type { HighlightConfig } from '@/types/table';
+import type { User } from '@/types/user';
 
 const showModal = ref(false);
-const selectedUser = ref(null);
-const users = ref([])
+const users = ref<User[]>([])
+const selectedUser = ref<User | undefined>(undefined);
 const activeUsers = computed(() => users.value.filter(user => user.isActive))
 
 const openModal = () => {
-  selectedUser.value = null;
+  selectedUser.value = undefined;
   showModal.value = true;
 };
 
 const closeModal = () => {
-  selectedUser.value = null;
+  selectedUser.value = undefined;
   showModal.value = false;
 };
 
@@ -37,12 +39,12 @@ const highlightUser = (item: any): HighlightConfig | undefined => {
   return undefined
 };
 
-const handleEditUser = (user) => {
+const handleEditUser = (user: User) => {
   selectedUser.value = { ...user };
   showModal.value = true;
 };
 
-const handleDeleteUser = async (user) => {
+const handleDeleteUser = async (user: User) => {
   selectedUser.value = { ...user };
   const userID = selectedUser.value.id
   try {
@@ -74,7 +76,7 @@ const getUsers = async () => {
   }
 }
 
-const handleRegisterOrUpdate = async (payload) => {
+const handleRegisterOrUpdate = async (payload: Partial<User>) => {
   const token = localStorage.getItem('token')
 
   try {
@@ -120,8 +122,9 @@ const handleRegisterOrUpdate = async (payload) => {
     getUsers()
     closeModal()
   } catch (error) {
-    console.error('Error al guardar usuario:', error)
-    toast.error(`Error: ${error.message}`)
+    const err = error as Error;
+    console.error('Error al guardar usuario:', err)
+    toast.error(`Error: ${err.message}`)
   }
 }
 

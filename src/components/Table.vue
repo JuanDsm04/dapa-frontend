@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import Row from './Row.vue'
+import type { HighlightConfig } from '@/types/table';
 import { defineProps, defineEmits } from 'vue'
 
-export interface HighlightConfig {
-  borderColor?: string
-  backgroundColor?: string
-}
 
 const props = defineProps<{
   items: any[]
@@ -47,7 +44,7 @@ const getHighlightStyles = (item: any) => {
         <th v-for="col in columns" :key="col.field">
           {{ col.label }}
         </th>
-        <th>Opciones</th>
+        <th>Opcionesss</th>
       </tr>
     </thead>
     <tbody>

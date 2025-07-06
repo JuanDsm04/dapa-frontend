@@ -5,22 +5,24 @@ import 'vue3-toastify/dist/index.css';
 
 import { useNotificationStore } from '@/stores/notifications'
 import VerticalNav from '@/components/NavBar.vue';
-import TableVehicles, { HighlightConfig } from '@/components/Table.vue';
+import TableVehicles from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
+import type { HighlightConfig } from '@/types/table';
+import type { Vehicle } from '@/types/vehicle'
 
 const showModal = ref(false);
-const selectedVehicle = ref(null);
-const vehicles = ref([]);
+const vehicles = ref<Vehicle[]>([])
+const selectedVehicle = ref<Vehicle | undefined>(undefined)
 const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
 const notificationStore = useNotificationStore()
 
 const openModal = () => {
-  selectedVehicle.value = null;
+  selectedVehicle.value = undefined;
   showModal.value = true;
 };
 
 const closeModal = () => {
-  selectedVehicle.value = null;
+  selectedVehicle.value = undefined;
   showModal.value = false;
 };
 
@@ -44,7 +46,7 @@ const getVehicles = async () => {
       },
     });
     const data = await response.json();
-    const vehiculosCriticos = data.filter(v => v.currentMileage > 200000)
+    const vehiculosCriticos = data.filter((v: Vehicle) => v.currentMileage > 200000)
     if (vehiculosCriticos.length > 0) {
     toast.warning(`Hay ${vehiculosCriticos.length} vehículo(s) que necesitan atención`, {
       autoClose: 5000,
@@ -58,7 +60,7 @@ const getVehicles = async () => {
   }
 };
 
-const handleCreationOrUpdate = async (payload) => {
+const handleCreationOrUpdate = async (payload: Partial<Vehicle>) => {
   const token = localStorage.getItem('token');
 
   try {
@@ -104,17 +106,18 @@ const handleCreationOrUpdate = async (payload) => {
     getVehicles();
     closeModal();
   } catch (error) {
-    console.error('Error al guardar vehículo:', error);
-    toast.error(`Error: ${error.message}`);
+    const err = error as Error;
+    console.error('Error al guardar vehículo:', err);
+    toast.error(`Error: ${err.message}`);
   }
 };
 
-const handleEditVehicle = (vehicle) => {
+const handleEditVehicle = (vehicle: Vehicle) => {
   selectedVehicle.value = { ...vehicle };
   showModal.value = true;
 };
 
-const handleDeleteVehicle = async (vehicle) => {
+const handleDeleteVehicle = async (vehicle: Vehicle) => {
   selectedVehicle.value = { ...vehicle };
   const vehicleID = selectedVehicle.value.id;
 
@@ -137,10 +140,7 @@ const handleDeleteVehicle = async (vehicle) => {
 };
 
 onMounted(async() => {
-  // notificationStore.clearVehicleAlert()
   getVehicles();
-  const alertNeeded = await activeVehicles.value.some(v => v.currentMileage > 200000)
-  // notificationStore.setVehicleAlert(alertNeeded)
 });
 </script>
 

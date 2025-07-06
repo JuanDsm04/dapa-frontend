@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  go_dev:
+    build:
+      context: ../dapa-backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ../dapa-backend:/app
+      - ../dapa-database/migrations:/database/migrations
+    env_file:
+      - ../dapa-backend/.env
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  vue_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - VITE_API_URL=http://go_dev:8080
+    command: sh -c "npm install && npm run dev"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - go_dev
+    networks:
+      - app-network
+
+  database:
+    build:
+      context: ../dapa-database
+    env_file:
+      - ../dapa-database/.env
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  app-network:
+    driver: bridge
