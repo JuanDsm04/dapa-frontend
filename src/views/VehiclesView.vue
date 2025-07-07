@@ -291,4 +291,35 @@ article section {
 .close-btn:hover {
   color: var(--close-btn-hover);
 }
+
+@media (max-width: 768px) {
+  .layout main {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  main header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  header h1 {
+    text-align: center;
+  }
+
+  .add-btn {
+    width: 100%;
+  }
+
+  main section {
+    justify-content: start;
+    overflow-x: auto;
+  }
+
+  article {
+    margin: 1rem;
+    max-width: 95%;
+  }
+}
 </style>

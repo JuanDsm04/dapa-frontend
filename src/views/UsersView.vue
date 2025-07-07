@@ -11,6 +11,7 @@ import type { User } from '@/types/user';
 const showModal = ref(false);
 const users = ref<User[]>([])
 const selectedUser = ref<User | undefined>(undefined);
+const loading = ref(false);
 const activeUsers = computed(() => users.value.filter(user => user.isActive))
 
 const openModal = () => {
@@ -45,8 +46,12 @@ const handleEditUser = (user: User) => {
 };
 
 const handleDeleteUser = async (user: User) => {
+  if (!confirm(`¿Estás seguro de que quieres eliminar a ${user.name} ${user.lastName}?`)) {
+    return;
+  }
   selectedUser.value = { ...user };
   const userID = selectedUser.value.id
+  loading.value = true;
   try {
     const token = localStorage.getItem('token') 
     await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userID}`, {
@@ -59,10 +64,13 @@ const handleDeleteUser = async (user: User) => {
   } catch (error) {
     console.log("Error eliminando usuario:", error)
     toast.error('Error eliminando usuario')
+  } finally {
+    loading.value = false;
   }
 };
 
 const getUsers = async () => {
+  loading.value = true;
   try {
     const token = localStorage.getItem('token') 
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
@@ -73,11 +81,15 @@ const getUsers = async () => {
     users.value = data
   } catch (error) {
     console.log("Error obteniendo usuarios de la base de datos:", error)
+    toast.error('Error al cargar usuarios')
+  } finally {
+    loading.value = false;
   }
 }
 
 const handleRegisterOrUpdate = async (payload: Partial<User>) => {
   const token = localStorage.getItem('token')
+  loading.value = true;
 
   try {
     let response
@@ -125,6 +137,8 @@ const handleRegisterOrUpdate = async (payload: Partial<User>) => {
     const err = error as Error;
     console.error('Error al guardar usuario:', err)
     toast.error(`Error: ${err.message}`)
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -140,11 +154,22 @@ onMounted(() => {
     
     <main>
       <header>
-        <h1>Usuarios</h1>
-        <button class="add-btn" @click="openModal">+ Agregar</button>
+        <div class="header-content">
+          <h1>Usuarios</h1>
+          <div class="header-info">
+            <span class="user-count">{{ activeUsers.length }} usuarios activos</span>
+          </div>
+        </div>
+        <button class="add-btn" @click="openModal" :disabled="loading">
+          {{ loading ? 'Cargando...' : '+ Agregar' }}
+        </button>
       </header>
 
       <section>
+        <div v-if="loading" class="loading-overlay">
+          <div class="spinner"></div>
+        </div>
+        
         <TableUsers
           :items="activeUsers"
           :columns="[
@@ -164,119 +189,196 @@ onMounted(() => {
   <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
     <article>
       <header>
-        <h3>{{ selectedUser ? 'Editar' : 'Agregar' }}</h3>
+        <h3>{{ selectedUser ? 'Editar Usuario' : 'Agregar Usuario' }}</h3>
         <button class="close-btn" @click="closeModal">&times;</button>
       </header>
 
       <section>
-        <UserForm :initialData="selectedUser" @submit="handleRegisterOrUpdate" :updating="!!selectedUser" />
+        <UserForm 
+          :initialData="selectedUser" 
+          @submit="handleRegisterOrUpdate" 
+          :updating="!!selectedUser"
+          :loading="loading"
+        />
       </section>
     </article>
   </div>
 </template>
 
 <style scoped>
-  .layout {
-    display: flex;
-    min-height: 100vh;
-    background-color: var(--bg-general);
-  }
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-general);
+}
 
+.layout main {
+  width: 100%;
+  padding: 2rem;
+  margin-left: 80px;
+  box-sizing: border-box;
+  background-color: var(--main-bg);
+}
+
+main header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.header-content h1 {
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-count {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  background-color: var(--bg-secondary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+main section {
+  width: 100%;
+  min-height: calc(100vh - 150px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+}
+
+.add-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--add-btn);
+  color: var(--text-on-add-btn);
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-btn:hover:not(:disabled) {
+  background-color: var(--add-btn-hover);
+}
+
+.add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--add-btn);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+article {
+  background: var(--modal-bg);
+  border-radius: 10px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+article header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-input);
+}
+
+article header h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+article section {
+  padding: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--close-btn);
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: var(--close-btn-hover);
+}
+
+@media (max-width: 768px) {
   .layout main {
-    width: 100%;
-    padding: 2rem;
-    margin-left: 80px;
-    box-sizing: border-box;
-    background-color: var(--main-bg);
+    margin-left: 0;
+    padding: 1rem;
   }
-
+  
   main header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-
-  header h1 {
-    font-weight: 600;
-  }
-
-  main section {
-    width: 100%;
-    min-height: calc(100vh - 150px);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
-
-  .add-btn {
-    padding: 0.75rem 1.5rem;
-    background-color: var(--add-btn);
-    color: var(--text-on-add-btn);
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  .add-btn:hover {
-    background-color: var(--add-btn-hover);
-  }
-
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  article {
-    background: var(--modal-bg);
-    border-radius: 10px;
-    max-width: 600px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    display: flex;
     flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
   }
-
-  article header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-input);
+  
+  .header-content {
+    text-align: center;
   }
-
-  article header h3 {
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin: 0;
-  }
-
-  article section {
-    padding: 1.5rem;
-  }
-
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--close-btn);
-    cursor: pointer;
-  }
-
-  .close-btn:hover {
-    color: var(--close-btn-hover);
-  }
-
+}
 </style>
