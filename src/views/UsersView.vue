@@ -3,7 +3,6 @@ import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import UserForm from '@/components/UserForm.vue';
-import VerticalNav from '@/components/NavBar.vue';
 import TableUsers from '@/components/Table.vue'
 import type { HighlightConfig } from '@/types/table';
 import type { User } from '@/types/user';
@@ -149,42 +148,33 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="layout">
-    <VerticalNav />
-    
-    <main>
-      <header>
-        <div class="header-content">
-          <h1>Usuarios</h1>
-          <div class="header-info">
-            <span class="user-count">{{ activeUsers.length }} usuarios activos</span>
-          </div>
-        </div>
-        <button class="add-btn" @click="openModal" :disabled="loading">
-          {{ loading ? 'Cargando...' : '+ Agregar' }}
-        </button>
-      </header>
+  <main>
+    <header>
+      <h1>Usuarios</h1>
+      <button class="add-btn" @click="openModal" :disabled="loading">
+        {{ loading ? 'Cargando...' : '+ Agregar' }}
+      </button>
+    </header>
 
-      <section>
-        <div v-if="loading" class="loading-overlay">
-          <div class="spinner"></div>
-        </div>
-        
-        <TableUsers
-          :items="activeUsers"
-          :columns="[
-            { label: 'Nombre', field: 'name' },
-            { label: 'Apellido', field: 'lastName' },
-            { label: 'Email', field: 'email' },
-            { label: 'Teléfono', field: 'phone' }
-          ]"
-          :highlightFn="highlightUser"
-          @edit="handleEditUser"
-          @delete="handleDeleteUser"
-        />
-      </section>
-    </main>
-  </div>
+    <section>
+      <div v-if="loading" class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+      
+      <TableUsers
+        :items="activeUsers"
+        :columns="[
+          { label: 'Nombre', field: 'name' },
+          { label: 'Apellido', field: 'lastName' },
+          { label: 'Email', field: 'email' },
+          { label: 'Teléfono', field: 'phone' }
+        ]"
+        :highlightFn="highlightUser"
+        @edit="handleEditUser"
+        @delete="handleDeleteUser"
+      />
+    </section>
+  </main>
 
   <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
     <article>
@@ -206,18 +196,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.layout {
-  display: flex;
-  min-height: 100vh;
-  background-color: var(--bg-general);
-}
-
-.layout main {
+main {
   width: 100%;
   padding: 2rem;
-  margin-left: 80px;
-  box-sizing: border-box;
-  background-color: var(--main-bg);
+  background-color: var(--bg-general);
+  min-height: 100vh;
 }
 
 main header {
@@ -227,30 +210,9 @@ main header {
   margin-bottom: 2rem;
 }
 
-.header-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.header-content h1 {
+h1 {
   font-weight: 600;
   margin: 0;
-}
-
-.header-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.user-count {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  background-color: var(--bg-secondary);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-weight: 500;
 }
 
 main section {
@@ -259,7 +221,6 @@ main section {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  position: relative;
 }
 
 .add-btn {
@@ -271,7 +232,6 @@ main section {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  white-space: nowrap;
 }
 
 .add-btn:hover:not(:disabled) {
@@ -317,7 +277,7 @@ main section {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1001;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -365,10 +325,10 @@ article section {
   color: var(--close-btn-hover);
 }
 
-@media (max-width: 768px) {
-  .layout main {
+@media (max-width: 770px) {
+  main {
     margin-left: 0;
-    padding: 1rem;
+    padding: 2rem 1rem;
   }
   
   main header {
@@ -379,6 +339,10 @@ article section {
   
   .header-content {
     text-align: center;
+  }
+
+  h1 {
+    margin-left: 50px;
   }
 }
 </style>

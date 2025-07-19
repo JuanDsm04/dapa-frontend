@@ -15,12 +15,14 @@ const router = createRouter({
     {
       path: "/",
       name: "LandingPage",
-      component: LandingPageView
+      component: LandingPageView,
+      meta: { hideNavbar: true }
     },
     {
       path: "/login",
       name: "Login",
       component: LoginView,
+      meta: { hideNavbar: true }
     },
     {
       path: "/users",

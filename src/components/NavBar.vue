@@ -1,3 +1,43 @@
+<script setup>
+import { getUserRole } from '@/utils/auth'
+import { ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import { useNotificationStore } from '@/stores/notifications'
+import { storeToRefs } from 'pinia'
+
+const activeSection = computed(() => {
+  const path = route.path.replace('/', '')
+  return path || 'quotes'
+})
+
+const notificationStore = useNotificationStore()
+const { vehicleAlert } = storeToRefs(notificationStore)
+
+const route = useRoute()
+const loggedRole = getUserRole()
+
+const sections = [
+  { id: 'quotes', icon: 'notifications', description: 'Cotizaciones', auth: ['admin'] },
+  { id: 'assignments', icon: 'pin_drop', description: 'Asignaciones', auth: ['admin', 'driver'] },
+  { id: 'users', icon: 'people', description: 'Usuarios', auth: ['admin']},
+  { id: 'vehicles', icon: 'local_shipping', description: 'Vehículos', auth: ['admin'] },
+  { id: 'reports', icon: 'monitoring', description: 'Reportes', auth: ['admin'] },
+  { id: 'reviews', icon: 'reviews', description: 'Reseñas', auth: ['admin'] },
+  { id: 'forms', icon: 'description', description: 'Formularios', auth: ['admin']}
+];
+
+const isMenuOpen = ref(false)
+
+function toggleMenu() {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+function closeMenu() {
+  isMenuOpen.value = false
+}
+
+</script>
+
 <template>
   <div>
     <button
@@ -48,57 +88,6 @@
   </div>
 </template>
 
-<script setup>
-import { getUserRole } from '@/utils/auth';
-import { onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useNotificationStore } from '@/stores/notifications'
-import { storeToRefs } from 'pinia'
-
-const notificationStore = useNotificationStore()
-const { vehicleAlert } = storeToRefs(notificationStore)
-
-const route = useRoute()
-const loggedRole = getUserRole()
-
-const sections = [
-  { id: 'quotes', icon: 'notifications', description: 'Cotizaciones', auth: ['admin'] },
-  { id: 'assignments', icon: 'pin_drop', description: 'Asignaciones', auth: ['admin', 'driver'] },
-  { id: 'users', icon: 'people', description: 'Usuarios', auth: ['admin']},
-  { id: 'vehicles', icon: 'local_shipping', description: 'Vehículos', auth: ['admin'] },
-  { id: 'reports', icon: 'monitoring', description: 'Reportes', auth: ['admin'] },
-  { id: 'reviews', icon: 'reviews', description: 'Reseñas', auth: ['admin'] },
-  { id: 'forms', icon: 'description', description: 'Formularios', auth: ['admin']}
-];
-
-const activeSection = ref(route.path.replace('/', '') || 'quotes')
-const isMenuOpen = ref(false)
-
-function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value
-}
-
-function closeMenu() {
-  isMenuOpen.value = false
-}
-
-onMounted(() => {
-  console.log(loggedRole)
-  window.addEventListener('scroll', () => {
-    for (const section of sections) {
-      const el = document.getElementById(section.id)
-      if (el) {
-        const rect = el.getBoundingClientRect()
-        if (rect.top <= 100 && rect.bottom >= 100) {
-          activeSection.value = section.id
-          break
-        }
-      }
-    }
-  })
-})
-</script>
-
 <style scoped>
   .side-nav {
     list-style-type: none;
@@ -112,16 +101,15 @@ onMounted(() => {
     height: 100dvh;
     overflow: auto;
     text-align: center;
-    z-index: 1000;
+    width: 80px;
   }
 
   .side-nav li:first-child {
-    padding: 20px;
+    margin: 20px auto;
   }
 
   .side-nav li:first-child img {
     width: 40px;
-    height: auto;
   }
 
   .side-nav li:last-child {
@@ -144,9 +132,8 @@ onMounted(() => {
   }
 
   li span {
-    font-size: 32px;
     color: var(--sidebar-icon-color);
-    padding: 20px;
+    margin: 20px 0;
   }
 
   li span.active {
@@ -155,7 +142,6 @@ onMounted(() => {
 
   li p {
     display: none;
-    font-size: 10px;
     color: var(--sidebar-text-color);
     margin: 0 auto;
     padding-bottom: 10px
@@ -192,15 +178,15 @@ onMounted(() => {
   }
 
   .notification-badge {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  background-color: red;
-  color: white;
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
- }
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+  }
 
   @media (max-width: 770px) {
     .menu-toggle {
@@ -210,7 +196,6 @@ onMounted(() => {
     .side-nav {
       position: fixed;
       left: -100%;
-      top: 0;
       width: 250px;
       transition: left 0.3s ease;
       z-index: 1000;
@@ -224,11 +209,7 @@ onMounted(() => {
       display: flex;
       flex-direction: row;
       align-items: center;
-      padding: 10px 20px;
-    }
-
-    li span {
-      padding: 10px 0;
+      padding-left: 20px;
     }
 
     li p {

@@ -4,7 +4,6 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
 import { useNotificationStore } from '@/stores/notifications'
-import VerticalNav from '@/components/NavBar.vue';
 import TableVehicles from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
 import type { HighlightConfig } from '@/types/table';
@@ -14,7 +13,6 @@ const showModal = ref(false);
 const vehicles = ref<Vehicle[]>([])
 const selectedVehicle = ref<Vehicle | undefined>(undefined)
 const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
-const notificationStore = useNotificationStore()
 
 const openModal = () => {
   selectedVehicle.value = undefined;
@@ -145,34 +143,36 @@ onMounted(async() => {
 </script>
 
 <template>
-  <div class="layout">
-    <VerticalNav />
+  <main>
+    <header>
+      <h1>Vehículos</h1>
+      <button class="add-btn" @click="openModal" :disabled="loading">
+        {{ loading ? 'Cargando...' : '+ Agregar' }}
+      </button>
+    </header>
 
-    <main>
-      <header>
-        <h1>Vehículos</h1>
-        <button class="add-btn" @click="openModal">+ Agregar</button>
-      </header>
+    <section>
+      <div v-if="loading" class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
 
-      <section>
-        <TableVehicles
-          :items="activeVehicles"
-          :columns="[
-            { label: 'Marca', field: 'brand' },
-            { label: 'Modelo', field: 'model' },
-            { label: 'Placa', field: 'licensePlate' },
-            { label: 'Capacidad (kg)', field: 'capacityKg' },
-            { label: 'Disponibilidad', field: 'available' },
-            { label: 'Kilometraje actual', field: 'currentMileage' },
-            { label: 'Próximo mantenimiento (km)', field: 'nextMaintenanceMileage' }
-          ]"
-          :highlightFn="highlightVeh"
-          @edit="handleEditVehicle"
-          @delete="handleDeleteVehicle"
-        />
-      </section>
-    </main>
-  </div>
+      <TableVehicles
+        :items="activeVehicles"
+        :columns="[
+          { label: 'Marca', field: 'brand' },
+          { label: 'Modelo', field: 'model' },
+          { label: 'Placa', field: 'licensePlate' },
+          { label: 'Capacidad (kg)', field: 'capacityKg' },
+          { label: 'Disponibilidad', field: 'available' },
+          { label: 'Kilometraje actual', field: 'currentMileage' },
+          { label: 'Próximo mantenimiento (km)', field: 'nextMaintenanceMileage' }
+        ]"
+        :highlightFn="highlightVeh"
+        @edit="handleEditVehicle"
+        @delete="handleDeleteVehicle"
+      />
+    </section>
+  </main>
 
   <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
     <article>
@@ -182,25 +182,23 @@ onMounted(async() => {
       </header>
 
       <section>
-        <VehicleForm :initialData="selectedVehicle" @submit="handleCreationOrUpdate" :updating="!!selectedVehicle" />
+        <VehicleForm 
+          :initialData="selectedVehicle" 
+          @submit="handleCreationOrUpdate" 
+          :updating="!!selectedVehicle"
+          :loading="loading" 
+        />
       </section>
     </article>
   </div>
 </template>
 
 <style scoped>
-.layout {
-  display: flex;
-  min-height: 100vh;
-  background-color: var(--bg-general);
-}
-
-.layout main {
+main {
   width: 100%;
   padding: 2rem;
-  margin-left: 80px;
-  box-sizing: border-box;
-  background-color: var(--main-bg);
+  background-color: var(--bg-general);
+  min-height: 100vh;
 }
 
 main header {
@@ -210,7 +208,7 @@ main header {
   margin-bottom: 2rem;
 }
 
-header h1 {
+h1 {
   font-weight: 600;
 }
 
@@ -233,8 +231,40 @@ main section {
   transition: background-color 0.3s ease;
 }
 
-.add-btn:hover {
+.add-btn:hover:not(:disabled) {
   background-color: var(--add-btn-hover);
+}
+
+.add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--add-btn);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .modal-overlay {
@@ -244,7 +274,7 @@ main section {
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
+  z-index: 1001;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -292,10 +322,10 @@ article section {
   color: var(--close-btn-hover);
 }
 
-@media (max-width: 768px) {
-  .layout main {
+@media (max-width: 770px) {
+  main {
     margin-left: 0;
-    padding: 1rem;
+    padding: 2rem 1rem;
   }
 
   main header {
@@ -304,22 +334,8 @@ article section {
     align-items: stretch;
   }
 
-  header h1 {
-    text-align: center;
-  }
-
-  .add-btn {
-    width: 100%;
-  }
-
-  main section {
-    justify-content: start;
-    overflow-x: auto;
-  }
-
-  article {
-    margin: 1rem;
-    max-width: 95%;
+  h1 {
+    margin-left: 50px;
   }
 }
 </style>
