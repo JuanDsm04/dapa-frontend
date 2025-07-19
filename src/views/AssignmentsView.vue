@@ -47,6 +47,9 @@ const activeTab = ref('left')
               ]"
             />
         </div>
+        <div class="details">
+            <OrderTracking />
+        </div>
     </section>
   </main>
 </template>
