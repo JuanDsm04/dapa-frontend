@@ -7,6 +7,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import { getUserRole, isTokenExpired } from '@/utils/auth';
 import VehiclesView from "@/views/VehiclesView.vue";
 import AssignmentsView from "@/views/AssignmentsView.vue";
+import NotFoundView from "@/views/NotFoundView.vue";
 
 
 const router = createRouter({
@@ -53,6 +54,12 @@ const router = createRouter({
       name: "Assignments",
       component: AssignmentsView,
       meta: { requiresAuth: true, roles: ['admin', 'driver']}
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: NotFoundView,
+      meta: { hideNavbar: true }
     }
   ],
 });
