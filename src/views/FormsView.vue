@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid'
 import Sortable from 'sortablejs'
 import QuestionCard from '@/components/form/QuestionCard.vue'
 import QuestionForm from '@/components/form/QuestionForm.vue'
+import FormPreview from '@/components/form/FormPreview.vue'
 import { type Question } from '@/types/form'
 
 //Preguntas de prueba
@@ -30,32 +31,33 @@ const questions = ref<Question[]>([
   }
 ])
 
+const activeTab = ref('left')
 const questionSelected = ref<Question | null>(null)
 const editIndex = ref<number | null>(null)
 
 const sortableContainer = ref<HTMLElement>()
 let sortableInstance: Sortable | null = null
 
-const activeQuestionsCount = computed(() => 
+const activeQuestionsCount = computed(() =>
   questions.value.filter(q => q.active).length
 )
 
 const totalQuestions = computed(() => questions.value.length)
 
 onMounted(() => {
-    if(!sortableContainer.value){
-        return
-    }
-    sortableInstance = Sortable.create(sortableContainer.value, {
-      animation: 200,
-      ghostClass: 'sortable-ghost',
-      chosenClass: 'sortable-chosen',
-      dragClass: 'sortable-drag',
-      handle: '.drag-handle',
-      forceFallback: false,
-      fallbackOnBody: true,
-      swapThreshold: 0.65,
-    })
+  if (!sortableContainer.value) {
+    return
+  }
+  sortableInstance = Sortable.create(sortableContainer.value, {
+    animation: 200,
+    ghostClass: 'sortable-ghost',
+    chosenClass: 'sortable-chosen',
+    dragClass: 'sortable-drag',
+    handle: '.drag-handle',
+    forceFallback: false,
+    fallbackOnBody: true,
+    swapThreshold: 0.65,
+  })
 })
 
 onUnmounted(() => {
@@ -129,7 +131,7 @@ const clearAllQuestions = () => {
       <div class="header-content">
         <h1>Administrador de formulario</h1>
         <p class="subtitle">Crea y personaliza el formulario arrastrando y configurando preguntas</p>
-        
+
         <div class="stats">
           <div class="stat-item">
             <span class="stat-number">{{ totalQuestions }}</span>
@@ -141,62 +143,56 @@ const clearAllQuestions = () => {
           </div>
         </div>
       </div>
-      
+
       <div class="header-actions">
         <button @click="addQuestion" class="btn-primary">
           + Agregar Pregunta
         </button>
-        <button 
-          @click="clearAllQuestions" 
-          class="btn-secondary"
-          :disabled="questions.length === 0"
-        >
+        <button @click="clearAllQuestions" class="btn-secondary" :disabled="questions.length === 0">
           Limpiar Todo
         </button>
       </div>
     </header>
 
     <main class="main-content">
-      <section class="column">
+
+      <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
+      <div class="toggle-indicator"></div>
+      <div class="toggle-button" @click="activeTab = 'left'">Editor</div>
+      <div class="toggle-button" @click="activeTab = 'right'">Preview</div>
+      </div>
+      <section v-if="activeTab === 'left'" class="column">
+        <!-- Editor de preguntas -->
         <div class="column-header">
           <h2 class="title">Preguntas del formulario</h2>
           <span class="count">{{ questions.length }} pregunta{{ questions.length !== 1 ? 's' : '' }}</span>
         </div>
-        
+
         <div class="draggable-container">
-          <div 
-            ref="sortableContainer" 
-            class="draggable-list"
-          >
-            <div
-              v-for="(question, index) in questions"
-              :key="`question-${question.id}`"
-              class="sortable-item"
-              :data-id="question.id"
-            >
-              <QuestionCard
-                :question="question"
-                @edit="editQuestion(index)"
-                @delete="deleteQuestion(index)"
-                @toggle="toggleQuestion(index)"
-              />
+          <div ref="sortableContainer" class="draggable-list">
+            <div v-for="(question, index) in questions" :key="`question-${question.id}`" class="sortable-item"
+              :data-id="question.id">
+              <QuestionCard :question="question" @edit="editQuestion(index)" @delete="deleteQuestion(index)"
+                @toggle="toggleQuestion(index)" />
             </div>
           </div>
-          
+
           <div v-if="questions.length === 0" class="empty-state">
             <p>No hay preguntas creadas</p>
             <p class="empty-subtitle">Agrega tu primera pregunta para comenzar</p>
           </div>
         </div>
       </section>
+
+      <section v-else class="preview">
+        <div class="preview-header">
+          <h2 class="title">Preview del formulario</h2>
+        </div>
+        <FormPreview :questions="questions" />
+      </section>
     </main>
 
-    <QuestionForm 
-      v-if="questionSelected" 
-      :question="questionSelected" 
-      @save="saveChanges" 
-      @cancel="closeModal" 
-    />
+    <QuestionForm v-if="questionSelected" :question="questionSelected" @save="saveChanges" @cancel="closeModal" />
   </div>
 </template>
 
@@ -291,8 +287,8 @@ const clearAllQuestions = () => {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  border-color: #d32f2f;
-  color: #d32f2f;
+  border-color: var(--on-delete-btn);
+  color: var(--on-delete-btn);
   background: #fafafa;
 }
 
@@ -305,13 +301,16 @@ const clearAllQuestions = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  position: relative;
 }
 
 .column {
   width: 100%;
   max-width: 800px;
   padding: 1rem;
-  background-color: var(--white);
+  background-color: #fff;
   border-radius: 8px;
   margin: 1rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -323,6 +322,27 @@ const clearAllQuestions = () => {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+  align-items: center;
+  padding: 1rem 0;
   border-bottom: 2px solid #e9ecef;
 }
 
@@ -389,6 +409,47 @@ const clearAllQuestions = () => {
 .btn-link:hover {
   opacity: 0.8;
 }
+.toggle-wrapper {
+  display: flex;
+  background-color: #EAEEF4;
+  border-radius: 10px;
+  position: relative;
+  width: 300px;
+  height: 60px;
+  padding: 6px;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-bottom: 0.6rem;
+}
+
+.toggle-indicator {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc(50% - 6px);
+  height: calc(100% - 12px);
+  background-color: white;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.toggle-button {
+  flex: 1;
+  text-align: center;
+  line-height: 48px;
+  cursor: pointer;
+  z-index: 2;
+  user-select: none;
+}
+
+.active-left .toggle-indicator {
+  left: 6px;
+}
+
+.active-right .toggle-indicator {
+  left: 50%;
+}
 
 /* Estilos para el drag and drop con sortablejs */
 :deep(.sortable-ghost) {
@@ -417,21 +478,21 @@ const clearAllQuestions = () => {
   .form-builder {
     padding: 1rem;
   }
-  
+
   .header {
     flex-direction: column;
     align-items: stretch;
     text-align: center;
   }
-  
+
   .header-content {
     margin-bottom: 1rem;
   }
-  
+
   .stats {
     justify-content: center;
   }
-  
+
   .header-actions {
     justify-content: center;
   }
@@ -441,24 +502,25 @@ const clearAllQuestions = () => {
   .header-content h1 {
     font-size: 1.5rem;
   }
-  
+
   .stats {
     gap: 1rem;
   }
-  
+
   .stat-number {
     font-size: 1.5rem;
   }
-  
+
   .header-actions {
     flex-direction: column;
   }
-  
-  .btn-primary, .btn-secondary {
+
+  .btn-primary,
+  .btn-secondary {
     width: 100%;
     justify-content: center;
   }
-  
+
   .column-header {
     flex-direction: column;
     gap: 0.5rem;
@@ -470,11 +532,11 @@ const clearAllQuestions = () => {
   .form-builder {
     padding: 0.5rem;
   }
-  
+
   .header {
     padding: 1rem;
   }
-  
+
   .stats {
     flex-direction: column;
     gap: 0.5rem;
