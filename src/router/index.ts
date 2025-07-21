@@ -8,6 +8,7 @@ import { getUserRole, isTokenExpired } from '@/utils/auth';
 import VehiclesView from "@/views/VehiclesView.vue";
 import AssignmentsView from "@/views/AssignmentsView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
+import FormsView from "@/views/FormsView.vue";
 
 
 const router = createRouter({
@@ -60,6 +61,12 @@ const router = createRouter({
       name: "NotFound",
       component: NotFoundView,
       meta: { hideNavbar: true }
+    },
+    {
+      path: "/forms",
+      name: "Forms",
+      component: FormsView,
+      meta: {requiresAuth: true, roles: ['admin']}
     }
   ],
 });

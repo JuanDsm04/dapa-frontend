@@ -23,6 +23,9 @@
   --secondary: #42B983;
   --secondary-dark: #369F6B;
 
+  --terciary: #999999;
+  --terciary-dark: #666666;
+
   /* Text colors*/
   --text-on-dark: var(--white);
   --text-on-light: var(--black);
