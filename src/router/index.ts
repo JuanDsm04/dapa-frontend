@@ -8,6 +8,7 @@ import { getUserRole, isTokenExpired } from '@/utils/auth';
 import VehiclesView from "@/views/VehiclesView.vue";
 import AssignmentsView from "@/views/AssignmentsView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
+import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
 
 
 const router = createRouter({
@@ -54,6 +55,11 @@ const router = createRouter({
       name: "Assignments",
       component: AssignmentsView,
       meta: { requiresAuth: true, roles: ['admin', 'driver']}
+    },
+    {
+      path: "/assignments/tracking",
+      name: "TempClientAssignments",
+      component: AssignmentTrackingView
     },
     {
       path: "/:pathMatch(.*)*",

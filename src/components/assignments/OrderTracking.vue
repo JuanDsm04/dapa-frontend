@@ -1,7 +1,5 @@
 <script setup>
-const currentStep = 2
-
-const stepIcons = ['local_shipping', 'package_2', 'delivery_truck_speed', 'hand_package']
+import OrderSteps from './OrderSteps.vue';
 </script>
 
 <template>
@@ -18,33 +16,7 @@ const stepIcons = ['local_shipping', 'package_2', 'delivery_truck_speed', 'hand_
     </header>
 
     <!-- Etapas del tracking -->
-    <nav class="steps">
-      <div class="step" :class="{ active: currentStep >= 1 }">
-        <span class="material-symbols-outlined icon">{{ stepIcons[0] }}</span>
-        <p>1</p>
-      </div>
-
-      <div class="line" :class="{ active: currentStep >= 2 }"></div>
-
-      <div class="step" :class="{ active: currentStep >= 2 }">
-        <span class="material-symbols-outlined icon">{{ stepIcons[1] }}</span>
-        <p>2</p>
-      </div>
-
-      <div class="line" :class="{ active: currentStep >= 3 }"></div>
-
-      <div class="step" :class="{ active: currentStep >= 3 }">
-        <span class="material-symbols-outlined icon">{{ stepIcons[2] }}</span>
-        <p>3</p>
-      </div>
-
-      <div class="line" :class="{ active: currentStep >= 4 }"></div>
-
-      <div class="step" :class="{ active: currentStep >= 4 }">
-        <span class="material-symbols-outlined icon">{{ stepIcons[3] }}</span>
-        <p>4</p>
-      </div>
-    </nav>
+    <OrderSteps />
 
     <!-- Información de envío -->
     <section class="shipment-info">
