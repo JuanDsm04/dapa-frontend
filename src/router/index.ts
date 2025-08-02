@@ -10,6 +10,7 @@ import AssignmentsView from "@/views/AssignmentsView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
 import FormsView from "@/views/FormsView.vue";
+import FinanceControlView from "@/views/FinanceControlView.vue";
 
 
 const router = createRouter({
@@ -73,7 +74,11 @@ const router = createRouter({
       name: "Forms",
       component: FormsView,
       meta: {requiresAuth: true, roles: ['admin']}
-    }
+    },
+    {
+      path: "/reports",
+      component: FinanceControlView
+    },
   ],
 });
 
