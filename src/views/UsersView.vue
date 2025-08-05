@@ -13,6 +13,25 @@ const selectedUser = ref<User | undefined>(undefined);
 const loading = ref(false);
 const activeUsers = computed(() => users.value.filter(user => user.isActive))
 
+// Identificador del registro según la fecha de vencimiento de su licencia
+const highlightUser = (item: any): HighlightConfig | undefined => {
+  const expiration = new Date(item.licenseExpirationDate)
+  const now = new Date()
+
+  const diffInMs = expiration.getTime() - now.getTime()
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
+
+  if (diffInDays <= 7) {
+    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' }
+
+  } else if (diffInDays <= 30) {
+    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' }
+  }
+
+  return undefined
+};
+
+// Abrir y cerrar el modal 
 const openModal = () => {
   selectedUser.value = undefined;
   showModal.value = true;
@@ -23,34 +42,23 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-const highlightUser = (item: any): HighlightConfig | undefined => {
-  const expiration = new Date(item.licenseExpirationDate)
-  const now = new Date()
-
-  const diffInMs = expiration.getTime() - now.getTime()
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
-
-  if (diffInDays <= 7) {
-    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' }
-  } else if (diffInDays <= 30) {
-    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' }
-  }
-
-  return undefined
-};
-
+// Preparar a un usuario para editarlo
 const handleEditUser = (user: User) => {
   selectedUser.value = { ...user };
   showModal.value = true;
 };
 
+// Eliminar a un usuario después de su confirmación y actualizar la lista
 const handleDeleteUser = async (user: User) => {
+
   if (!confirm(`¿Estás seguro de que quieres eliminar a ${user.name} ${user.lastName}?`)) {
     return;
   }
+
   selectedUser.value = { ...user };
   const userID = selectedUser.value.id
   loading.value = true;
+
   try {
     const token = localStorage.getItem('token') 
     await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userID}`, {
@@ -60,16 +68,20 @@ const handleDeleteUser = async (user: User) => {
 
     await getUsers()
     toast.warning('Usuario eliminado')
+
   } catch (error) {
     console.log("Error eliminando usuario:", error)
     toast.error('Error eliminando usuario')
+
   } finally {
     loading.value = false;
   }
 };
 
+// Obtener los usuarios desde la API
 const getUsers = async () => {
   loading.value = true;
+
   try {
     const token = localStorage.getItem('token') 
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
@@ -78,14 +90,17 @@ const getUsers = async () => {
     })
     const data = await response.json()
     users.value = data
+
   } catch (error) {
     console.log("Error obteniendo usuarios de la base de datos:", error)
     toast.error('Error al cargar usuarios')
+
   } finally {
     loading.value = false;
   }
 }
 
+// Manejar el registro o actualización de un usuario según si tiene id o no
 const handleRegisterOrUpdate = async (payload: Partial<User>) => {
   const token = localStorage.getItem('token')
   loading.value = true;
@@ -111,6 +126,7 @@ const handleRegisterOrUpdate = async (payload: Partial<User>) => {
       }
 
       toast.info('Usuario modificado exitosamente')
+
     } else {
       response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
         method: 'POST',
@@ -132,15 +148,18 @@ const handleRegisterOrUpdate = async (payload: Partial<User>) => {
 
     getUsers()
     closeModal()
+
   } catch (error) {
     const err = error as Error;
     console.error('Error al guardar usuario:', err)
     toast.error(`Error: ${err.message}`)
+
   } finally {
     loading.value = false;
   }
 }
 
+// Cargar la lista de usuarios al montar el componente
 onMounted(() => {
   getUsers()
 })
@@ -167,12 +186,37 @@ onMounted(() => {
           { label: 'Nombre', field: 'name' },
           { label: 'Apellido', field: 'lastName' },
           { label: 'Email', field: 'email' },
-          { label: 'Teléfono', field: 'phone' }
+          { label: 'Teléfono', field: 'phone' },
+          {
+            label: 'Rol',
+            field: 'role',
+            formatter: (value: string) => {
+              if (value === 'admin') return 'Administrador'
+              if (value === 'driver') return 'Piloto'
+              return value
+            }
+          },
+          {
+            label: 'Vencimiento de licencia',
+            field: 'licenseExpirationDate',
+            formatter: (value, row) => {
+              if (row.role !== 'driver') return 'No Aplica'
+              if (!value) return 'Sin fecha'
+
+              const date = new Date(value)
+              const day = String(date.getDate()).padStart(2, '0')
+              const month = String(date.getMonth() + 1).padStart(2, '0') // Los meses van de 0 a 11
+              const year = date.getFullYear()
+
+              return `${day}/${month}/${year}`
+            }
+          }
         ]"
         :highlightFn="highlightUser"
         @edit="handleEditUser"
         @delete="handleDeleteUser"
       />
+
     </section>
   </main>
 

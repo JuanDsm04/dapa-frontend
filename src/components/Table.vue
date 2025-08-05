@@ -12,7 +12,7 @@ DataTable.use(DataTablesCore)
 DataTable.use(DataTablesResponsive)
 const props = defineProps<{
   items: any[]
-  columns: { label: string, field: string }[]
+  columns: { label: string, field: string, formatter?: (value: any, row: any) => string }[]
   highlightFn?: (item: any) => HighlightConfig | undefined
   options?: any
 }>()
@@ -48,7 +48,10 @@ const getHighlightStyles = (item: any) => {
 const dtColumns = computed(() => [
   ...props.columns.map(col => ({
     data: col.field,
-    title: col.label
+    title: col.label,
+    render: (data: any, type: string, row: any) => {
+      return col.formatter ? col.formatter(data, row) : data
+    }
   })),
   {
     data: null,
