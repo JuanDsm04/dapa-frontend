@@ -43,16 +43,19 @@ const getVehicles = async () => {
         'Authorization': `Bearer ${token}`,
       },
     });
+
     const data = await response.json();
     const vehiculosCriticos = data.filter((v: Vehicle) => v.currentMileage > 200000)
+
     if (vehiculosCriticos.length > 0) {
     toast.warning(`Hay ${vehiculosCriticos.length} vehículo(s) que necesitan atención`, {
       autoClose: 5000,
       position: toast.POSITION.TOP_CENTER,
     })
+
   }
     vehicles.value = data;
-    console.log(vehicles.value)
+
   } catch (error) {
     console.error("Error obteniendo vehículos:", error);
   }
@@ -82,6 +85,7 @@ const handleCreationOrUpdate = async (payload: Partial<Vehicle>) => {
       }
 
       toast.info('Vehículo actualizado exitosamente');
+
     } else {
       response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
         method: 'POST',
@@ -97,16 +101,17 @@ const handleCreationOrUpdate = async (payload: Partial<Vehicle>) => {
       if (!response.ok) {
         throw new Error(data.Message || 'Error al registrar el vehículo');
       }
-
       toast.success('Vehículo registrado exitosamente');
     }
 
     getVehicles();
     closeModal();
+
   } catch (error) {
     const err = error as Error;
     console.error('Error al guardar vehículo:', err);
     toast.error(`Error: ${err.message}`);
+    
   }
 };
 
@@ -164,8 +169,7 @@ onMounted(async() => {
           { label: 'Placa', field: 'licensePlate' },
           { label: 'Capacidad (kg)', field: 'capacityKg' },
           { label: 'Disponibilidad', field: 'available' },
-          { label: 'Kilometraje actual', field: 'currentMileage' },
-          { label: 'Próximo mantenimiento (km)', field: 'nextMaintenanceMileage' }
+          { label: 'Vencimiento del seguro', field: 'insuranceDate' }
         ]"
         :highlightFn="highlightVeh"
         @edit="handleEditVehicle"

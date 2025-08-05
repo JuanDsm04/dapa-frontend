@@ -15,12 +15,11 @@ const props = defineProps({
 })
 
 const orders = ref([
-  { id: '123456', name: 'Armando', date: '2025-04-16', status: 'pending' },
-  { id: '789012', name: 'Lucía', date: '2025-05-01', status: 'assigned' },
-  { id: '345678', name: 'Carlos', date: '2025-05-10', status: 'pickup' },
-  { id: '901234', name: 'Laura', date: '2025-05-15', status: 'collected' },
-  { id: '567890', name: 'Luis', date: '2025-06-01', status: 'transporting' },
-  { id: '432109', name: 'Ana', date: '2025-06-10', status: 'delivered' }
+  { id: '123456', name: 'Armando', date: '2025-04-16', status: 'pending' }, // Pendientes: Las cotizaciones que si aceptaron
+  { id: '789012', name: 'Lucía', date: '2025-05-01', status: 'assigned' }, // Asignados: Chofer, pero no necesariamente ya empezó (todavia puede cambiar la persona y vehiculo asignado)
+  { id: '345678', name: 'Carlos', date: '2025-05-10', status: 'pickup' }, // Aceptado - En camino a recoger
+  { id: '901234', name: 'Laura', date: '2025-05-15', status: 'collected' }, // Carga recogida
+  { id: '432109', name: 'Ana', date: '2025-06-10', status: 'delivered' } // Completado - Entregado
 ])
 
 const filter = ref(null)

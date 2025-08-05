@@ -5,7 +5,6 @@ export interface Vehicle {
   licensePlate: string
   capacityKg: number
   available: boolean
-  currentMileage: number
-  nextMaintenanceMileage: number
+  insuranceDate: string
   isActive: boolean
 }

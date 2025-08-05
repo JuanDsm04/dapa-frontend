@@ -9,8 +9,7 @@ const props = defineProps<{
         licensePlate?: string
         capacityKg?: number
         available?: boolean
-        currentMileage?: number
-        nextMaintenanceMileage?: number
+        insuranceDate?: string
     },
     updating?: boolean
 }>()
@@ -20,15 +19,9 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 
-const brand = ref('')
-const model = ref('')
-const licensePlate = ref('')
-const capacityKg = ref<number | null>(null)
-const available = ref(true)
-const currentMileage = ref<number | null>(null)
-const nextMaintenanceMileage = ref<number | null>(null)
-
 const handleSubmit = () => {
+  const isoDate = insuranceDate.value ? new Date(insuranceDate.value).toISOString() : undefined
+
   emit('submit', {
     id: props.initialData?.id,
     brand: brand.value,
@@ -36,10 +29,16 @@ const handleSubmit = () => {
     licensePlate: licensePlate.value,
     capacityKg: capacityKg.value,
     available: available.value,
-    currentMileage: currentMileage.value,
-    nextMaintenanceMileage: nextMaintenanceMileage.value,
+    insuranceDate: isoDate
   })
 }
+
+const brand = ref('')
+const model = ref('')
+const licensePlate = ref('')
+const capacityKg = ref<number | null>(null)
+const available = ref(true)
+const insuranceDate = ref('')
 
 watch(() => props.initialData, (newData) => {
     if (newData) {
@@ -48,8 +47,7 @@ watch(() => props.initialData, (newData) => {
         licensePlate.value = newData.licensePlate || ''
         capacityKg.value = newData.capacityKg ?? null
         available.value = newData.available ?? true
-        currentMileage.value = newData.currentMileage ?? null
-        nextMaintenanceMileage.value = newData.nextMaintenanceMileage ?? null
+        insuranceDate.value = newData.insuranceDate || ''
     }
 }, { immediate: true })
 </script>
@@ -83,15 +81,9 @@ watch(() => props.initialData, (newData) => {
                 </select>
             </div>
         </div>
-        <div class="field-group">
-            <div class="field">
-                <label for="CurrentMileage">Kilometraje actual</label>
-                <input type="number" id="CurrentMileage" name="CurrentMileage" v-model="currentMileage" min="0" />
-            </div>
-            <div class="field">
-                <label for="NextMaintenanceMileage">Próximo mantenimiento (km)</label>
-                <input type="number" id="NextMaintenanceMileage" name="NextMaintenanceMileage" v-model="nextMaintenanceMileage" min="0" />
-            </div>
+        <div class="field">
+            <label for="insuranceDate">Vencimiento del seguro</label>
+            <input type="date" id="InsuranceDate" name="InsuranceDate" v-model="insuranceDate"/>
         </div>
 
         <button type="submit">{{ updating ? 'Actualizar' : 'Registrar' }}</button>
