@@ -50,9 +50,12 @@ const handleSubmit = () => {
         errors.value.licenseExpirationDate = 'Fecha de licencia requerida para pilotos *'
     }
 
+    if (!role.value.trim()) {
+        errors.value.role = 'El rol es requerido *'
+    }
+
     if (Object.keys(errors.value).length > 0) return
 
-    // Convertir fecha a formato requerido
     const licenseDate = licenseExpirationDate.value
         ? new Date(licenseExpirationDate.value).toISOString()
         : undefined
@@ -91,7 +94,7 @@ const onPhoneInput = (event: Event) => {
     phone.value = input.value.replace(/\D/g, '')
 }
 
-// Observar cambios en initialData para llenar el formulario cuando se edita
+// Observar cambios en initialData para llenar el formulario de editar
 watch(() => props.initialData, (newData) => {
     if (newData) {
         name.value = newData.name || ''
@@ -99,7 +102,7 @@ watch(() => props.initialData, (newData) => {
         phone.value = newData.phone || ''
         email.value = newData.email || ''
         password.value = newData.password || ''
-        role.value = newData.role || 'driver'
+        role.value = newData.role && newData.role.trim() !== '' ? newData.role : 'driver'
         licenseExpirationDate.value = newData.licenseExpirationDate
             ? newData.licenseExpirationDate.split('T')[0]
             : ''
@@ -190,7 +193,7 @@ label {
     margin-bottom: 0.1rem;
 }
 
-div p {
+.error {
     font-size: 10px;
     color: red;
     margin-left: 5px;
