@@ -15,20 +15,22 @@ const activeUsers = computed(() => users.value.filter(user => user.isActive))
 
 // Identificador del registro según la fecha de vencimiento de su licencia
 const highlightUser = (item: any): HighlightConfig | undefined => {
-  const expiration = new Date(item.licenseExpirationDate)
-  const now = new Date()
+  if (item.role !== 'driver' || !item.licenseExpirationDate) return undefined;
 
-  const diffInMs = expiration.getTime() - now.getTime()
-  const diffInDays = diffInMs / (1000 * 60 * 60 * 24)
+  const expiration = new Date(item.licenseExpirationDate);
+  const now = new Date();
 
-  if (diffInDays <= 7) {
-    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' }
+  const diffInMs = expiration.getTime() - now.getTime();
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
-  } else if (diffInDays <= 30) {
-    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' }
+  if (diffInDays < 0) {
+    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' };
+
+  } else if (diffInDays <= 7) {
+    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' };
   }
 
-  return undefined
+  return undefined;
 };
 
 // Abrir y cerrar el modal 
@@ -83,22 +85,40 @@ const getUsers = async () => {
   loading.value = true;
 
   try {
-    const token = localStorage.getItem('token') 
+    const token = localStorage.getItem('token');
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-    })
-    const data = await response.json()
-    users.value = data
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+    users.value = data;
+
+    // Verificar licencias vencidas (solo para 'driver')
+    const hoy = new Date();
+    const vencidos = users.value.filter((u: User) => {
+      if (u.role !== 'driver' || !u.licenseExpirationDate) return false;
+      const fechaLicencia = new Date(u.licenseExpirationDate);
+      return fechaLicencia < hoy;
+    });
+
+    if (vencidos.length > 0) {
+      toast.warning(`Advertencia: Hay ${vencidos.length} usuario(s) con la licencia vencida`, {
+        autoClose: 5000,
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
 
   } catch (error) {
-    console.log("Error obteniendo usuarios de la base de datos:", error)
-    toast.error('Error al cargar usuarios')
-
+    console.log("Error obteniendo usuarios de la base de datos:", error);
+    toast.error('Error al cargar usuarios');
   } finally {
     loading.value = false;
   }
-}
+};
 
 // Manejar el registro o actualización de un usuario según si tiene id o no
 const handleRegisterOrUpdate = async (payload: Partial<User>) => {
@@ -204,6 +224,8 @@ onMounted(() => {
               if (!value) return 'Sin fecha'
 
               const date = new Date(value)
+              date.setDate(date.getDate() + 1)
+              
               const day = String(date.getDate()).padStart(2, '0')
               const month = String(date.getMonth() + 1).padStart(2, '0')
               const year = date.getFullYear()

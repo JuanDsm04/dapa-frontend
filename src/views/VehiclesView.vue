@@ -13,17 +13,25 @@ const selectedVehicle = ref<Vehicle | undefined>(undefined)
 const loading = ref(false);
 const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
 
-// Identificador del registro según las millas (se debe actualizar)
+// Identificador del registro según la fecha de vencimiento de su seguro vehicular
 const highlightVeh = (item: any): HighlightConfig | undefined => {
-  if (item.currentMileage > 200000) {
-    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' }
+  if (!item.insuranceDate) return undefined;
 
-  }else if (item.currentMileage > 100000){
-    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' }
+  const insurance = new Date(item.insuranceDate);
+  const now = new Date();
+
+  const diffInMs = insurance.getTime() - now.getTime();
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+  if (diffInDays < 0) {
+    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' };
+
+  } else if (diffInDays <= 7) {
+    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' };
   }
 
-  return undefined
-}
+  return undefined;
+};
 
 // Abrir y cerrar el modal
 const openModal = () => {
@@ -88,16 +96,24 @@ const getVehicles = async () => {
     });
 
     const data = await response.json();
-    const vehiculosCriticos = data.filter((v: Vehicle) => v.currentMileage > 200000)
 
-    if (vehiculosCriticos.length > 0) {
-    toast.warning(`Hay ${vehiculosCriticos.length} vehículo(s) que necesitan atención`, {
-      autoClose: 5000,
-      position: toast.POSITION.TOP_CENTER,
-    })
-
-  }
     vehicles.value = data;
+
+    // Detectar seguros vencidos
+    const hoy = new Date();
+
+    const vencidos = vehicles.value.filter((v: Vehicle) => {
+      if (!v.insuranceDate) return false;
+      const fechaSeguro = new Date(v.insuranceDate);
+      return fechaSeguro < hoy;
+    });
+
+    if (vencidos.length > 0) {
+      toast.warning(`Advertencia: Hay ${vencidos.length} vehículo(s) con el seguro vencido`, {
+        autoClose: 5000,
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
 
   } catch (error) {
     console.error("Error obteniendo vehículos:", error);
@@ -199,6 +215,8 @@ onMounted(async() => {
               if (!value) return 'Sin fecha'
 
               const date = new Date(value)
+              date.setDate(date.getDate() + 1)
+              
               const day = String(date.getDate()).padStart(2, '0')
               const month = String(date.getMonth() + 1).padStart(2, '0')
               const year = date.getFullYear()
