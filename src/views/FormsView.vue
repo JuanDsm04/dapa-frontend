@@ -1,53 +1,44 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { v4 as uuid } from 'uuid'
 import Sortable from 'sortablejs'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+
 import QuestionCard from '@/components/form/QuestionCard.vue'
 import QuestionForm from '@/components/form/QuestionForm.vue'
 import FormPreview from '@/components/form/FormPreview.vue'
-import { type Question } from '@/types/form'
 
-//Preguntas de prueba
-const questions = ref<Question[]>([
-  {
-    id: uuid(),
-    text: '¿Cuál es tu nombre completo?',
-    type: 'text',
-    active: true,
-  },
-  {
-    id: uuid(),
-    text: '¿Cuál es tu color favorito?',
-    type: 'multiple',
-    options: ['Rojo', 'Verde', 'Azul', 'Amarillo'],
-    active: true,
-  },
-  {
-    id: uuid(),
-    text: '¿En qué ciudad vives?',
-    type: 'dropdown',
-    options: ['Ciudad de Guatemala', 'Quetzaltenango', 'Escuintla', 'Otra'],
-    active: false,
-  }
-])
+import { type QuestionType, type Question } from '@/types/form'
+import { createQuestion, getActiveQuestions, getQuestions, updateQuestion, deleteQuestion, getQuestionTypes } from '@/services/formService'
 
+const questions = ref<Question[]>([])
+const activeQuestions = ref<Question[]>([])
+const questionTypes = ref<QuestionType[]>([])
+const loading = ref(false)
 const activeTab = ref('left')
-const questionSelected = ref<Question | null>(null)
-const editIndex = ref<number | null>(null)
+const questionSelected = ref<Question | undefined>(undefined)
+const showModal = ref(false)
 
 const sortableContainer = ref<HTMLElement>()
 let sortableInstance: Sortable | null = null
 
-const activeQuestionsCount = computed(() =>
-  questions.value.filter(q => q.active).length
-)
-
+const activeQuestionsCount = computed(() => questions.value.filter(q => q.isActive).length)
 const totalQuestions = computed(() => questions.value.length)
 
-onMounted(() => {
-  if (!sortableContainer.value) {
-    return
+onMounted(async () => {
+  await loadQuestions()
+  initSortable()
+})
+
+onUnmounted(() => {
+  if (sortableInstance) {
+    sortableInstance.destroy()
+    sortableInstance = null
   }
+})
+
+const initSortable = () => {
+  if (!sortableContainer.value) return
   sortableInstance = Sortable.create(sortableContainer.value, {
     animation: 200,
     ghostClass: 'sortable-ghost',
@@ -58,23 +49,26 @@ onMounted(() => {
     fallbackOnBody: true,
     swapThreshold: 0.65,
   })
-})
+}
 
-onUnmounted(() => {
-  if (sortableInstance) {
-    sortableInstance.destroy()
-    sortableInstance = null
+const loadQuestions = async () => {
+  loading.value = true
+  try {
+    questions.value = await getQuestions()
+    activeQuestions.value = await getActiveQuestions()
+    questionTypes.value = await getQuestionTypes()
+  } catch (err) {
+    const error = err as Error
+    console.error('Error cargando preguntas:', error)
+    toast.error(`Error al cargar preguntas: ${error.message}`)
+  } finally {
+    loading.value = false
   }
-})
+}
 
-const addQuestion = () => {
-  questionSelected.value = {
-    id: uuid(),
-    text: '',
-    type: 'text',
-    active: true
-  }
-  editIndex.value = null
+const openModal = () => {
+  questionSelected.value = undefined
+  showModal.value = true
 }
 
 const editQuestion = (index: number) => {
@@ -83,43 +77,87 @@ const editQuestion = (index: number) => {
       ...questions.value[index],
       options: questions.value[index].options ? [...questions.value[index].options] : undefined
     }
-    editIndex.value = index
+    showModal.value = true
   }
-}
-
-const deleteQuestion = (index: number) => {
-  if (questions.value[index]) {
-    const question = questions.value[index]
-    if (confirm(`¿Estás seguro de que deseas eliminar la pregunta: "${question.text}"?`)) {
-      questions.value.splice(index, 1)
-    }
-  }
-}
-
-const toggleQuestion = (index: number) => {
-  if (questions.value[index]) {
-    questions.value[index].active = !questions.value[index].active
-  }
-}
-
-const saveChanges = (question: Question) => {
-  if (editIndex.value !== null && editIndex.value < questions.value.length) {
-    questions.value[editIndex.value] = question
-  } else {
-    questions.value.push(question)
-  }
-  closeModal()
 }
 
 const closeModal = () => {
-  questionSelected.value = null
-  editIndex.value = null
+  questionSelected.value = undefined
+  showModal.value = false
+}
+
+const handleAddOrEditQuestion = async (payload: Partial<Question>) => {
+  loading.value = true
+  try {
+    if (payload.id) {
+      toast.info('Pregunta modificada exitosamente')
+      payload.options = payload.options?.map(opt => ({
+        id: opt.id,
+        option: opt.option,
+        questionId: payload.id
+      }))
+      console.log("data enviada: "+JSON.stringify(payload))
+      const response = await updateQuestion(payload.id, payload)
+      console.log("respuesta: "+JSON.stringify(response))
+    } else {
+      const response = await createQuestion(payload)
+      toast.success('Pregunta agregada correctamente')
+    }
+    await loadQuestions()
+    closeModal()
+  } catch (err) {
+    const error = err as Error
+    console.error('Error al guardar pregunta:', error)
+    toast.error(`Error: ${error.message}`)
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleDeleteQuestion = async (index: number) => {
+  if (!questions.value[index]) return
+
+  const question = questions.value[index]
+  if (!confirm(`¿Estás seguro de que deseas eliminar la pregunta: "${question.question}"?`)) {
+    return
+  }
+
+  loading.value = true
+  try {
+    await deleteQuestion(question.id!)
+    await loadQuestions()
+    toast.warning('Pregunta eliminada')
+  } catch (err) {
+    const error = err as Error
+    console.error('Error eliminando pregunta:', error)
+    toast.error(`Error eliminando pregunta: ${error.message}`)
+  } finally {
+    loading.value = false
+  }
+}
+
+const toggleQuestion = async (index: number) => {
+  if (!questions.value[index]) return
+
+  const question = questions.value[index]
+  const updatedQuestion = { ...question, isActive: !question.isActive }
+
+  try {
+    await updateQuestion(question.id!, updatedQuestion)
+    await loadQuestions()
+    toast.info(`Pregunta ${updatedQuestion.isActive ? 'activada' : 'desactivada'}`)
+  } catch (err) {
+    const error = err as Error
+    console.error('Error actualizando pregunta:', error)
+    toast.error(`Error: ${error.message}`)
+  }
 }
 
 const clearAllQuestions = () => {
   if (questions.value.length > 0) {
     if (confirm('¿Estás seguro de que deseas eliminar todas las preguntas? Esta acción no se puede deshacer.')) {
       questions.value = []
+      toast.warning('Todas las preguntas han sido eliminadas')
     }
   }
 }
@@ -145,24 +183,27 @@ const clearAllQuestions = () => {
       </div>
 
       <div class="header-actions">
-        <button @click="addQuestion" class="btn-primary">
-          + Agregar Pregunta
+        <button @click="openModal" class="btn-primary" :disabled="loading">
+          {{ loading ? 'Cargando...' : '+ Agregar Pregunta' }}
         </button>
-        <button @click="clearAllQuestions" class="btn-secondary" :disabled="questions.length === 0">
+        <button @click="clearAllQuestions" class="btn-secondary" :disabled="questions.length === 0 || loading">
           Limpiar Todo
         </button>
       </div>
     </header>
 
     <main class="main-content">
+      <div v-if="loading" class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
 
       <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
-      <div class="toggle-indicator"></div>
-      <div class="toggle-button" @click="activeTab = 'left'">Editor</div>
-      <div class="toggle-button" @click="activeTab = 'right'">Preview</div>
+        <div class="toggle-indicator"></div>
+        <div class="toggle-button" @click="activeTab = 'left'">Editor</div>
+        <div class="toggle-button" @click="activeTab = 'right'">Preview</div>
       </div>
+
       <section v-if="activeTab === 'left'" class="column">
-        <!-- Editor de preguntas -->
         <div class="column-header">
           <h2 class="title">Preguntas del formulario</h2>
           <span class="count">{{ questions.length }} pregunta{{ questions.length !== 1 ? 's' : '' }}</span>
@@ -172,8 +213,8 @@ const clearAllQuestions = () => {
           <div ref="sortableContainer" class="draggable-list">
             <div v-for="(question, index) in questions" :key="`question-${question.id}`" class="sortable-item"
               :data-id="question.id">
-              <QuestionCard :question="question" @edit="editQuestion(index)" @delete="deleteQuestion(index)"
-                @toggle="toggleQuestion(index)" />
+              <QuestionCard :question="question" :question_types="questionTypes" @edit="editQuestion(index)"
+                @delete="handleDeleteQuestion(index)" @toggle="toggleQuestion(index)" />
             </div>
           </div>
 
@@ -192,7 +233,20 @@ const clearAllQuestions = () => {
       </section>
     </main>
 
-    <QuestionForm v-if="questionSelected" :question="questionSelected" @save="saveChanges" @cancel="closeModal" />
+    <!-- Modal -->
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <article>
+        <header>
+          <h3>{{ questionSelected ? 'Editar Pregunta' : 'Agregar Pregunta' }}</h3>
+          <button class="close-btn" @click="closeModal">&times;</button>
+        </header>
+
+        <section>
+          <QuestionForm :initialData="questionSelected" :question-types="questionTypes"
+            @submit="handleAddOrEditQuestion" :updating="!!questionSelected" :loading="loading" />
+        </section>
+      </article>
+    </div>
   </div>
 </template>
 
@@ -271,8 +325,14 @@ const clearAllQuestions = () => {
   transition: all 0.3s ease;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
+  background: var(--add-btn-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-secondary {
@@ -304,6 +364,38 @@ const clearAllQuestions = () => {
   justify-content: center;
   gap: 1rem;
   position: relative;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--add-btn);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .column {
@@ -390,25 +482,6 @@ const clearAllQuestions = () => {
   opacity: 0.8;
 }
 
-.additional-actions {
-  margin-top: 1rem;
-  text-align: center;
-}
-
-.btn-link {
-  background: none;
-  border: none;
-  color: white;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0.5rem;
-  font-size: 0.9rem;
-  transition: opacity 0.2s ease;
-}
-
-.btn-link:hover {
-  opacity: 0.8;
-}
 .toggle-wrapper {
   display: flex;
   background-color: #EAEEF4;
@@ -449,6 +522,69 @@ const clearAllQuestions = () => {
 
 .active-right .toggle-indicator {
   left: 50%;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+article {
+  background: var(--modal-bg, white);
+  border-radius: 10px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+}
+
+article header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-input, #e0e0e0);
+}
+
+article header h3 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+article section {
+  padding: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--close-btn, #666);
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  color: var(--close-btn-hover, #333);
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Estilos para el drag and drop con sortablejs */
@@ -496,6 +632,10 @@ const clearAllQuestions = () => {
   .header-actions {
     justify-content: center;
   }
+
+  .toggle-wrapper {
+    width: 250px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -525,6 +665,15 @@ const clearAllQuestions = () => {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-start;
+  }
+
+  .toggle-wrapper {
+    width: 200px;
+  }
+
+  article {
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
   }
 }
 

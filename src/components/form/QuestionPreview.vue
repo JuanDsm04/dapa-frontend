@@ -8,13 +8,13 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'change', questionId: string, value: any): void
+  (e: 'change', questionId: number, value: any): void
 }>()
 
 const localValue = ref(props.value || getInitialValue())
 
 function getInitialValue() {
-  switch (props.question.type) {
+  switch (props.question.type.type) {
     case 'text':
       return ''
     case 'multiple':
@@ -60,12 +60,12 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
 <template>
   <div class="preview-question">
     <label class="question-label">
-      {{ question.text }}
+      {{ question.question }}
       <span class="required-indicator">*</span>
     </label>
 
     <!-- Pregunta de texto -->
-    <div v-if="question.type === 'text'" class="input-group">
+    <div v-if="question.type.type === 'text'" class="input-group">
       <input
         v-model="localValue"
         type="text"
@@ -75,65 +75,65 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
     </div>
 
     <!-- Pregunta de selección múltiple -->
-    <div v-else-if="question.type === 'multiple'" class="input-group">
+    <div v-else-if="question.type.type === 'multiple'" class="input-group">
       <div class="checkbox-group">
         <div
           v-for="option in question.options"
-          :key="option"
+          :key="option.id"
           class="checkbox-item"
         >
           <input
-            :id="`${question.id}-${option}`"
+            :id="`${question.id}-${option.option}`"
             type="checkbox"
             :value="option"
             :checked="Array.isArray(localValue) && localValue.includes(option)"
-            @change="handleCheckboxChange(option, ($event.target as HTMLInputElement).checked)"
+            @change="handleCheckboxChange(option.option, ($event.target as HTMLInputElement).checked)"
             class="checkbox-input"
           />
           <label
-            :for="`${question.id}-${option}`"
+            :for="`${question.id}-${option.option}`"
             class="checkbox-label"
           >
-            {{ option }}
+            {{ option.option }}
           </label>
         </div>
       </div>
     </div>
 
     <!-- Pregunta de lista desplegable -->
-    <div v-else-if="question.type === 'dropdown'" class="input-group">
+    <div v-else-if="question.type.type === 'dropdown'" class="input-group">
       <select v-model="localValue" class="select-input">
         <option value="">Selecciona una opción</option>
         <option
           v-for="option in question.options"
-          :key="option"
+          :key="option.id"
           :value="option"
         >
-          {{ option }}
+          {{ option.option }}
         </option>
       </select>
     </div>
 
     <!-- Pregunta de selección única -->
-    <div v-else-if="question.type === 'unique'" class="input-group">
+    <div v-else-if="question.type.type === 'unique'" class="input-group">
       <div class="radio-group">
         <div
           v-for="option in question.options"
-          :key="option"
+          :key="option.id"
           class="radio-item"
         >
           <input
-            :id="`${question.id}-${option}`"
+            :id="`${question.id}-${option.option}`"
             v-model="localValue"
             type="radio"
             :value="option"
             class="radio-input"
           />
           <label
-            :for="`${question.id}-${option}`"
+            :for="`${question.id}-${option.option}`"
             class="radio-label"
           >
-            {{ option }}
+            {{ option.option }}
           </label>
         </div>
       </div>
