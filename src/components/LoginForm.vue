@@ -35,7 +35,7 @@
       if (getUserRole() === 'admin') {
         router.push('/users')
       } else {
-        router.push('/assignments')
+        router.push('/my-assignments')
       }
 
     } catch (e) {

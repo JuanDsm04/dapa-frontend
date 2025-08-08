@@ -11,7 +11,7 @@ import NotFoundView from "@/views/NotFoundView.vue";
 import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
 import FormsView from "@/views/FormsView.vue";
 import FinanceControlView from "@/views/FinanceControlView.vue";
-
+import DriverAssignmentsView from "@/views/DriverAssignments.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -56,12 +56,18 @@ const router = createRouter({
       path: "/assignments",
       name: "Assignments",
       component: AssignmentsView,
-      meta: { requiresAuth: true, roles: ['admin', 'driver']}
+      meta: { requiresAuth: true, roles: ['admin']}
     },
     {
       path: "/assignments/tracking",
       name: "TempClientAssignments",
       component: AssignmentTrackingView
+    },
+    {
+      path: "/my-assignments",
+      name: "MyAssignments",
+      component: DriverAssignmentsView,
+      meta: { requiresAuth: true, roles: ['driver'] }
     },
     {
       path: "/:pathMatch(.*)*",
