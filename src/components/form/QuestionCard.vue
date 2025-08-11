@@ -1,47 +1,127 @@
 <script setup lang="ts">
-import { type Question } from '@/types/form';
-import { Bars3Icon } from '@heroicons/vue/24/solid';
+import { computed } from "vue";
+import { type Question, type QuestionType } from "@/types/form";
+import { Bars3Icon, PencilSquareIcon, TrashIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps<{
-  question: Question
-}>()
+  question: Question;
+  question_types: QuestionType[]
+}>();
 
 const emit = defineEmits<{
-  (e: 'edit'): void
-  (e: 'delete'): void
-  (e: 'toggle'): void
-}>()
+  (e: "edit"): void;
+  (e: "delete"): void;
+  (e: "toggle"): void;
+}>();
 
-const typeLabel = {
+const questionTypeLabels: Record<string, string> = {
   text: 'Respuesta corta',
-  multiple: 'Opción múltiple',
+  multiple: 'Selección múltiple',
   dropdown: 'Lista desplegable',
-  unique: 'Selección única'
+  unique: 'Selección única',
+};
+
+// Computed para obtener las opciones como strings
+const optionsText = computed(() => {
+  if (!props.question.options || props.question.options.length === 0) {
+    return "";
+  }
+
+  // Extraer solo el texto de las opciones
+  return props.question.options
+    .map((option) => option.option)
+    .filter((option) => option.trim() !== "") // Filtrar opciones vacías
+    .join(", ");
+});
+
+// Computed para verificar si el tipo requiere opciones
+const requiresOptions = computed(() => {
+  return ["multiple", "dropdown", "unique"].includes(props.question.type.type);
+});
+
+function getTypeLabel(type: string, types: QuestionType[]): string {
+  const match = types.find(t => t.type === type);
+
+  if (match) {
+    return questionTypeLabels[type] || `Tipo desconocido: ${type}`;
+  }
+
+  return `Tipo no registrado: ${type}`;
 }
+
+const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.question_types))
+
 </script>
 
 <template>
-  <div class="question-card" :class="{ inactive: !question.active }">
-    <div class="drag-handle" title="Arrastrar para mover">
-      <Bars3Icon class="drag-icon" />
-    </div>
+  <div class="question-card" :class="{ 'card-inactive': !question.isActive }">
+    <!-- Status indicator bar -->
+    <div class="status-indicator" :class="{ 'inactive': !question.isActive }"></div>
 
     <div class="card-body">
-      <h3>{{ question.text || '(Sin texto)' }}</h3>
-      <p><strong>Tipo:</strong> {{ typeLabel[question.type] }}</p>
-
-      <div v-if="!(question.type === 'text')">
-        <p v-if="question.options && question.options.length">
-          <strong>Opciones:</strong> {{ question.options.join(', ') }}
-        </p>
+      <div class="drag-handle" title="Arrastrar para mover">
+        <Bars3Icon class="drag-icon" />
       </div>
 
-      <div class="actions">
-        <button class="btn-edit" @click="emit('edit')">Editar</button>
-        <button class="btn-delete" @click="emit('delete')">Eliminar</button>
-        <button class="btn-toggle" @click="emit('toggle')">
-          {{ question.active ? 'Desactivar' : 'Activar' }}
-        </button>
+      <div class="card-content">
+        <div class="card-header">
+          <div class="question-info">
+            <div class="question-title-container">
+              <h3 class="question-title">{{ question.question || "(Sin texto)" }}</h3>
+              <span class="type-badge">{{ typeLabel }}</span>
+              <span class="status-badge"
+                :class="{ 'status-active': question.isActive, 'status-inactive': !question.isActive }">
+                {{ question.isActive ? 'Activa' : 'Inactiva' }}
+              </span>
+            </div>
+            <p v-if="question.description" class="question-description">
+              {{ question.description }}
+            </p>
+          </div>
+        </div>
+
+        <div v-if="requiresOptions" class="options-section">
+          <div class="options-header">
+            <p class="options-label">Opciones de respuesta</p>
+          </div>
+
+          <div v-if="optionsText" class="options-grid">
+            <div v-for="(option, index) in question.options" :key="option.id || index"
+              v-show="option.option.trim() !== ''" class="option-chip">
+              <span class="option-bullet">•</span>
+              {{ option.option }}
+            </div>
+          </div>
+
+          <div v-else class="warning-message">
+            <p class="warning-text">Este tipo de pregunta requiere opciones</p>
+          </div>
+        </div>
+
+        <!-- Action buttons moved to bottom right -->
+        <div class="actions-container">
+          <div class="actions">
+            <button class="btn btn-edit" @click="emit('edit')" title="Editar pregunta">
+              <PencilSquareIcon class="btn-icon" />
+              <span class="btn-text">Editar</span>
+            </button>
+
+            <button 
+              class="btn btn-toggle" 
+              @click="emit('toggle')" 
+              :title="question.isActive ? 'Desactivar pregunta' : 'Activar pregunta'"
+              :class="{ 'btn-toggle-active': question.isActive }"
+            >
+              <component :is="question.isActive ? CheckCircleIcon : XCircleIcon" class="btn-icon" />
+              <span class="btn-text">{{ question.isActive ? 'Desactivar' : 'Activar' }}</span>
+            </button>
+
+            <button class="btn btn-delete" @click="emit('delete')" title="Eliminar pregunta">
+              <TrashIcon class="btn-icon" />
+              <span class="btn-text">Eliminar</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -49,116 +129,383 @@ const typeLabel = {
 
 <style scoped>
 .question-card {
-  display: flex;
-  align-items: flex-start;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin: 1rem 0;
-  padding: 1rem;
-  background-color: white;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  background: var(--white);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .question-card:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transform: translateY(-2px);
 }
 
-.question-card.inactive {
-  opacity: 0.6;
-  background-color: #f8f8f8;
+.question-card.card-inactive {
+  opacity: 0.7;
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+}
+
+.status-indicator.inactive {
+  background: linear-gradient(90deg, #ccc 0%, #999 100%);
+}
+
+.card-body {
+  display: flex;
+  align-items: flex-start;
+  padding: 1.75rem;
+  gap: 1rem;
 }
 
 .drag-handle {
-  cursor: grab;
-  margin-right: 1rem;
-  color: #6c757d;
-  user-select: none;
   display: flex;
   align-items: center;
-  padding: 0.25rem;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  cursor: grab;
+  color: var(--terciary);
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(var(--terciary), 0.08);
+  transition: all 0.2s ease;
+  border: 2px dashed transparent;
 }
 
 .drag-handle:hover {
-  background-color: #f8f9fa;
+  color: var(--primary-dark);
+  background: rgba(var(--primary), 0.15);
+  border-color: var(--primary);
+  transform: scale(1.05);
 }
 
 .drag-handle:active {
   cursor: grabbing;
+  transform: scale(0.95);
 }
 
 .drag-icon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
 }
 
-.card-body {
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.question-info {
   flex: 1;
 }
 
-.card-body h3 {
-  margin: 0 0 0.5rem 0;
-  color: #333;
-  font-size: 1.1rem;
-}
-
-.card-body p {
-  margin: 0.25rem 0;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.actions {
-  margin-top: 1rem;
+.question-title-container {
   display: flex;
-  gap: 0.5rem;
+  height: 100%;
+  align-items: center;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
-.actions button {
+.question-title {
+  margin: 0;
+  color: var(--text-on-light);
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.3;
+  flex: 1;
+  min-width: 200px;
+}
+
+.question-description {
+  margin: 0;
+  color: var(--terciary-dark);
+  font-size: 1rem;
+  line-height: 1.6;
+  font-style: italic;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(var(--primary), 0.05) 0%, rgba(var(--secondary), 0.05) 100%);
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+}
+
+.type-badge {
   padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  border-radius: 25px;
   font-size: 0.85rem;
+  font-weight: 600;
+  background-color: var(--add-btn);
+  color: var(--text-on-add-btn);
+  white-space: nowrap;
+}
+
+.status-badge {
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.status-active {
+  color: var(--text-on-add-btn);
+  background: var(--secondary-dark);
+  border: 1px solid rgba(var(--secondary), 0.25);
+}
+
+.status-inactive {
+  color: var(--terciary-dark);
+  background: linear-gradient(135deg, rgba(var(--terciary), 0.15) 0%, rgba(var(--terciary), 0.08) 100%);
+  border: 1px solid rgba(var(--terciary), 0.25);
+}
+
+.options-section {
+  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #e9ecef;
+}
+
+.options-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.options-icon {
+  font-size: 1.1rem;
+}
+
+.options-label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--terciary-dark);
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.option-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--white);
+  border: 1px solid #e0e4e7;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-on-light);
   font-weight: 500;
   transition: all 0.2s ease;
 }
 
+.option-chip:hover {
+  border-color: var(--primary);
+  background: rgba(var(--primary), 0.02);
+}
+
+.option-bullet {
+  color: var(--primary);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.warning-message {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: rgba(var(--on-delete-btn), 0.05);
+  border: 1px solid rgba(var(--on-delete-btn), 0.15);
+  border-radius: 8px;
+}
+
+.warning-icon {
+  font-size: 1.2rem;
+}
+
+.warning-text {
+  margin: 0;
+  color: var(--on-delete-btn);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.actions-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.btn-text {
+  white-space: nowrap;
+}
+
 .btn-edit {
-  background-color: var(--edit-btn);
+  background: var(--white);
   color: var(--on-edit-btn);
+  border:2px solid var(--on-edit-btn);
 }
 
 .btn-edit:hover {
-  background-color: var(--edit-btn-hover);
+  background: var(--on-edit-btn);
+  color: var(--text-on-dark);
+  transform: translateY(-1px);
 }
 
 .btn-delete {
-  background-color: var(--delete-btn);
+  background: var(--white);
   color: var(--on-delete-btn);
+  border:2px solid var(--on-delete-btn);
 }
 
 .btn-delete:hover {
-  background-color: var(--delete-btn-hover);
+  background: var(--on-delete-btn);
+  color: var(--text-on-dark);
+  transform: translateY(-1px);
 }
 
 .btn-toggle {
-  background-color: var(--add-btn);
-  color: white;
+  border: 2px solid var(--terciary-dark);
+  background: #f8f9fa;
+  color: var(--terciary-dark);
+  border-color: #dee2e6;
+}
+
+.btn-toggle.btn-toggle-active {
+  background: var(--white);
+  color: var(--primary-dark);
+  border-color: var(--primary-dark);
 }
 
 .btn-toggle:hover {
-  background-color: var(--add-btn-hover);
+  background: #e9ecef;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(var(--terciary), 0.15);
 }
 
-.question-card.inactive .btn-toggle {
-  background-color: var(--terciary);
+.btn-toggle.btn-toggle-active:hover {
+  background: var(--primary-dark);
+  color: var(--text-on-dark);
 }
 
-.question-card.inactive .btn-toggle:hover {
-  background-color: var(--terciary-dark);
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card-body {
+    flex-direction: column;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .drag-handle {
+    align-self: center;
+    width: 36px;
+    height: 36px;
+  }
+
+  .question-title-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .question-title {
+    font-size: 1.2rem;
+    min-width: unset;
+  }
+
+  .type-badge {
+    align-self: flex-start;
+  }
+
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-container {
+    justify-content: center;
+  }
+
+  .actions {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .btn {
+    flex: 1;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .btn-text {
+    display: none;
+  }
+
+  .btn {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-body {
+    padding: 1rem;
+  }
+
+  .question-title {
+    font-size: 1.1rem;
+  }
+
+  .options-section {
+    padding: 1rem;
+  }
+
+  .btn {
+    padding: 0.625rem;
+  }
+
+  .btn-icon {
+    width: 20px;
+    height: 20px;
+  }
 }
 </style>

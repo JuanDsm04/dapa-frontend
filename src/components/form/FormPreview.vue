@@ -14,10 +14,10 @@ const emit = defineEmits<{
 const formData = ref<Record<string, any>>({})
 
 const activeQuestions = computed(() =>
-    props.questions.filter(q => q.active)
+    props.questions.filter(q => q.isActive)
 )
 
-const handleQuestionChange = (questionId: string, value: any) => {
+const handleQuestionChange = (questionId: number, value: any) => {
     formData.value[questionId] = value
 }
 
