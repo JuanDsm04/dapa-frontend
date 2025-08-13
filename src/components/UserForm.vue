@@ -56,8 +56,6 @@ const handleSubmit = () => {
         errors.value.role = 'El rol es requerido *'
     }
 
-    if (Object.keys(errors.value).length > 0) return
-
     const licenseDate = licenseExpirationDate.value
         ? new Date(licenseExpirationDate.value).toISOString()
         : undefined
@@ -72,19 +70,8 @@ const handleSubmit = () => {
         role: role.value,
         licenseExpirationDate: role.value === 'driver' ? licenseDate : undefined,
     })
-    emit('submit', {
-        id: props.initialData?.id,
-        name: name.value,
-        lastName: lastName.value,
-        email: email.value,
-        phone: phone.value,
-        password: password.value,
-        role: role.value,
-        licenseExpirationDate: role.value === 'driver' ? licenseDate : undefined,
-    })
 }
 
-// Variables para cada campo del formulario y estado de errores
 // Variables para cada campo del formulario y estado de errores
 const name = ref('')
 const lastName = ref('')
@@ -95,19 +82,12 @@ const role = ref('driver')
 const showPassword = ref(false)
 const licenseExpirationDate = ref('')
 const errors = ref<Record<string, string>>({})
-const errors = ref<Record<string, string>>({})
 
-// Cambiar el estado de visibilidad de la contraseña
 // Cambiar el estado de visibilidad de la contraseña
 const togglePassVisibility = () => {
     showPassword.value = !showPassword.value
 }
 
-// Controlar que el campo teléfono solo tenga números al ser ingresado
-const onPhoneInput = (event: Event) => {
-    const input = event.target as HTMLInputElement
-    phone.value = input.value.replace(/\D/g, '')
-}
 // Controlar que el campo teléfono solo tenga números al ser ingresado
 const onPhoneInput = (event: Event) => {
     const input = event.target as HTMLInputElement
