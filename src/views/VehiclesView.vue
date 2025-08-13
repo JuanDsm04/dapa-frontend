@@ -2,18 +2,38 @@
 import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
-
-import { useNotificationStore } from '@/stores/notifications'
-import TableVehicles from '@/components/Table.vue';
 import VehicleForm from '@/components/VehicleForm.vue';
+import TableVehicles from '@/components/Table.vue';
 import type { HighlightConfig } from '@/types/table';
 import type { Vehicle } from '@/types/vehicle'
 
 const showModal = ref(false);
 const vehicles = ref<Vehicle[]>([])
 const selectedVehicle = ref<Vehicle | undefined>(undefined)
+const loading = ref(false);
 const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
 
+// Identificador del registro según la fecha de vencimiento de su seguro vehicular
+const highlightVeh = (item: any): HighlightConfig | undefined => {
+  if (!item.insuranceDate) return undefined;
+
+  const insurance = new Date(item.insuranceDate);
+  const now = new Date();
+
+  const diffInMs = insurance.getTime() - now.getTime();
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+  if (diffInDays < 0) {
+    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' };
+
+  } else if (diffInDays <= 7) {
+    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' };
+  }
+
+  return undefined;
+};
+
+// Abrir y cerrar el modal
 const openModal = () => {
   selectedVehicle.value = undefined;
   showModal.value = true;
@@ -24,15 +44,46 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-const highlightVeh = (item: any): HighlightConfig | undefined => {
-  if (item.currentMileage > 200000) {
-    return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' }
-  }else if (item.currentMileage > 100000){
-    return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' }
-  }
-  return undefined
-}
+// Preparar a un vehículo para editarlo
+const handleEditVehicle = (vehicle: Vehicle) => {
+  selectedVehicle.value = { ...vehicle };
+  showModal.value = true;
+};
 
+// Eliminar a un vehículo después de su confirmación y actualizar la lista
+const handleDeleteVehicle = async (vehicle: Vehicle) => {
+
+  if (!confirm(`¿Estás seguro de que quieres eliminar al vehículo con placa ${vehicle.licensePlate}?`)) {
+    return;
+  }
+
+  selectedVehicle.value = { ...vehicle };
+  const vehicleID = selectedVehicle.value.id;
+  loading.value = true;
+
+  try {
+    const token = localStorage.getItem('token');
+    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${vehicleID}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    await getVehicles();
+    toast.warning('Vehículo eliminado');
+
+  } catch (error) {
+    console.error("Error eliminando vehículo:", error);
+    toast.error('Error eliminando vehículo');
+
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Obtener los vehículos desde la API
 const getVehicles = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -45,22 +96,31 @@ const getVehicles = async () => {
     });
 
     const data = await response.json();
-    const vehiculosCriticos = data.filter((v: Vehicle) => v.currentMileage > 200000)
 
-    if (vehiculosCriticos.length > 0) {
-    toast.warning(`Hay ${vehiculosCriticos.length} vehículo(s) que necesitan atención`, {
-      autoClose: 5000,
-      position: toast.POSITION.TOP_CENTER,
-    })
-
-  }
     vehicles.value = data;
+
+    // Detectar seguros vencidos
+    const hoy = new Date();
+
+    const vencidos = vehicles.value.filter((v: Vehicle) => {
+      if (!v.insuranceDate) return false;
+      const fechaSeguro = new Date(v.insuranceDate);
+      return fechaSeguro < hoy;
+    });
+
+    if (vencidos.length > 0) {
+      toast.warning(`Advertencia: Hay ${vencidos.length} vehículo(s) con el seguro vencido`, {
+        autoClose: 5000,
+        position: toast.POSITION.TOP_CENTER,
+      });
+    }
 
   } catch (error) {
     console.error("Error obteniendo vehículos:", error);
   }
 };
 
+// Manejar el registro o actualización de un vehículo según si tiene id o no
 const handleCreationOrUpdate = async (payload: Partial<Vehicle>) => {
   const token = localStorage.getItem('token');
 
@@ -115,36 +175,11 @@ const handleCreationOrUpdate = async (payload: Partial<Vehicle>) => {
   }
 };
 
-const handleEditVehicle = (vehicle: Vehicle) => {
-  selectedVehicle.value = { ...vehicle };
-  showModal.value = true;
-};
-
-const handleDeleteVehicle = async (vehicle: Vehicle) => {
-  selectedVehicle.value = { ...vehicle };
-  const vehicleID = selectedVehicle.value.id;
-
-  try {
-    const token = localStorage.getItem('token');
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${vehicleID}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    await getVehicles();
-    toast.warning('Vehículo eliminado');
-  } catch (error) {
-    console.error("Error eliminando vehículo:", error);
-    toast.error('Error eliminando vehículo');
-  }
-};
-
+// Cargar la lista de vehículos al montar el componente
 onMounted(async() => {
   getVehicles();
 });
+
 </script>
 
 <template>
@@ -168,8 +203,27 @@ onMounted(async() => {
           { label: 'Modelo', field: 'model' },
           { label: 'Placa', field: 'licensePlate' },
           { label: 'Capacidad (kg)', field: 'capacityKg' },
-          { label: 'Disponibilidad', field: 'available' },
-          { label: 'Vencimiento del seguro', field: 'insuranceDate' }
+          { 
+            label: 'Disponibilidad', 
+            field: 'available',
+            formatter: (value) => value ? 'Disponible' : 'No disponible'
+          },
+          { 
+            label: 'Vencimiento del seguro', 
+            field: 'insuranceDate',
+            formatter: (value) => {
+              if (!value) return 'Sin fecha'
+
+              const date = new Date(value)
+              date.setDate(date.getDate() + 1)
+              
+              const day = String(date.getDate()).padStart(2, '0')
+              const month = String(date.getMonth() + 1).padStart(2, '0')
+              const year = date.getFullYear()
+
+              return `${day}/${month}/${year}`
+            }
+          }
         ]"
         :highlightFn="highlightVeh"
         @edit="handleEditVehicle"

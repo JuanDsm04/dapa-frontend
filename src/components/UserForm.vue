@@ -20,6 +20,8 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'submit', payload: any): void
     (e: 'cancel'): void
+    (e: 'submit', payload: any): void
+    (e: 'cancel'): void
 }>()
 
 // Validar el formulario y emitir el submit
@@ -50,9 +52,12 @@ const handleSubmit = () => {
         errors.value.licenseExpirationDate = 'Fecha de licencia requerida para pilotos *'
     }
 
+    if (!role.value.trim()) {
+        errors.value.role = 'El rol es requerido *'
+    }
+
     if (Object.keys(errors.value).length > 0) return
 
-    // Convertir fecha a formato requerido
     const licenseDate = licenseExpirationDate.value
         ? new Date(licenseExpirationDate.value).toISOString()
         : undefined
@@ -67,8 +72,19 @@ const handleSubmit = () => {
         role: role.value,
         licenseExpirationDate: role.value === 'driver' ? licenseDate : undefined,
     })
+    emit('submit', {
+        id: props.initialData?.id,
+        name: name.value,
+        lastName: lastName.value,
+        email: email.value,
+        phone: phone.value,
+        password: password.value,
+        role: role.value,
+        licenseExpirationDate: role.value === 'driver' ? licenseDate : undefined,
+    })
 }
 
+// Variables para cada campo del formulario y estado de errores
 // Variables para cada campo del formulario y estado de errores
 const name = ref('')
 const lastName = ref('')
@@ -79,7 +95,9 @@ const role = ref('driver')
 const showPassword = ref(false)
 const licenseExpirationDate = ref('')
 const errors = ref<Record<string, string>>({})
+const errors = ref<Record<string, string>>({})
 
+// Cambiar el estado de visibilidad de la contraseña
 // Cambiar el estado de visibilidad de la contraseña
 const togglePassVisibility = () => {
     showPassword.value = !showPassword.value
@@ -90,8 +108,13 @@ const onPhoneInput = (event: Event) => {
     const input = event.target as HTMLInputElement
     phone.value = input.value.replace(/\D/g, '')
 }
+// Controlar que el campo teléfono solo tenga números al ser ingresado
+const onPhoneInput = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    phone.value = input.value.replace(/\D/g, '')
+}
 
-// Observar cambios en initialData para llenar el formulario cuando se edita
+// Observar cambios en initialData para llenar el formulario de editar
 watch(() => props.initialData, (newData) => {
     if (newData) {
         name.value = newData.name || ''
@@ -99,12 +122,13 @@ watch(() => props.initialData, (newData) => {
         phone.value = newData.phone || ''
         email.value = newData.email || ''
         password.value = newData.password || ''
-        role.value = newData.role || 'driver'
+        role.value = newData.role && newData.role.trim() !== '' ? newData.role : 'driver'
         licenseExpirationDate.value = newData.licenseExpirationDate
             ? newData.licenseExpirationDate.split('T')[0]
             : ''
     }
 }, { immediate: true })
+
 
 </script>
 
@@ -115,25 +139,33 @@ watch(() => props.initialData, (newData) => {
                 <label for="Name">Nombre</label>
                 <input type="text" id="Nombre" name="Nombre" v-model="name">
                 <p v-if="errors.name" class="error">{{ errors.name }}</p>
+                <p v-if="errors.name" class="error">{{ errors.name }}</p>
             </div>
             <div class="field">
                 <label for="LastName">Apellido</label>
                 <input type="text" id="LastName" name="LastName" v-model="lastName">
                 <p v-if="errors.lastName" class="error">{{ errors.lastName }}</p>
+                <p v-if="errors.lastName" class="error">{{ errors.lastName }}</p>
             </div>
         </div>
+
 
         <div class="field">
             <label for="Phone">Teléfono</label>
             <input type="tel" id="Phone" name="Phone" v-model="phone" @input="onPhoneInput">
             <p v-if="errors.phone" class="error">{{ errors.phone }}</p>
+            <input type="tel" id="Phone" name="Phone" v-model="phone" @input="onPhoneInput">
+            <p v-if="errors.phone" class="error">{{ errors.phone }}</p>
         </div>
+
 
         <div class="field">
             <label for="Email">Email</label>
             <input type="text" id="Email" name="Email" v-model="email">
             <p v-if="errors.email" class="error">{{ errors.email }}</p>
+            <p v-if="errors.email" class="error">{{ errors.email }}</p>
         </div>
+
 
         <div class="field" v-if="!updating">
             <div class="pass-row">
@@ -158,17 +190,24 @@ watch(() => props.initialData, (newData) => {
             </select>
         </div>
 
+
         <div class="field" v-if="role === 'driver'">
             <label for="LicenseExpiration">Fecha de vencimiento de licencia</label>
             <input type="date" id="LicenseExpiration" v-model="licenseExpirationDate">
             <p v-if="errors.licenseExpirationDate" class="error">{{ errors.licenseExpirationDate }}</p>
+            <p v-if="errors.licenseExpirationDate" class="error">{{ errors.licenseExpirationDate }}</p>
         </div>
 
+        <button type="submit">{{ (!updating && !isProfile) ? 'Confirmar' : 'Actualizar' }}</button>
         <button type="submit">{{ (!updating && !isProfile) ? 'Confirmar' : 'Actualizar' }}</button>
     </form>
 </template>
 
 <style scoped>
+.field-group {
+    display: flex;
+    gap: 5px;
+}
 .field-group {
     display: flex;
     gap: 5px;
@@ -179,7 +218,17 @@ watch(() => props.initialData, (newData) => {
     display: flex;
     flex-direction: column;
 }
+.field {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
 
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
 form {
     display: flex;
     flex-direction: column;

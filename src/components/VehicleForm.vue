@@ -15,41 +15,72 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'submit', payload: any): void
-  (e: 'cancel'): void
+    (e: 'submit', payload: any): void
+    (e: 'cancel'): void
 }>()
 
+// Validar el formulario y emitir el submit
 const handleSubmit = () => {
-  const isoDate = insuranceDate.value ? new Date(insuranceDate.value).toISOString() : undefined
+    errors.value = {}
 
-  emit('submit', {
-    id: props.initialData?.id,
-    brand: brand.value,
-    model: model.value,
-    licensePlate: licensePlate.value,
-    capacityKg: capacityKg.value,
-    available: available.value,
-    insuranceDate: isoDate
-  })
+    if (!brand.value.trim()) {
+        errors.value.brand = 'La marca es requerida *'
+    }
+
+    if (!model.value.trim()) {
+        errors.value.model = 'El modelo es requerido *'
+    }
+
+    const plateRegex = /^[A-Z]?\d{3}[A-Z]{3}$/
+    if (!plateRegex.test(licensePlate.value.toUpperCase())) {
+        errors.value.licensePlate = 'Formato de placa inválido (Ej: P123ABC o 123ABC) *'
+    }
+
+    if (capacityKg.value === null || capacityKg.value <= 0) {
+        errors.value.capacityKg = 'La capacidad debe ser mayor a 0 *'
+    }
+
+    if (!insuranceDate.value) {
+        errors.value.insuranceDate = 'La fecha de vencimiento del seguro es requerida *'
+    }
+
+    if (Object.keys(errors.value).length > 0) return
+
+    const isoDate = insuranceDate.value ? new Date(insuranceDate.value).toISOString() : undefined
+
+    emit('submit', {
+        id: props.initialData?.id,
+        brand: brand.value,
+        model: model.value,
+        licensePlate: licensePlate.value.toUpperCase(),
+        capacityKg: capacityKg.value,
+        available: true,
+        insuranceDate: isoDate
+    })
+
 }
 
+// Variables para cada campo del formulario y estado de errores
 const brand = ref('')
 const model = ref('')
 const licensePlate = ref('')
 const capacityKg = ref<number | null>(null)
-const available = ref(true)
 const insuranceDate = ref('')
+const errors = ref<Record<string, string>>({})
 
+// Observar cambios en initialData para llenar el formulario de editar
 watch(() => props.initialData, (newData) => {
     if (newData) {
         brand.value = newData.brand || ''
         model.value = newData.model || ''
         licensePlate.value = newData.licensePlate || ''
         capacityKg.value = newData.capacityKg ?? null
-        available.value = newData.available ?? true
-        insuranceDate.value = newData.insuranceDate || ''
+        insuranceDate.value = newData.insuranceDate
+            ? newData.insuranceDate.split('T')[0]
+            : ''
     }
 }, { immediate: true })
+
 </script>
 
 <template>
@@ -58,32 +89,31 @@ watch(() => props.initialData, (newData) => {
             <div class="field">
                 <label for="Brand">Marca</label>
                 <input type="text" id="Brand" name="Brand" v-model="brand" />
+                <p v-if="errors.brand" class="error">{{ errors.brand }}</p>
             </div>
             <div class="field">
                 <label for="Model">Modelo</label>
                 <input type="text" id="Model" name="Model" v-model="model" />
+                <p v-if="errors.model" class="error">{{ errors.model }}</p>
             </div>
         </div>
+
         <div class="field">
             <label for="LicensePlate">Placa</label>
             <input type="text" id="LicensePlate" name="LicensePlate" v-model="licensePlate" />
+            <p v-if="errors.licensePlate" class="error">{{ errors.licensePlate }}</p>
         </div>
-        <div class="field-group">
-            <div class="field">
-                <label for="CapacityKg">Capacidad (Kg)</label>
-                <input type="number" id="CapacityKg" name="CapacityKg" v-model="capacityKg" min="0" />
-            </div>
-            <div class="field">
-                <label for="Available">Disponible</label>
-                <select id="Available" name="Available" v-model="available">
-                    <option :value="true">Sí</option>
-                    <option :value="false">No</option>
-                </select>
-            </div>
+
+        <div class="field">
+            <label for="CapacityKg">Capacidad (Kg)</label>
+            <input type="number" id="CapacityKg" name="CapacityKg" v-model="capacityKg" min="0" />
+            <p v-if="errors.capacityKg" class="error">{{ errors.capacityKg }}</p>
         </div>
+        
         <div class="field">
             <label for="insuranceDate">Vencimiento del seguro</label>
-            <input type="date" id="InsuranceDate" name="InsuranceDate" v-model="insuranceDate"/>
+            <input type="date" id="InsuranceDate" name="InsuranceDate" v-model="insuranceDate" />
+            <p v-if="errors.insuranceDate" class="error">{{ errors.insuranceDate }}</p>
         </div>
 
         <button type="submit">{{ updating ? 'Actualizar' : 'Registrar' }}</button>
@@ -91,55 +121,61 @@ watch(() => props.initialData, (newData) => {
 </template>
 
 <style scoped>
+.field-group {
+    display: flex;
+    gap: 5px;
+}
+
+.field {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+label {
+    margin-bottom: 0.1rem;
+}
+
+.error {
+    font-size: 10px;
+    color: red;
+    margin-left: 5px;
+}
+
+input,
+select {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-input);
+    font-size: 1rem;
+}
+
+button {
+    border: 0;
+    padding: 15px 35px;
+    border-radius: 10px;
+    background-color: var(--add-btn);
+    color: var(--white);
+    font-size: 1rem;
+    font-weight: 500;
+    margin: 0 auto;
+    cursor: pointer;
+}
+
+form>button:hover {
+    background-color: var(--add-btn-hover);
+}
+
+@media screen and (max-width: 770px) {
     .field-group {
-        display: flex;
-        gap: 5px;
-    }
-
-    .field {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-    }
-
-    form {
-        display: flex;
         flex-direction: column;
         gap: 1.75rem;
     }
-
-    label {
-        margin-bottom: 0.1rem;
-    }
-
-    input,
-    select {
-        padding: 0.75rem 1rem;
-        border-radius: 10px;
-        border: 1px solid var(--border-input);
-        font-size: 1rem;
-    }
-
-    button {
-        border: 0;
-        padding: 15px 35px;
-        border-radius: 10px;
-        background-color: var(--add-btn);
-        color: var(--white);
-        font-size: 1rem;
-        font-weight: 500;
-        margin: 0 auto;
-        cursor: pointer;
-    }
-
-    form > button:hover {
-        background-color: var(--add-btn-hover);
-    }
-
-    @media screen and (max-width: 770px) {
-        .field-group {
-            flex-direction: column;
-            gap: 1.75rem;
-        }
-    }
+}
 </style>
