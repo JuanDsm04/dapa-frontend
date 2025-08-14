@@ -1,7 +1,6 @@
 <script setup>
 import router from '@/router'
 import UserForm from '@/components/UserForm.vue'
-import VerticalNav from '@/components/NavBar.vue'
 import { getUserID } from "@/utils/auth";
 import { ref, onMounted } from 'vue';
 
@@ -30,7 +29,6 @@ const getCurrentUserData = async () => {
       role: data.role,
     }
     user.value = currentUser
-    console.log(currentUser)
   } catch (error) {
     console.log("Error obteniendo al usuario loggeado:", error)
   }
@@ -41,7 +39,6 @@ const handleLogout = () => {
 }
 const handleEditProfile = async (payload) => {
   const id = getUserID()
-  console.log(payload)
   if (!id) {
     console.warn("No UserID found");
     return;
@@ -53,7 +50,6 @@ const handleEditProfile = async (payload) => {
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
       body: JSON.stringify(payload),
     })
-    console.log('Perfil Editado exitosamente')
   } catch (error) {
     console.error('Error al editar perfil:', error)
   }
@@ -66,7 +62,6 @@ onMounted(() => {
 
 <template>
   <div class="layout">
-    <VerticalNav />
     <main>
       <header class="sticky-header">
         <h1>Mi perfil</h1>
@@ -77,7 +72,7 @@ onMounted(() => {
         </button>
       </header>
       <div class="content">
-        <UserForm :initialData="user" :updating="user" @submit="handleEditProfile"/>
+        <UserForm :initialData="user" :updating="user != null" @submit="handleEditProfile"/>
       </div>
     </main>
   </div>
@@ -93,7 +88,6 @@ onMounted(() => {
 .layout main {
   width: 100%;
   padding: 0;
-  margin-left: 80px;
   box-sizing: border-box;
   overflow-y: auto;
   height: 100vh;

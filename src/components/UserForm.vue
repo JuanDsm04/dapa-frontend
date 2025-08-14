@@ -119,12 +119,10 @@ watch(() => props.initialData, (newData) => {
                 <label for="Name">Nombre</label>
                 <input type="text" id="Nombre" name="Nombre" v-model="name">
                 <p v-if="errors.name" class="error">{{ errors.name }}</p>
-                <p v-if="errors.name" class="error">{{ errors.name }}</p>
             </div>
             <div class="field">
                 <label for="LastName">Apellido</label>
                 <input type="text" id="LastName" name="LastName" v-model="lastName">
-                <p v-if="errors.lastName" class="error">{{ errors.lastName }}</p>
                 <p v-if="errors.lastName" class="error">{{ errors.lastName }}</p>
             </div>
         </div>
@@ -134,15 +132,12 @@ watch(() => props.initialData, (newData) => {
             <label for="Phone">Teléfono</label>
             <input type="tel" id="Phone" name="Phone" v-model="phone" @input="onPhoneInput">
             <p v-if="errors.phone" class="error">{{ errors.phone }}</p>
-            <input type="tel" id="Phone" name="Phone" v-model="phone" @input="onPhoneInput">
-            <p v-if="errors.phone" class="error">{{ errors.phone }}</p>
         </div>
 
 
         <div class="field">
             <label for="Email">Email</label>
             <input type="text" id="Email" name="Email" v-model="email">
-            <p v-if="errors.email" class="error">{{ errors.email }}</p>
             <p v-if="errors.email" class="error">{{ errors.email }}</p>
         </div>
 
@@ -175,10 +170,8 @@ watch(() => props.initialData, (newData) => {
             <label for="LicenseExpiration">Fecha de vencimiento de licencia</label>
             <input type="date" id="LicenseExpiration" v-model="licenseExpirationDate">
             <p v-if="errors.licenseExpirationDate" class="error">{{ errors.licenseExpirationDate }}</p>
-            <p v-if="errors.licenseExpirationDate" class="error">{{ errors.licenseExpirationDate }}</p>
         </div>
 
-        <button type="submit">{{ (!updating && !isProfile) ? 'Confirmar' : 'Actualizar' }}</button>
         <button type="submit">{{ (!updating && !isProfile) ? 'Confirmar' : 'Actualizar' }}</button>
     </form>
 </template>

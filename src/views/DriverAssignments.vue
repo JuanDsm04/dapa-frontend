@@ -22,7 +22,7 @@
     </main>
 </template>
 
-<style>
+<style scoped>
 main {
   width: 100%;
   padding: 2rem;

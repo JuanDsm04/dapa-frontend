@@ -1,8 +1,7 @@
 import {jwtDecode} from 'jwt-decode';
 
 export interface TokenPayload {
-    id: number;             
-    userId: number;         
+    UserID: number;             
     name: string;
     email: string;
     role: string;
@@ -29,7 +28,7 @@ export function getUserID(): number | null {
   if (!token) return null;
   try {
     const decoded = jwtDecode<TokenPayload>(token);
-    return decoded.id;
+    return decoded.UserID;
   } catch (err) {
     return null;
   }
