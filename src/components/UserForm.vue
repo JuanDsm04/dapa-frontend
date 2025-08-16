@@ -181,27 +181,13 @@ watch(() => props.initialData, (newData) => {
     display: flex;
     gap: 5px;
 }
-.field-group {
-    display: flex;
-    gap: 5px;
-}
 
 .field {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
-.field {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
 
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-}
 form {
     display: flex;
     flex-direction: column;
