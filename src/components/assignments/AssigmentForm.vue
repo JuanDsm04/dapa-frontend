@@ -85,7 +85,7 @@ header h2 {
   height: 55px;
   color: #235dda;
   border: 1px solid #235dda;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: white;
 }
 
@@ -102,7 +102,7 @@ header h2 {
   border: none;
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
   height: 55px;

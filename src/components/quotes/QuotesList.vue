@@ -1,25 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue'
-import OrderCard from './OrderCard.vue'
+import QuoteCard from './QuoteCard.vue'
 
 const props = defineProps({
   title: String,
-  defaultStatuses: {
-    type: Array,
-    required: true
-  },
-  availableFilters: {
-    type: Array,
-    required: true
-  }
 })
 
-const orders = ref([
-  { id: '123456', name: 'Armando', date: '2025-04-16', status: 'pending' }, // Pendientes: Las cotizaciones que si aceptaron
-  { id: '789012', name: 'Lucía', date: '2025-05-01', status: 'assigned' }, // Asignados: Chofer, pero no necesariamente ya empezó (todavia puede cambiar la persona y vehiculo asignado)
-  { id: '345678', name: 'Carlos', date: '2025-05-10', status: 'pickup' }, // Aceptado - En camino a recoger
-  { id: '901234', name: 'Laura', date: '2025-05-15', status: 'collected' }, // Carga recogida
-  { id: '432109', name: 'Ana', date: '2025-06-10', status: 'delivered' } // Completado - Entregado
+const quotes = ref([
+  { id: 'q001', client: 'Armando', date: '2025-04-10' },
+  { id: 'q002', client: 'Lucía', date: '2025-04-15' },
+  { id: 'q003', client: 'Carlos', date: '2025-05-01' },
+  { id: 'q004', client: 'Laura', date: '2025-05-05' }
 ])
 
 const filter = ref(null)
@@ -34,32 +25,20 @@ function setFilter(option) {
   showFilters.value = false
 }
 
-const filteredOrders = computed(() => {
-  const sorted = orders.value.filter(order =>
-    props.defaultStatuses.includes(order.status)
-  )
-
+const filteredQuotes = computed(() => {
   switch (filter.value) {
     case 'recent':
-      return [...sorted].sort((a, b) => new Date(b.date) - new Date(a.date))
+      return [...quotes.value].sort((a, b) => new Date(b.date) - new Date(a.date))
     case 'oldest':
-      return [...sorted].sort((a, b) => new Date(a.date) - new Date(b.date))
-    case 'pending':
-      return sorted.filter(order => order.status === 'pending')
-    case 'assigned':
-      return sorted.filter(order => order.status === 'assigned')
-    case 'in_progress':
-      return sorted.filter(order => ['pickup', 'collected', 'transporting'].includes(order.status))
-    case 'delivered':
-      return sorted.filter(order => order.status === 'delivered')
+      return [...quotes.value].sort((a, b) => new Date(a.date) - new Date(b.date))
     default:
-      return sorted
+      return quotes.value
   }
 })
 </script>
 
 <template>
-  <section class="order-list">
+  <section class="quotes-list">
     <header>
       <h2>{{ title }}</h2>
       <div class="filter-wrapper">
@@ -67,29 +46,24 @@ const filteredOrders = computed(() => {
           <span class="material-symbols-outlined">tune</span>
         </button>
         <div v-if="showFilters" class="filter-options">
-          <button
-            v-for="option in props.availableFilters"
-            :key="option.value"
-            @click="setFilter(option.value)"
-          >
-            {{ option.label }}
-          </button>
+          <button @click="setFilter('recent')">Más recientes</button>
+          <button @click="setFilter('oldest')">Más antiguos</button>
         </div>
       </div>
     </header>
 
     <div class="card-list">
-      <OrderCard
-        v-for="order in filteredOrders"
-        :key="order.id"
-        :order="order"
+      <QuoteCard
+        v-for="quote in filteredQuotes"
+        :key="quote.id"
+        :quote="quote"
       />
     </div>
   </section>
 </template>
 
 <style scoped>
-.order-list {
+.quotes-list {
   padding: 1.5rem;
   height: 100%;
 }

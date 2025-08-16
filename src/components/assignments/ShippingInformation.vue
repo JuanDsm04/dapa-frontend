@@ -57,7 +57,7 @@ const closeModal = () => {
       </header>
 
       <section>
-        <OrderForm />
+        <OrderForm :isEdit="true" />
       </section>
     </article>
   </div>

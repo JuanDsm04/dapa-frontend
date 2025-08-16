@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
+// Props
+defineProps<{
+  isEdit?: boolean
+}>()
+
+// Emitir evento para volver al componente padre
+const emit = defineEmits(["volver"])
+
 const price = ref('')
 const cargoType = ref('personal')
 const origin = ref('')
@@ -14,7 +22,7 @@ const handleSubmit = () => {
 
   // Validaciones
   const numericPrice = parseFloat(price.value)
-  if (numericPrice !== 0) {
+  if (!price.value.trim()) {
     errors.value.price = 'El precio es requerido *'
   } else if (isNaN(numericPrice)) {
     errors.value.price = 'El precio debe ser un número *'
@@ -41,9 +49,8 @@ const handleSubmit = () => {
 const filterPriceInput = (event: Event) => {
   const input = event.target as HTMLInputElement
   input.value = input.value.replace(/[^0-9.]/g, '')
-  price.value = input.value;
+  price.value = input.value
 }
-
 </script>
 
 <template>
@@ -92,8 +99,21 @@ const filterPriceInput = (event: Event) => {
       <p v-if="errors.details" class="error">{{ errors.details }}</p>
     </div>
 
-    <!-- Botón -->
-    <button type="submit">Confirmar</button>
+    <!-- Botón (solo si es edición) -->
+    <button class ="edit-button" v-if="isEdit" type="submit">Confirmar</button>
+
+    <!-- Botones (solo si no es edición) -->
+    <div v-if="!isEdit" class="action-container">
+      <button type="button" @click="emit('volver')">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Volver
+      </button>
+      <button type="submit">
+        <span class="material-symbols-outlined">check</span>
+        Aceptar
+      </button>
+    </div>
+
   </form>
 </template>
 
@@ -168,7 +188,8 @@ textarea {
   margin-top: 0.25rem;
 }
 
-button {
+/* Botón de edición (Confirmar) */
+.edit-button {
   border: 0;
   padding: 15px 35px;
   border-radius: 10px;
@@ -180,8 +201,45 @@ button {
   cursor: pointer;
 }
 
-button:hover {
+.edit-button:hover {
   background-color: var(--add-btn-hover, #1e4ed8);
+}
+
+/* Contenedor de botones de no edición */
+.action-container {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.action-container button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+.action-container button:first-child {
+  background-color: #ff5a70;
+}
+
+.action-container button:first-child:hover {
+  background-color: #f0566a;
+}
+
+.action-container button:last-child {
+  background-color: #53d86c;
+}
+
+.action-container button:last-child:hover {
+  background-color: #53cd69;
+}
+
+.action-container button span {
+  margin-right: 0.5rem;
 }
 
 @media screen and (max-width: 770px) {

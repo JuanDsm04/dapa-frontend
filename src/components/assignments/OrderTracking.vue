@@ -53,7 +53,7 @@ header {
   height: 55px;
   color: #235dda;
   border: 1px solid #235dda;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: white;
 }
 
