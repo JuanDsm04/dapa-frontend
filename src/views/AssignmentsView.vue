@@ -13,12 +13,14 @@ const activeTab = ref('left')
       <h1>Control de pedidos y asignaciones</h1>
     </header>
 
+    <!-- Switch para cambiar entre pestañas -->
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
       <div class="toggle-indicator"></div>
       <div class="toggle-button" @click="activeTab = 'left'">Pendientes</div>
       <div class="toggle-button" @click="activeTab = 'right'">En progreso</div>
     </div>
 
+    <!-- Pedidos pendientes -->
     <section class="pending-orders" v-if="activeTab === 'left'">
         <div class="list">
             <OrderList
@@ -36,6 +38,8 @@ const activeTab = ref('left')
             <AssigmentForm />
         </div>
     </section>
+
+    <!-- Pedidos en progreso -->
     <section class="pending-orders" v-else>
         <div class="list">
             <OrderList

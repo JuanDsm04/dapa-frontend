@@ -1,6 +1,21 @@
+<script setup>
+defineProps({
+  order: {
+    type: Object,
+    required: true,
+    default: () => ({ id: '', name: '', date: '' })
+  },
+  status: {
+    type: String,
+    default: 'default', // 'default' | 'available' | 'locked'
+  }
+})
+</script>
+
 <template>
   <div class="order-card">
 
+    <!-- Información del pedido -->
     <div class="info">
       <div class="field">
         <label>Número de pedido</label>
@@ -20,6 +35,7 @@
       <img src="../../assets/images/truck.png" alt="Pedido" />
     </div>
 
+    <!-- Overlay según el estado -->
     <div v-if="status !== 'default'" class="overlay">
       <template v-if="status === 'available'">
         <button class="view-btn">Ver</button>
@@ -33,20 +49,6 @@
 
   </div>
 </template>
-
-<script setup>
-defineProps({
-  order: {
-    type: Object,
-    required: true,
-    default: () => ({ id: '', name: '', date: '' })
-  },
-  status: {
-    type: String,
-    default: 'default', // 'default' | 'available' | 'locked'
-  }
-})
-</script>
 
 <style scoped>
 .order-card {

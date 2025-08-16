@@ -1,6 +1,6 @@
 <script setup>
   const currentStep = 2
-  const stepIcons = ['local_shipping', 'package_2', 'delivery_truck_speed', 'hand_package']
+  const stepIcons = ['local_shipping', 'delivery_truck_speed', 'hand_package']
 </script>
 
 <template>
@@ -22,13 +22,6 @@
     <div class="step" :class="{ active: currentStep >= 3 }">
       <span class="material-symbols-outlined icon">{{ stepIcons[2] }}</span>
       <p>3</p>
-    </div>
-
-    <div class="line" :class="{ active: currentStep >= 4 }"></div>
-
-    <div class="step" :class="{ active: currentStep >= 4 }">
-      <span class="material-symbols-outlined icon">{{ stepIcons[3] }}</span>
-      <p>4</p>
     </div>
   </nav>
 </template>
