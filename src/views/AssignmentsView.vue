@@ -16,7 +16,7 @@ const activeTab = ref('left')
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
       <div class="toggle-indicator"></div>
       <div class="toggle-button" @click="activeTab = 'left'">Pendientes</div>
-      <div class="toggle-button" @click="activeTab = 'right'">Asignados</div>
+      <div class="toggle-button" @click="activeTab = 'right'">En progreso</div>
     </div>
 
     <section class="pending-orders" v-if="activeTab === 'left'">
@@ -39,7 +39,7 @@ const activeTab = ref('left')
     <section class="pending-orders" v-else>
         <div class="list">
             <OrderList
-              title="Asignados"
+              title="En progreso"
               :defaultStatuses="['pickup', 'collected', 'transporting', 'delivered']"
               :availableFilters="[
                 { value: 'in_progress', label: 'En progreso' },

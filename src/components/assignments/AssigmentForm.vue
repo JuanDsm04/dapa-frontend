@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue'
+import ShippingInformation from '../assignments/ShippingInformation.vue'
 
 const selectedDriver = ref('')
 const selectedVehicle = ref('')
@@ -11,13 +12,18 @@ const additionalComment = ref('')
     <!-- Encabezado -->
     <header>
       <h2>Asignación</h2>
-      <button class="assign-btn">
-        <span class="material-symbols-outlined">check</span>
-        Asignar
-      </button>
+      <div class="header-actions">
+        <button class="form-btn">
+          <span class="material-symbols-outlined">attach_file</span>
+        </button>
+        <button class="assign-btn">
+          <span class="material-symbols-outlined">check</span>
+          Asignar
+        </button>
+      </div>
     </header>
 
-    <!-- Formulario -->
+    <!-- Formulario de asignación -->
     <div class="form-section">
       <div class="field-group">
         <div class="form-field">
@@ -38,21 +44,10 @@ const additionalComment = ref('')
           </select>
         </div>
       </div>
-
-      <div class="form-field full-width">
-        <label for="comment">Comentario adicional</label>
-        <textarea id="comment" v-model="additionalComment" rows="4" />
-      </div>
     </div>
 
-    <!-- Detalles del pedido -->
-    <article class="details">
-      <h3>Detalles</h3>
-      <p class="subtext">Información proporcionada por el cliente</p>
-      <p class="details-content">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...
-      </p>
-    </article>
+    <!-- Información de envío -->
+    <ShippingInformation />
   </div>
 </template>
 
@@ -75,6 +70,30 @@ header h2 {
   font-weight: 600;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.form-btn {
+  padding: 0.6rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 55px;
+  color: #235dda;
+  border: 1px solid #235dda;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.form-btn:hover {
+  background-color: #f9f9fc;
+}
+
 .assign-btn {
   display: flex;
   align-items: center;
@@ -87,6 +106,7 @@ header h2 {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
+  height: 55px;
 }
 
 .assign-btn:hover {

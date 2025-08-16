@@ -123,7 +123,7 @@ h2 {
 }
 
 .filter-btn:hover {
-  background-color: rgb(245, 245, 245);
+  background-color: #f5f5f5;
 }
 
 .filter-options {
