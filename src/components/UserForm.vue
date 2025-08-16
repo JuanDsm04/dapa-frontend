@@ -44,7 +44,7 @@ const handleSubmit = () => {
         errors.value.email = 'Correo no válido *'
     }
 
-    if (password.value.length < 8) {
+    if (!props.updating && password.value.length < 8) { 
         errors.value.password = 'La contraseña debe tener al menos 8 caracteres *'
     }
 
@@ -54,6 +54,11 @@ const handleSubmit = () => {
 
     if (!role.value.trim()) {
         errors.value.role = 'El rol es requerido *'
+    }
+
+    // Si hay errores, se detiene aquí
+    if (Object.keys(errors.value).length > 0) {
+        return
     }
 
     const licenseDate = licenseExpirationDate.value

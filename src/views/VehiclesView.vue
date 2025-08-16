@@ -5,7 +5,8 @@ import 'vue3-toastify/dist/index.css';
 import VehicleForm from '@/components/VehicleForm.vue';
 import TableVehicles from '@/components/Table.vue';
 import type { HighlightConfig } from '@/types/table';
-import type { Vehicle } from '@/types/vehicle'
+import type { Vehicle } from '@/types/vehicle';
+import NotificationModal from '@/components/NotificationModal.vue';
 
 const showModal = ref(false);
 const vehicles = ref<Vehicle[]>([])
@@ -50,38 +51,44 @@ const handleEditVehicle = (vehicle: Vehicle) => {
   showModal.value = true;
 };
 
+// Estados para el modal de eliminación
+const showConfirmModal = ref(false)
+const confirmTitle = ref('')
+const confirmMessage = ref('')
+const confirmAction = ref<(() => void) | null>(null)
+
 // Eliminar a un vehículo después de su confirmación y actualizar la lista
-const handleDeleteVehicle = async (vehicle: Vehicle) => {
+const handleDeleteVehicle = (vehicle: Vehicle) => {
+  confirmTitle.value = '¿Eliminar vehículo?'
+  confirmMessage.value = `¿Estás seguro de que quieres eliminar al vehículo con placa ${vehicle.licensePlate}?`
 
-  if (!confirm(`¿Estás seguro de que quieres eliminar al vehículo con placa ${vehicle.licensePlate}?`)) {
-    return;
+  confirmAction.value = async () => {
+    selectedVehicle.value = { ...vehicle }
+    const vehicleID = selectedVehicle.value.id
+    loading.value = true
+
+    try {
+      const token = localStorage.getItem('token')
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${vehicleID}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      })
+
+      await getVehicles()
+      toast.warning('Vehículo eliminado')
+    } catch (error) {
+      console.error("Error eliminando vehículo:", error)
+      toast.error('Error eliminando vehículo')
+    } finally {
+      loading.value = false
+    }
   }
 
-  selectedVehicle.value = { ...vehicle };
-  const vehicleID = selectedVehicle.value.id;
-  loading.value = true;
-
-  try {
-    const token = localStorage.getItem('token');
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${vehicleID}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    await getVehicles();
-    toast.warning('Vehículo eliminado');
-
-  } catch (error) {
-    console.error("Error eliminando vehículo:", error);
-    toast.error('Error eliminando vehículo');
-
-  } finally {
-    loading.value = false;
-  }
-};
+  showConfirmModal.value = true
+}
 
 // Obtener los vehículos desde la API
 const getVehicles = async () => {
@@ -249,6 +256,21 @@ onMounted(async() => {
       </section>
     </article>
   </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <NotificationModal
+    v-if="showConfirmModal"
+    :show="showConfirmModal"
+    :title="confirmTitle"
+    :message="confirmMessage"
+    confirmText="Eliminar"
+    cancelText="Cancelar"
+    @close="showConfirmModal = false"
+    @confirm="() => { 
+      if (confirmAction) confirmAction()
+      showConfirmModal = false
+    }"
+  />
 </template>
 
 <style scoped>

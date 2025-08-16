@@ -100,7 +100,6 @@ h1 {
   background-color: white;
   border-radius: 10px;
   transition: all 0.3s ease;
-  z-index: 1;
 }
 
 .toggle-button {
@@ -108,7 +107,7 @@ h1 {
   text-align: center;
   line-height: 48px;
   cursor: pointer;
-  z-index: 2;
+  z-index: 1;
   user-select: none;
 }
 

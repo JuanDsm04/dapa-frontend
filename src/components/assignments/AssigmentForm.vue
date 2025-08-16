@@ -1,9 +1,16 @@
 <script setup>
 import { ref } from 'vue'
 import ShippingInformation from '../assignments/ShippingInformation.vue'
+import NotificationModal from '../NotificationModal.vue'
 
 const selectedDriver = ref('')
 const selectedVehicle = ref('')
+const showModal = ref(false)
+
+const handleConfirm = () => {
+  showModal.value = false
+  // Lógica para manejar la confirmación
+}
 </script>
 
 <template>
@@ -15,7 +22,7 @@ const selectedVehicle = ref('')
         <button class="form-btn">
           <span class="material-symbols-outlined">attach_file</span>
         </button>
-        <button class="assign-btn">
+        <button class="assign-btn" @click="showModal = true">
           <span class="material-symbols-outlined">check</span>
           Asignar
         </button>
@@ -47,6 +54,18 @@ const selectedVehicle = ref('')
 
     <!-- Información de envío -->
     <ShippingInformation :editable="true" />
+
+    <!-- Confirmar asignación -->
+    <NotificationModal
+      v-if="showModal"
+      :show="showModal"
+      title="¿Estás seguro de hacer la asignación?"
+      message="Recuerda tomar en cuenta la disponibilidad tanto del conductor como del vehículo."
+      confirmText="Asignar"
+      cancelText="Cerrar"
+      @close="showModal = false"
+      @confirm="handleConfirm"
+    />
   </div>
 </template>
 

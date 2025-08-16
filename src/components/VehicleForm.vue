@@ -31,7 +31,7 @@ const handleSubmit = () => {
         errors.value.model = 'El modelo es requerido *'
     }
 
-    const plateRegex = /^[A-Z]?\d{3}[A-Z]{3}$/
+    const plateRegex = /^[A-Z]?\d{3}[A-Z]{3}$/ // P123ABC o 123ABC
     if (!plateRegex.test(licensePlate.value.toUpperCase())) {
         errors.value.licensePlate = 'Formato de placa inválido (Ej: P123ABC o 123ABC) *'
     }
@@ -44,9 +44,14 @@ const handleSubmit = () => {
         errors.value.insuranceDate = 'La fecha de vencimiento del seguro es requerida *'
     }
 
-    if (Object.keys(errors.value).length > 0) return
+    // Si hay errores, se detiene aquí
+    if (Object.keys(errors.value).length > 0) {
+        return
+    }
 
-    const isoDate = insuranceDate.value ? new Date(insuranceDate.value).toISOString() : undefined
+    const isoDate = insuranceDate.value
+        ? new Date(insuranceDate.value).toISOString()
+        : undefined
 
     emit('submit', {
         id: props.initialData?.id,
@@ -55,9 +60,8 @@ const handleSubmit = () => {
         licensePlate: licensePlate.value.toUpperCase(),
         capacityKg: capacityKg.value,
         available: true,
-        insuranceDate: isoDate
+        insuranceDate: isoDate,
     })
-
 }
 
 // Variables para cada campo del formulario y estado de errores
