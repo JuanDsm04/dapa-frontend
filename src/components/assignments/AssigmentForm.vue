@@ -4,7 +4,6 @@ import ShippingInformation from '../assignments/ShippingInformation.vue'
 
 const selectedDriver = ref('')
 const selectedVehicle = ref('')
-const additionalComment = ref('')
 </script>
 
 <template>
@@ -47,7 +46,7 @@ const additionalComment = ref('')
     </div>
 
     <!-- Información de envío -->
-    <ShippingInformation />
+    <ShippingInformation :editable="true" />
   </div>
 </template>
 

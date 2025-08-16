@@ -15,7 +15,7 @@ import ShippingInformation from './ShippingInformation.vue';
           3 - Envío completado
         </p>
       </div>
-      
+
       <div class="header-button">
          <button class="form-btn">
           <span class="material-symbols-outlined">attach_file</span>
@@ -27,7 +27,7 @@ import ShippingInformation from './ShippingInformation.vue';
     <OrderSteps />
 
     <!-- Información de envío -->
-    <ShippingInformation />
+    <ShippingInformation :editable="false" />
   </section>
 </template>
 

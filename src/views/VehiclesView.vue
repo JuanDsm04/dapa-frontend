@@ -236,7 +236,7 @@ onMounted(async() => {
     <article>
       <header>
         <h3>{{ selectedVehicle ? 'Editar' : 'Agregar' }}</h3>
-        <button class="close-btn" @click="closeModal">&times;</button>
+        <button class="close-btn" @click="closeModal">✕</button>
       </header>
 
       <section>

@@ -246,7 +246,7 @@ onMounted(() => {
     <article>
       <header>
         <h3>{{ selectedUser ? 'Editar Usuario' : 'Agregar Usuario' }}</h3>
-        <button class="close-btn" @click="closeModal">&times;</button>
+        <button class="close-btn" @click="closeModal">✕</button>
       </header>
 
       <section>
