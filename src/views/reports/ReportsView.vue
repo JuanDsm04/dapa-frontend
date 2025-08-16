@@ -1,15 +1,14 @@
 <script setup>
 import BigButton from '@/components/BigButton.vue'
+import router from '@/router';
 
-function goToControl() {
-  // router.push('/financial-control') o acción deseada
-}
+function goToControl() { }
+
 function goToReport() {
-  // router.push('/financial-report') o acción deseada
+  router.push("/reports/financial")
 }
-function goToPerformance() {
-  // router.push('/performance-report') o acción deseada
-}
+
+function goToPerformance() { }
 </script>
 
 <template>

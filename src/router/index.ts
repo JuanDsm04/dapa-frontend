@@ -10,8 +10,9 @@ import AssignmentsView from "@/views/AssignmentsView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
 import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
 import FormsView from "@/views/FormsView.vue";
-import FinanceControlView from "@/views/FinanceControlView.vue";
 import DriverAssignmentsView from "@/views/DriverAssignments.vue";
+import ReportsView from "@/views/reports/ReportsView.vue";
+import FinancialReportView from "@/views/reports/FinancialReportView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -83,8 +84,16 @@ const router = createRouter({
     },
     {
       path: "/reports",
-      component: FinanceControlView
+      name: "Reports",
+      component: ReportsView,
+      meta: {requiresAuth: true, roles: ['admin']}
     },
+    {
+      path: "/reports/financial",
+      name: "FinancialReport",
+      component: FinancialReportView,
+      meta: {requiresAuth: true, roles: ['admin']}
+    }
   ],
 });
 
