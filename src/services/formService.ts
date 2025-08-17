@@ -1,31 +1,5 @@
 import type { Question } from '@/types/form'
-
-const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'
-
-const getHeaders = () => {
-  const token = localStorage.getItem('token') || ''
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}`
-  }
-}
-
-const handleResponse = async (res: Response) => {
-  if (!res.ok) {
-    const errorText = await res.text()
-    let errorMessage = res.statusText
-    
-    try {
-      const errorData = JSON.parse(errorText)
-      errorMessage = errorData.message || errorData.error || errorText
-    } catch {
-      errorMessage = errorText || res.statusText
-    }
-    
-    throw new Error(errorMessage)
-  }
-  return res.json()
-}
+import { getHeaders, handleResponse, API_URL } from '@/utils/api'
 
 export const getQuestions = async (): Promise<Question[]> => {
   const response = await handleResponse(
@@ -98,4 +72,27 @@ export const createQuestionOption = async (questionId: number, option: string) =
       body: JSON.stringify({ option })
     })
   )
+}
+
+export const toggleActiveQuestion = async (questionId: number) => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/questions/${questionId}/active`, {
+      method: 'PATCH',
+      headers: getHeaders()
+    })
+  )
+
+  return response
+}
+
+export const reorderQuestions = async (questionSourceId: number, questionTargetId: number) => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/questions/reorder`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+      body: JSON.stringify({ sourceId: questionSourceId, targetId: questionTargetId })
+    })
+  )
+
+  return response
 }

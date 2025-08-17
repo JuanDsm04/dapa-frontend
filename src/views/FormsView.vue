@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import Sortable from 'sortablejs'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
@@ -9,7 +9,16 @@ import QuestionForm from '@/components/form/QuestionForm.vue'
 import FormPreview from '@/components/form/FormPreview.vue'
 
 import { type QuestionType, type Question } from '@/types/form'
-import { createQuestion, getActiveQuestions, getQuestions, updateQuestion, deleteQuestion, getQuestionTypes } from '@/services/formService'
+import { 
+  createQuestion, 
+  getActiveQuestions, 
+  getQuestions, 
+  updateQuestion, 
+  deleteQuestion, 
+  getQuestionTypes, 
+  toggleActiveQuestion, 
+  reorderQuestions 
+} from '@/services/formService'
 
 const questions = ref<Question[]>([])
 const activeQuestions = ref<Question[]>([])
@@ -48,8 +57,40 @@ const initSortable = () => {
     forceFallback: false,
     fallbackOnBody: true,
     swapThreshold: 0.65,
+    onEnd: async (evt) => {
+
+      const oldIndex = evt.oldIndex
+      const newIndex = evt.newIndex
+
+      if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) {
+        return
+      }
+      const sourceQuestion = questions.value[oldIndex]
+      const targetQuestion = questions.value[newIndex]
+      try {
+        await reorderQuestions(sourceQuestion.id, targetQuestion.id)
+        await loadQuestions()
+      }catch (err){
+        const error = err as Error
+        console.error('Error al reordenar preguntas:', error)
+        toast.error(`Error al reordenar preguntas: ${error.message}`)
+        sortableInstance?.sort(questions.value.map((q) => q.id.toString()))
+      }
+    },
+
   })
 }
+
+watch(activeTab, async (newTab) => {
+  if (newTab === 'left') {
+    await nextTick()
+    if (sortableInstance) {
+      sortableInstance.destroy()
+      sortableInstance = null
+    }
+    initSortable()
+  }
+})
 
 const loadQuestions = async () => {
   loading.value = true
@@ -140,12 +181,11 @@ const toggleQuestion = async (index: number) => {
   if (!questions.value[index]) return
 
   const question = questions.value[index]
-  const updatedQuestion = { ...question, isActive: !question.isActive }
 
   try {
-    await updateQuestion(question.id!, updatedQuestion)
+    await toggleActiveQuestion(question.id!)
     await loadQuestions()
-    toast.info(`Pregunta ${updatedQuestion.isActive ? 'activada' : 'desactivada'}`)
+    toast.info(`Pregunta ${!question.isActive ? 'activada' : 'desactivada'}`)
   } catch (err) {
     const error = err as Error
     console.error('Error actualizando pregunta:', error)
