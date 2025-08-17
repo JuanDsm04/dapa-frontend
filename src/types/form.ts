@@ -18,3 +18,23 @@ export interface Question {
   isActive: boolean;
 }
 
+export interface Answer {
+  id: number;
+  submissionId: number;
+  question: Question;
+  answer?: string;
+  questionOption?: QuestionOption;
+}
+
+export interface Submission {
+  id: number;
+  submittedAt: string;
+  status: 'pending' | 'cancelled' | 'approved';
+  answers: Answer[];
+}
+
+export interface SubmissionStats {
+  totalSubmissions: number;
+  submissionsByStatus: { status: string; count: number }[];
+  answersByQuestion: { questionId: number; optionId: number; count: number }[];
+}
