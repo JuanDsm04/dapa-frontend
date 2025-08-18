@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ReportFilter from '@/components/filters/ReportFilter.vue';
+import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
 import FinanceTable from '@/components/Table.vue';
 </script>
 
@@ -10,6 +11,11 @@ import FinanceTable from '@/components/Table.vue';
     </header>
     <section>
       <ReportFilter />
+      <TotalesFinancieros
+        :ingresos="0"
+        :egresos="0"
+        :diferencia="0"
+      />
       <div class="table-wrapper">
         <FinanceTable
           :items="[]"
