@@ -15,7 +15,7 @@ function onFilterChange() {
 </script>
 
 <template>
-  <main>
+  <form class="filter-form" @submit.prevent>
     <div class="field">
       <label for="startDate">Fecha inicio</label>
       <input v-model="startDate" type="date" name="startDate" id="startDate" @input="onFilterChange">
@@ -24,25 +24,38 @@ function onFilterChange() {
       <label for="endDate">Fecha fin</label>
       <input v-model="endDate" type="date" name="endDate" id="endDate" @input="onFilterChange">
     </div>
-    <div class="field">
-      <label for="search">Buscar</label>
-      <input v-model="search" type="text" name="search" id="search" @change="onFilterChange">
-    </div>
-    <button>Descargar</button>
-  </main>
+    <button type="button">Descargar</button>
+  </form>
 </template>
 
 <style scoped>
-main {
+.filter-form {
   display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
   align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
 }
 
 .field {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  min-width: 120px;
+}
+
+label {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+  color: #3F74BD;
+}
+
+input[type="date"],
+input[type="text"] {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
 }
 
 button {
@@ -52,6 +65,22 @@ button {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
 }
 
+button:hover {
+  background-color: #2c387e;
+}
+
+@media (max-width: 600px) {
+  .filter-form {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  button {
+    width: 100%;
+  }
+}
 </style>
