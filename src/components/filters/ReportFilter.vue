@@ -59,7 +59,7 @@ input[type="text"] {
 }
 
 button {
-  background-color: #3949ab;
+  background-color: #3F74BD;
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
@@ -67,10 +67,11 @@ button {
   cursor: pointer;
   font-size: 1rem;
   transition: background 0.2s;
+  margin-top: 20px;
 }
 
 button:hover {
-  background-color: #2c387e;
+  background-color: #285a8c;
 }
 
 @media (max-width: 600px) {

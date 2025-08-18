@@ -5,7 +5,9 @@ import FinanceTable from '@/components/Table.vue';
 
 <template>
   <main>
-
+    <header>
+      <h1>Reporte Financiero</h1>
+    </header>
     <section>
       <ReportFilter />
       <div class="table-wrapper">
@@ -49,20 +51,6 @@ h1 {
   margin: 0;
 }
 
-.download-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #3F74BD;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.download-btn:hover:not(:disabled) {
-  background-color: #285a8c;
-}
 
 section {
   width: 100%;
