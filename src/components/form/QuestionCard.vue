@@ -214,6 +214,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-bottom: 1.5rem;
 }
 
 .question-title {
@@ -227,15 +228,14 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 }
 
 .question-description {
-  margin: 0;
   color: var(--terciary-dark);
+  border: 1px solid #e9ecef;
   font-size: 1rem;
   line-height: 1.6;
   font-style: italic;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, rgba(var(--primary), 0.05) 0%, rgba(var(--secondary), 0.05) 100%);
-  border-radius: 8px;
-  border-left: 3px solid var(--primary);
+  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+  border-radius: 12px;
 }
 
 .type-badge {
@@ -249,7 +249,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 }
 
 .status-badge {
-  padding: 0.4rem 0.9rem;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -260,13 +260,11 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .status-active {
   color: var(--text-on-add-btn);
   background: var(--secondary-dark);
-  border: 1px solid rgba(var(--secondary), 0.25);
 }
 
 .status-inactive {
   color: var(--terciary-dark);
-  background: linear-gradient(135deg, rgba(var(--terciary), 0.15) 0%, rgba(var(--terciary), 0.08) 100%);
-  border: 1px solid rgba(var(--terciary), 0.25);
+  background: #e4e2e2;
 }
 
 .options-section {

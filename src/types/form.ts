@@ -16,6 +16,7 @@ export interface Question {
   type: QuestionType
   options?: QuestionOption[];
   isActive: boolean;
+  position: number;
 }
 
 export interface Answer {
@@ -23,7 +24,7 @@ export interface Answer {
   submissionId: number;
   question: Question;
   answer?: string;
-  questionOption?: QuestionOption;
+  questionOptions?: QuestionOption[];
 }
 
 export interface Submission {

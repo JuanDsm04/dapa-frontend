@@ -193,14 +193,6 @@ const toggleQuestion = async (index: number) => {
   }
 }
 
-const clearAllQuestions = () => {
-  if (questions.value.length > 0) {
-    if (confirm('¿Estás seguro de que deseas eliminar todas las preguntas? Esta acción no se puede deshacer.')) {
-      questions.value = []
-      toast.warning('Todas las preguntas han sido eliminadas')
-    }
-  }
-}
 </script>
 
 <template>
@@ -225,9 +217,6 @@ const clearAllQuestions = () => {
       <div class="header-actions">
         <button @click="openModal" class="btn-primary" :disabled="loading">
           {{ loading ? 'Cargando...' : '+ Agregar Pregunta' }}
-        </button>
-        <button @click="clearAllQuestions" class="btn-secondary" :disabled="questions.length === 0 || loading">
-          Limpiar Todo
         </button>
       </div>
     </header>
@@ -269,7 +258,7 @@ const clearAllQuestions = () => {
         <div class="preview-header">
           <h2 class="title">Preview del formulario</h2>
         </div>
-        <FormPreview :questions="questions" />
+        <FormPreview :questions="activeQuestions" :is-preview="true"/>
       </section>
     </main>
 
@@ -466,15 +455,18 @@ const clearAllQuestions = () => {
   max-width: 800px;
   background-color: #fff;
   border-radius: 8px;
+  margin: 1rem 0;
+  padding: 1rem;;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .preview-header {
   display: flex;
   justify-content: space-between;
-  width: 90%;
+  width: 100%;
   align-items: center;
-  padding: 1rem 0;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
   border-bottom: 2px solid #e9ecef;
 }
 

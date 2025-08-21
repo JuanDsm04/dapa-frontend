@@ -1,55 +1,149 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { type Question } from '@/types/form'
-import QuestionPreview from './QuestionPreview.vue';
+import QuestionPreview from './QuestionPreview.vue'
+import { createSubmission } from '@/services/submissionService'
+import { EyeIcon, WrenchScrewdriverIcon } from '@heroicons/vue/24/solid'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const props = defineProps<{
     questions: Question[]
+    isPreview?: boolean
 }>()
 
 const emit = defineEmits<{
     (e: 'close'): void
+    (e: 'submit-success', data: any): void
+    (e: 'submit-error', error: any): void
 }>()
 
-const formData = ref<Record<string, any>>({})
-
-const activeQuestions = computed(() =>
-    props.questions.filter(q => q.isActive)
-)
+const formData = ref<Record<number, any>>({})
+const isSubmitting = ref(false)
+const formKey = ref(0)
 
 const handleQuestionChange = (questionId: number, value: any) => {
     formData.value[questionId] = value
 }
 
-const submitForm = () => {
-    console.log('Datos del formulario:', formData.value)
-    alert('Formulario enviado (solo preview)')
+const submitForm = async () => {
+    // Modo preview no se envía nada
+    if (props.isPreview) {
+        console.log('Datos del formulario (Preview):', formData.value)
+        toast.success('Formulario enviado (Preview)')
+        resetForm()
+        return
+    }
+
+    isSubmitting.value = true
+
+    try {
+        const answers = Object.entries(formData.value).map(([questionIdStr, value]) => {
+            const questionId = parseInt(questionIdStr)
+            const question = props.questions.find(q => q.id === questionId)
+
+            if (!question) {
+                console.warn(`Pregunta con ID ${questionId} no encontrada`)
+                return null
+            }
+
+            if (question.options && question.options.length > 0) {
+                let selectedOptionIds: number[] = []
+
+                if (Array.isArray(value)) {
+                    // Caso: checkboxes (múltiples opciones seleccionadas)
+                    selectedOptionIds = question.options
+                        .filter(opt => value.includes(opt.option))
+                        .map(opt => opt.id)
+                } else {
+                    // Caso: radio o select (una sola opción seleccionada)
+                    const selected = question.options.find(opt => opt.option === value.option)
+                    if (selected) {
+                        selectedOptionIds = [selected.id]
+                    }
+                }
+
+                return {
+                    questionId,
+                    optionsId: selectedOptionIds 
+                }
+            }
+
+            // Caso preguntas abiertas o de texto
+            return {
+                questionId,
+                answer: value
+            }
+        }).filter(Boolean)
+
+        const payload = { answers }
+        const response = await createSubmission(payload)
+
+        emit('submit-success', response)
+        toast.success('¡Formulario enviado exitosamente!')
+        resetForm()
+
+    } catch (error: any) {
+        console.error('Error al enviar formulario:', error)
+        emit('submit-error', error)
+        toast.error('Error al enviar el formulario. Por favor, intenta nuevamente.')
+    } finally {
+        isSubmitting.value = false
+    }
 }
 
 const resetForm = () => {
     formData.value = {}
+    formKey.value++
 }
 </script>
 
 <template>
-    <div class="preview-container">
-        <div class="preview-body">
-            <form @submit.prevent="submitForm" class="preview-form">
-                <div v-if="activeQuestions.length === 0" class="empty-preview">
-                    <p>No hay preguntas activas para mostrar</p>
-                    <p class="empty-subtitle">Activa al menos una pregunta para ver la vista previa</p>
+    <div class="form-viewer-container">
+        <div class="form-viewer-body">
+            <!-- Indicador de modo -->
+            <div v-if="isPreview" class="preview-mode-indicator">
+                <EyeIcon class="icon"/>
+                Modo Vista Previa
+            </div>
+
+            <form @submit.prevent="submitForm" class="form-content">
+                <!-- Estado vacío -->
+                <div v-if="questions.length === 0" class="empty-state">
+                    <WrenchScrewdriverIcon class="empty-icon"/>
+                    <h3>No hay preguntas activas</h3>
+                    <p>{{ isPreview ? 'Activa al menos una pregunta para ver la vista previa' : 'Intenta de nuevo más tarde' }}</p>
                 </div>
 
-                <div v-else class="questions-container">
-                    <QuestionPreview v-for="question in activeQuestions" :key="question.id" :question="question"
-                        :value="formData[question.id!]" @change="handleQuestionChange" />
+                <!-- Preguntas -->
+                <div v-else class="questions-container" :key="formKey">
+                    <QuestionPreview 
+                        v-for="question in questions" 
+                        :key="question.id" 
+                        :question="question"
+                        :value="formData[question.id]" 
+                        @change="handleQuestionChange" 
+                    />
                 </div>
 
-                <div v-if="activeQuestions.length > 0" class="form-actions">
-                    <button type="submit" class="btn-submit">
-                        Enviar formulario
+                <!-- Acciones del formulario -->
+                <div v-if="questions.length > 0" class="form-actions">
+                    <button 
+                        type="submit" 
+                        class="btn-submit"
+                        :disabled="isSubmitting"
+                        :class="{ 'submitting': isSubmitting }"
+                    >
+                        <span v-if="isSubmitting" class="spinner"></span>
+                        {{ isSubmitting ? 'Enviando...' : (isPreview ? 'Prueba de envío' : 'Enviar formulario') }}
                     </button>
-                    <button type="button" @click="resetForm" class="btn-reset">
+                    
+                    <button 
+                        type="button" 
+                        @click="resetForm" 
+                        class="btn-reset"
+                        :disabled="isSubmitting"
+                    >
                         Limpiar respuestas
                     </button>
                 </div>
@@ -59,9 +153,9 @@ const resetForm = () => {
 </template>
 
 <style scoped>
-.preview-container {
+.form-viewer-container {
     background: white;
-    width: 90%;
+    width: 100%;
     max-width: 800px;
     max-height: 90vh;
     overflow: hidden;
@@ -69,38 +163,69 @@ const resetForm = () => {
     flex-direction: column;
 }
 
-.preview-body {
+.form-viewer-body {
     flex: 1;
     overflow-y: auto;
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
-.preview-form {
-    max-width: 600px;
+.preview-mode-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f0f9ff;
+    border: 1px solid #0ea5e9;
+    color: #0369a1;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.form-content {
+    max-width: 700px;
     margin: 0 auto;
 }
 
-.empty-preview {
+.empty-state {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 4rem 1rem;
     color: #6c757d;
 }
 
-.empty-preview p {
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
+.empty-icon {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
 }
 
-.empty-subtitle {
-    font-size: 0.9rem !important;
+.icon{
+    width: 1rem;
+    height: 1rem;
+}
+
+.empty-state h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    color: #374151;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 1rem;
     opacity: 0.8;
+}
+
+.questions-container {
+    margin-bottom: 2rem;
 }
 
 .form-actions {
     width: 100%;
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid #e5e7eb;
     display: flex;
     gap: 1rem;
     justify-content: center;
@@ -108,7 +233,7 @@ const resetForm = () => {
 }
 
 .btn-submit {
-    background: var(--add-btn);
+    background: var(--add-btn, #3b82f6);
     color: white;
     border: none;
     padding: 0.875rem 2rem;
@@ -117,16 +242,33 @@ const resetForm = () => {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    min-width: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
 
-.btn-submit:hover {
+.btn-submit:hover:not(:disabled) {
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-submit.submitting {
+    cursor: wait;
 }
 
 .btn-reset {
     background: white;
-    color: #666;
-    border: 2px solid #e0e0e0;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
     padding: 0.875rem 2rem;
     border-radius: 8px;
     font-size: 1rem;
@@ -135,28 +277,40 @@ const resetForm = () => {
     transition: all 0.3s ease;
 }
 
-.btn-reset:hover {
-    border-color: var(--on-delete-btn);
-    color: var(--on-delete-btn);
-    background: #f8f9fa;
+.btn-reset:hover:not(:disabled) {
+    border-color: var(--on-delete-btn, #ef4444);
+    color: var(--on-delete-btn, #ef4444);
+    background: #fef2f2;
+}
+
+.btn-reset:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 @media (max-width: 768px) {
-    .preview-container {
+    .form-viewer-container {
         width: 95%;
         margin: 1rem;
     }
 
-    .preview-header {
-        padding: 1rem 1.5rem;
-    }
-
-    .preview-header h2 {
-        font-size: 1.25rem;
-    }
-
-    .preview-body {
-        padding: 1.5rem;
+    .form-viewer-body {
+        padding: 1rem;
     }
 
     .form-actions {
@@ -166,6 +320,12 @@ const resetForm = () => {
     .btn-submit,
     .btn-reset {
         width: 100%;
+        min-width: auto;
+    }
+
+    .preview-mode-indicator {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.75rem;
     }
 }
 </style>
