@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { type Question } from '@/types/form'
+import { XCircleIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
   question: Question
   value?: any
+  error?: string
 }>()
 
 const emit = defineEmits<{
@@ -12,6 +14,9 @@ const emit = defineEmits<{
 }>()
 
 const localValue = ref(props.value || getInitialValue())
+
+// Computed para saber si el campo tiene error
+const hasError = computed(() => !!props.error)
 
 function getInitialValue() {
   switch (props.question.type.type) {
@@ -58,7 +63,7 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
 </script>
 
 <template>
-  <div class="preview-question">
+  <div class="preview-question" :class="{ 'has-error': hasError }">
     <label class="question-label">
       {{ question.question }}
       <span class="required-indicator">*</span>
@@ -70,13 +75,14 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
         v-model="localValue"
         type="text"
         class="text-input"
+        :class="{ 'error': hasError }"
         placeholder="Escribe tu respuesta aquí..."
       />
     </div>
 
     <!-- Pregunta de selección múltiple -->
     <div v-else-if="question.type.type === 'multiple'" class="input-group">
-      <div class="checkbox-group">
+      <div class="checkbox-group" :class="{ 'error': hasError }">
         <div
           v-for="option in question.options"
           :key="option.id"
@@ -102,7 +108,11 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
 
     <!-- Pregunta de lista desplegable -->
     <div v-else-if="question.type.type === 'dropdown'" class="input-group">
-      <select v-model="localValue" class="select-input">
+      <select 
+        v-model="localValue" 
+        class="select-input"
+        :class="{ 'error': hasError }"
+      >
         <option value="">Selecciona una opción</option>
         <option
           v-for="option in question.options"
@@ -116,7 +126,7 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
 
     <!-- Pregunta de selección única -->
     <div v-else-if="question.type.type === 'unique'" class="input-group">
-      <div class="radio-group">
+      <div class="radio-group" :class="{ 'error': hasError }">
         <div
           v-for="option in question.options"
           :key="option.id"
@@ -138,6 +148,12 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
         </div>
       </div>
     </div>
+
+    <!-- Mensaje de error -->
+    <div v-if="hasError" class="error-message">
+      <XCircleIcon class="icon"/>
+      {{ error }}
+    </div>
   </div>
 </template>
 
@@ -156,6 +172,16 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
+.preview-question.has-error {
+  border-color: #ef4444;
+  background: #fefefe;
+}
+
+.preview-question.has-error:hover {
+  border-color: #dc2626;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.15);
+}
+
 .question-label {
   display: block;
   margin-bottom: 1rem;
@@ -163,6 +189,10 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
   font-weight: 600;
   color: #333;
   line-height: 1.4;
+}
+
+.has-error .question-label {
+  color: #dc2626;
 }
 
 .required-indicator {
@@ -191,6 +221,20 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.text-input.error {
+  border-color: #ef4444;
+}
+
+.text-input.error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.icon{
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
 /* Estilos para select */
 .select-input {
   width: 100%;
@@ -210,11 +254,29 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.select-input.error {
+  border-color: #ef4444;
+}
+
+.select-input.error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
 /* Estilos para checkboxes */
 .checkbox-group {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  padding: 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.checkbox-group.error {
+  border-color: #ef4444;
+  background: #fef2f2;
 }
 
 .checkbox-item {
@@ -247,6 +309,15 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  padding: 0.75rem;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.radio-group.error {
+  border-color: #ef4444;
+  background: #fef2f2;
 }
 
 .radio-item {
@@ -274,6 +345,25 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
   color: #333;
 }
 
+/* Mensaje de error */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.error-message svg {
+  flex-shrink: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .preview-question {
@@ -287,6 +377,15 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
   
   .text-input, .select-input {
     font-size: 16px; /* Evita zoom en iOS */
+  }
+  
+  .checkbox-group, .radio-group {
+    padding: 0.5rem;
+  }
+  
+  .error-message {
+    font-size: 0.8rem;
+    padding: 0.5rem;
   }
 }
 </style>

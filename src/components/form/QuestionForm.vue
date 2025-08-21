@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue'
 import { type Question, type QuestionOption, type QuestionType } from '@/types/form'
+import { XCircleIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps<{
   initialData?: Question
@@ -14,6 +15,16 @@ const emit = defineEmits<{
 }>()
 
 const loadingTypes = ref(false)
+
+// Estado de validación
+const errors = ref<{
+  question?: string
+  type?: string
+  options?: string[]
+  general?: string
+}>({})
+
+const showErrors = ref(false)
 
 // Reactive form data
 const formData = ref<{
@@ -34,13 +45,12 @@ onMounted(() => {
       question: props.initialData.question || '',
       type: props.initialData.type || (props.questionTypes.length > 0 ? props.questionTypes[0] : null),
       isActive: props.initialData.isActive ?? true,
-      options: props.initialData.options ? [...props.initialData.options] : []
+      options: props.initialData.options ? deepClone(props.initialData.options) : []
     }
   } else {
     formData.value.type = props.questionTypes.length > 0 ? props.questionTypes[0] : null
   }
 })
-
 
 // Watch for changes in initialData (in case parent updates it)
 watch(() => props.initialData, (newData) => {
@@ -49,10 +59,16 @@ watch(() => props.initialData, (newData) => {
       question: newData.question || '',
       type: newData.type,
       isActive: newData.isActive ?? true,
-      options: newData.options ? [...newData.options] : []
+      options: newData.options ? deepClone(newData.options) : []
     }
+    // Limpiar errores cuando se cargan nuevos datos
+    clearErrors()
   }
 }, { deep: true })
+
+const deepClone = <T>(obj: T): T => {
+  return JSON.parse(JSON.stringify(obj))
+}
 
 watch(() => formData.value.type, (newType) => {
   if (!newType) return;
@@ -66,6 +82,17 @@ watch(() => formData.value.type, (newType) => {
   } else {
     formData.value.options = []
   }
+  
+  // Limpiar errores relacionados con el tipo
+  clearFieldError('type')
+  clearFieldError('options')
+})
+
+// Watch para limpiar errores cuando el usuario empieza a escribir
+watch(() => formData.value.question, () => {
+  if (showErrors.value && formData.value.question.trim()) {
+    clearFieldError('question')
+  }
 })
 
 const addOption = () => {
@@ -76,7 +103,86 @@ const addOption = () => {
 const deleteOption = (index: number) => {
   if (formData.value.options.length > 1) {
     formData.value.options.splice(index, 1)
+    // Limpiar errores de opciones si se elimina una
+    if (errors.value.options && errors.value.options[index]) {
+      errors.value.options.splice(index, 1)
+    }
   }
+}
+
+// Función para limpiar errores
+const clearErrors = () => {
+  errors.value = {}
+  showErrors.value = false
+}
+
+const clearFieldError = (field: keyof typeof errors.value) => {
+  if (errors.value[field]) {
+    delete errors.value[field]
+    errors.value = { ...errors.value }
+  }
+}
+
+// Función para validar el formulario
+const validateForm = (): boolean => {
+  errors.value = {}
+  let isValid = true
+
+  // Validar pregunta
+  if (!formData.value.question.trim()) {
+    errors.value.question = 'El texto de la pregunta es obligatorio'
+    isValid = false
+  } else if (formData.value.question.trim().length < 3) {
+    errors.value.question = 'El texto de la pregunta debe tener al menos 3 caracteres'
+    isValid = false
+  } else if (formData.value.question.trim().length > 50) {
+    errors.value.question = 'El texto de la pregunta no puede exceder 50 caracteres'
+    isValid = false
+  }
+
+  // Validar tipo de pregunta
+  if (!formData.value.type) {
+    errors.value.type = 'Debes seleccionar un tipo de pregunta'
+    isValid = false
+  }
+
+  // Validar opciones si el tipo las requiere
+  if (requiresOptions.value && formData.value.options.length > 0) {
+    errors.value.options = []
+    let hasValidOptions = false
+    let duplicateOptions: string[] = []
+    const optionTexts: string[] = []
+
+    formData.value.options.forEach((option, index) => {
+      const trimmedOption = option.option.trim()
+      
+      if (!trimmedOption) {
+        errors.value.options![index] = 'Esta opción no puede estar vacía'
+        isValid = false
+      } else if (trimmedOption.length > 50) {
+        errors.value.options![index] = 'Esta opción no puede exceder 50 caracteres'
+        isValid = false
+      } else if (optionTexts.includes(trimmedOption.toLowerCase())) {
+        errors.value.options![index] = 'Esta opción está duplicada'
+        duplicateOptions.push(trimmedOption)
+        isValid = false
+      } else {
+        hasValidOptions = true
+        optionTexts.push(trimmedOption.toLowerCase())
+      }
+    })
+
+    // Validar que haya al menos 2 opciones válidas para tipos que requieren opciones
+    if (requiresOptions.value && !hasValidOptions) {
+      errors.value.general = 'Debes agregar al menos una opción válida'
+      isValid = false
+    } else if (requiresOptions.value && optionTexts.length < 2) {
+      errors.value.general = 'Debes tener al menos 2 opciones válidas'
+      isValid = false
+    }
+  }
+
+  return isValid
 }
 
 const canSave = computed(() => {
@@ -84,13 +190,21 @@ const canSave = computed(() => {
   if (!formData.value.type) return false
 
   if (['multiple', 'dropdown', 'unique'].includes(formData.value.type.type)) {
-    return formData.value.options.some(option => option.option.trim() !== '')
+    const validOptions = formData.value.options.filter(option => option.option.trim() !== '')
+    return validOptions.length >= 2
   }
   return true
 })
 
 const handleSubmit = () => {
-  if (!canSave.value || props.loading) return
+  if (props.loading) return
+  
+  showErrors.value = true
+  
+  if (!validateForm()) {
+    return
+  }
+
   // Filter out empty options
   const filteredOptions = formData.value.options
     .filter(option => option.option.trim() !== '')
@@ -102,18 +216,17 @@ const handleSubmit = () => {
   // Find the TypeID from the loaded question types
   const selectedType = props.questionTypes.find(qt => qt.type === formData.value.type?.type)
   if (!selectedType) {
-    console.error('Selected question type not found. Selected:', formData.value.type, 'Available:', props.questionTypes)
+    errors.value.general = 'Tipo de pregunta no válido. Por favor, selecciona un tipo diferente.'
     return
   }
 
   const payload: any = {
     question: formData.value.question.trim(),
     description: null,
-    typeId: selectedType.id, // Use real ID from database
+    typeId: selectedType.id,
     isActive: formData.value.isActive,
     options: filteredOptions
   }
-
 
   // Add ID if updating
   if (props.updating && props.initialData?.id) {
@@ -121,6 +234,13 @@ const handleSubmit = () => {
   }
 
   emit('submit', payload)
+}
+
+// Función para limpiar error de opción específica
+const clearOptionError = (index: number) => {
+  if (showErrors.value && errors.value.options && errors.value.options[index]) {
+    errors.value.options[index] = ''
+  }
 }
 
 const isEditing = computed(() => props.updating || !!props.initialData?.id)
@@ -140,26 +260,54 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   return displayNames[typeObj.type] || typeObj.type
 }
 
+// Computed para verificar si hay errores
+const hasErrors = computed(() => {
+  return showErrors.value && Object.keys(errors.value).length > 0
+})
+
 </script>
 
 <template>
   <div class="question-form">
     <div class="form-group">
-      <label for="question-text">Texto de la pregunta:</label>
-      <input id="question-text" v-model="formData.question" type="text" placeholder="Ej. ¿Cuál es tu nombre?"
-        class="form-input" :disabled="loading" required />
+      <label for="question-text">Texto de la pregunta: <span class="required">*</span></label>
+      <input 
+        id="question-text" 
+        v-model="formData.question" 
+        type="text" 
+        placeholder="Ej. ¿Cuál es tu nombre?"
+        class="form-input" 
+        :class="{ 'error': showErrors && errors.question }"
+        :disabled="loading" 
+        maxlength="50"
+        required 
+      />
+      <div v-if="showErrors && errors.question" class="error-message">
+        {{ errors.question }}
+      </div>
+      <div class="input-help">
+        {{ formData.question.length }}/50 caracteres
+      </div>
     </div>
 
     <div class="form-group">
-      <label for="question-type">Tipo de pregunta:</label>
-      <select id="question-type" v-model="formData.type" class="form-select" :disabled="loading || loadingTypes">
+      <label for="question-type">Tipo de pregunta: <span class="required">*</span></label>
+      <select 
+        id="question-type" 
+        v-model="formData.type" 
+        class="form-select"
+        :class="{ 'error': showErrors && errors.type }"
+        :disabled="loading || loadingTypes"
+      >
         <option value="" disabled v-if="loadingTypes">Cargando tipos...</option>
         <option value="" disabled v-if="!loadingTypes && questionTypes.length === 0">No hay tipos disponibles</option>
         <option v-for="questionType in questionTypes" :key="questionType.id" :value="questionType">
           {{ getTypeDisplayName(questionType) }}
         </option>
-
       </select>
+      <div v-if="showErrors && errors.type" class="error-message">
+        {{ errors.type }}
+      </div>
     </div>
 
     <div class="form-group">
@@ -168,28 +316,61 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
         <div class="toggle-slider"></div>
         <span class="toggle-text">Pregunta activa</span>
       </label>
+      <div class="input-help">
+        {{ formData.isActive ? 'La pregunta aparecerá en el formulario' : 'La pregunta estará oculta en el formulario' }}
+      </div>
     </div>
 
     <div v-if="requiresOptions" class="form-group">
-      <label>Opciones:</label>
+      <label>Opciones: <span class="required">*</span></label>
+      <div class="input-help" style="margin-bottom: 0.75rem;">
+        Agrega al menos 2 opciones. Cada opción debe ser única.
+      </div>
       <div class="options-container">
         <div v-for="(option, index) in formData.options" :key="option.id || index" class="option-row">
-          <input v-model="option.option" type="text" :placeholder="`Opción ${index + 1}`"
-            class="form-input option-input" :disabled="loading" />
-          <button @click="deleteOption(index)" class="btn-delete-option"
-            :disabled="formData.options.length === 1 || loading" type="button">
-            Eliminar
+          <div class="option-input-container">
+            <input 
+              v-model="option.option" 
+              type="text" 
+              :placeholder="`Opción ${index + 1}`"
+              class="form-input option-input" 
+              :class="{ 'error': showErrors && errors.options && errors.options[index] }"
+              :disabled="loading"
+              maxlength="200"
+              @input="clearOptionError(index)"
+            />
+            <div v-if="showErrors && errors.options && errors.options[index]" class="error-message">
+              {{ errors.options[index] }}
+            </div>
+            <div class="option-help">
+              {{ option.option.length }}/50 caracteres
+            </div>
+          </div>
+          <button 
+            @click="deleteOption(index)" 
+            class="btn-delete-option"
+            :disabled="formData.options.length === 1 || loading" 
+            type="button"
+            :title="formData.options.length === 1 ? 'Debe haber al menos una opción' : 'Eliminar opción'"
+          >
+            <TrashIcon class="icon"/>
           </button>
         </div>
-        <button @click="addOption" class="btn-add-option" type="button" :disabled="loading">
-          + Agregar opción
+        <button @click="addOption" class="btn-add-option" type="button" :disabled="loading || formData.options.length >= 10">
+          + Agregar opción {{ formData.options.length >= 15 ? '(máximo 15)' : '' }}
         </button>
       </div>
     </div>
 
     <div class="form-actions">
-      <button @click="handleSubmit" class="btn-primary" :disabled="!canSave || loading">
-        <span v-if="loading">Guardando...</span>
+      <button 
+        @click="handleSubmit" 
+        class="btn-primary" 
+        :disabled="!canSave || loading"
+      >
+        <span v-if="loading">
+          Guardando...
+        </span>
         <span v-else>{{ isEditing ? 'Guardar cambios' : 'Crear pregunta' }}</span>
       </button>
     </div>
@@ -210,6 +391,56 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #555;
+}
+
+.required {
+  color: #e74c3c;
+  margin-left: 0.25rem;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.alert-error {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  color: #dc2626;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.icon{
+  height: 1.2rem;
+  width: 1.2rem;
+}
+
+.input-help {
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.option-help {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
 }
 
 .checkbox-label {
@@ -251,7 +482,7 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   border-radius: 14px;
   transition: all 0.3s ease;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-  flex-shrink: 0; /* Evita que se reduzca en pantallas pequeñas */
+  flex-shrink: 0;
 }
 
 .toggle-slider::before {
@@ -291,7 +522,6 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   transition: color 0.2s ease;
 }
 
-/* Hover effect */
 .toggle-switch:hover:not(:has(input:disabled)) .toggle-slider {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 3px rgba(34, 197, 94, 0.1);
 }
@@ -318,6 +548,17 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
+.form-input.error,
+.form-select.error {
+  border-color: #ef4444;
+}
+
+.form-input.error:focus,
+.form-select.error:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
 .form-input:disabled,
 .form-select:disabled {
   background-color: #f5f5f5;
@@ -330,13 +571,23 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   border-radius: 6px;
   padding: 1rem;
   background-color: #fafafa;
+  transition: border-color 0.2s ease;
+}
+
+.options-container.error {
+  border-color: #ef4444;
+  background-color: #fef2f2;
 }
 
 .option-row {
   display: flex;
   gap: 0.5rem;
   margin-bottom: 0.75rem;
-  align-items: center;
+  align-items: flex-start;
+}
+
+.option-input-container {
+  flex: 1;
 }
 
 .option-input {
@@ -345,7 +596,8 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
 }
 
 .btn-delete-option {
-  padding: 0.5rem 0.75rem;
+  margin-top: 0.35rem;
+  padding: 0.5rem;
   background-color: #f44336;
   color: white;
   border: none;
@@ -354,6 +606,11 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   font-size: 0.85rem;
   transition: background-color 0.2s ease;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
 }
 
 .btn-delete-option:hover:not(:disabled) {
@@ -374,6 +631,9 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   cursor: pointer;
   font-size: 0.9rem;
   transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .btn-add-option:hover:not(:disabled) {
@@ -403,6 +663,10 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   font-weight: 500;
   transition: all 0.2s ease;
   min-width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -414,13 +678,22 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
   cursor: not-allowed;
 }
 
-.debug-info {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  color: #666;
+.btn-primary.has-errors:not(:disabled) {
+  background-color: #ef4444;
+}
+
+.btn-primary.has-errors:hover:not(:disabled) {
+  background-color: #dc2626;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 768px) {
@@ -431,6 +704,8 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
 
   .btn-delete-option {
     width: 100%;
+    height: auto;
+    padding: 0.5rem 0.75rem;
   }
 
   .form-actions {

@@ -20,13 +20,61 @@ const emit = defineEmits<{
 
 const formData = ref<Record<number, any>>({})
 const isSubmitting = ref(false)
+const submitError = ref<string | null>(null)
+const submitSuccess = ref(false)
 const formKey = ref(0)
+const questionErrors = ref<Record<number, string>>({}) // Errores por pregunta
 
 const handleQuestionChange = (questionId: number, value: any) => {
     formData.value[questionId] = value
+    submitError.value = null
+    submitSuccess.value = false
+    
+    // Limpiar error de la pregunta específica cuando el usuario empiece a escribir
+    if (questionErrors.value[questionId]) {
+        delete questionErrors.value[questionId]
+        questionErrors.value = { ...questionErrors.value }
+    }
+}
+
+const validateForm = (): boolean => {
+    questionErrors.value = {}
+    let hasErrors = false
+    
+    for (const question of props.questions) {
+        const value = formData.value[question.id!]
+        let isValid = true
+        
+        if (value === undefined || value === null || value === '') {
+            isValid = false
+        }
+        
+        // Validación específica para arrays (preguntas de selección múltiple)
+        if (Array.isArray(value) && value.length === 0) {
+            isValid = false
+        }
+        
+        if (!isValid) {
+            questionErrors.value[question.id!] = 'Este campo es obligatorio'
+            hasErrors = true
+        }
+    }
+    
+    if (hasErrors) {
+        submitError.value = 'Por favor, completa todos los campos obligatorios'
+        return false
+    }
+    
+    return true
 }
 
 const submitForm = async () => {
+
+    if (!validateForm()) {
+        toast.error(submitError)
+        return
+    }
+
     // Modo preview no se envía nada
     if (props.isPreview) {
         console.log('Datos del formulario (Preview):', formData.value)
@@ -94,6 +142,7 @@ const submitForm = async () => {
 
 const resetForm = () => {
     formData.value = {}
+    questionErrors.value = {}
     formKey.value++
 }
 </script>
@@ -122,6 +171,7 @@ const resetForm = () => {
                         :key="question.id" 
                         :question="question"
                         :value="formData[question.id]" 
+                        :error="questionErrors[question.id]"
                         @change="handleQuestionChange" 
                     />
                 </div>
@@ -203,6 +253,28 @@ const resetForm = () => {
 .icon{
     width: 1rem;
     height: 1rem;
+}
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #dc2626;
+}
+
+.alert-success {
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    color: #16a34a;
 }
 
 .empty-state h3 {
