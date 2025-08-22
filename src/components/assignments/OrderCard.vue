@@ -8,12 +8,44 @@ defineProps({
   status: {
     type: String,
     default: 'default', // 'default' | 'available' | 'locked'
+  },
+  isSelected: {
+    type: Boolean,
+    default: false
   }
 })
+
+// Traducción de los tipos de ordenes
+const orderTypeMap = {
+  business: 'Negocio',
+  personal: 'Personal',
+  corporate: 'Corporativo'
+}
+
+// Función para obtener el tipo de pedido en español
+const getOrderTypeInSpanish = (type) => {
+  return orderTypeMap[type] || '----';
+}
+
+// Función para formatear la fecha
+const formatDate = (value) => {
+  const date = new Date(value);
+  date.setDate(date.getDate() + 1);
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}
 </script>
 
 <template>
-  <div class="order-card">
+  <div 
+    class="order-card" 
+    :class="{ 'selected': isSelected }"
+    style="cursor: pointer;"
+  >
 
     <!-- Información del pedido -->
     <div class="info">
@@ -22,12 +54,12 @@ defineProps({
         <p>#{{ order.id }}</p>
       </div>
       <div class="field">
-        <label>Nombre</label>
-        <p>{{ order.name || '----' }}</p>
+        <label>Tipo</label>
+        <p>{{ getOrderTypeInSpanish(order.type) }}</p>
       </div>
       <div class="field">
         <label>Fecha</label>
-        <p>{{ order.date || '----' }}</p>
+        <p>{{ formatDate(order.date) || '----' }}</p>
       </div>
     </div>
 
@@ -63,10 +95,17 @@ defineProps({
   background-color: white;
   max-width: 100%;
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .order-card:hover {
   background-color: rgb(245, 245, 245);
+}
+
+.order-card.selected {
+  border-color: #2563eb;
+  background-color: #f0f4ff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
 .info {

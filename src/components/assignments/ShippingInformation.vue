@@ -1,12 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 import OrderForm from './OrderForm.vue'
 
 const props = defineProps<{
   editable?: boolean
+  orderData?: object | null
 }>()
 
+// Emit para comunicar cambios al componente padre
+const emit = defineEmits(['orderUpdated'])
+
 const showModal = ref(false)
+const localOrderData = ref(null)
+
+// Watch para actualizar localOrderData cuando cambie orderData
+watch(() => props.orderData, (newOrderData) => {
+  if (newOrderData) {
+    localOrderData.value = { ...newOrderData }
+  } else {
+    localOrderData.value = null
+  }
+}, { immediate: true, deep: true })
 
 const openModal = () => {
   showModal.value = true
@@ -15,36 +31,113 @@ const openModal = () => {
 const closeModal = () => {
   showModal.value = false
 }
+
+// Función para manejar la actualización de la orden
+const handleOrderSubmit = async (payload) => {
+  const token = localStorage.getItem('token')
+
+  try {
+    if (!props.orderData?.id) {
+      throw new Error("No se encontró el ID de la orden")
+    }
+
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${props.orderData.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload)
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.Message || data.message || 'Error al actualizar la orden')
+    }
+
+    // Crear el objeto actualizado combinando los datos actuales con el payload
+    const updatedOrderData = {
+      ...localOrderData.value,
+      ...payload,
+      // Si el servidor devuelve datos actualizados, usar esos también
+      ...(data.id ? data : {})
+    }
+
+    // Actualizar los datos locales
+    localOrderData.value = updatedOrderData
+    
+    toast.success("Orden actualizada correctamente")
+    
+    // Cerrar el modal
+    closeModal()
+    
+    // Emitir evento al componente padre con los datos actualizados
+    emit('orderUpdated', updatedOrderData)
+    
+  } catch (error) {
+    const err = error as Error
+    console.error('Error al actualizar orden:', err)
+    toast.error(`Error: ${err.message}`)
+  }
+}
+
+// Mapeo de tipos de carga
+const cargoTypeMap = {
+  business: 'Negocio',
+  personal: 'Personal', 
+  corporate: 'Empresarial'
+}
+
+// Función para obtener el tipo de carga en español
+const getCargoTypeInSpanish = (type) => {
+  return cargoTypeMap[type] || 'No especificado'
+}
+
+// Función para formatear el precio
+const formatPrice = (amount) => {
+  if (!amount) return 'Q 0.00'
+  return `Q ${parseFloat(amount).toFixed(2)}`
+}
+
+// Obtener los datos de la orden por ID
+const currentOrderData = computed(() => localOrderData.value)
 </script>
 
 <template>
   <section class="shipment-info">
     <div class="info-box">
       <!-- Botón de acción solo si es editable -->
-      <button v-if="props.editable" class="info-action" @click="openModal">
+      <button v-if="props.editable && currentOrderData" class="info-action" @click="openModal">
         <span class="material-symbols-outlined">edit</span>
       </button>
 
-      <div class="info-item">
-        <label>Precio</label>
-        <p>Q 150.00</p>
+      <div v-if="!currentOrderData" class="no-data">
+        <p>No hay información de orden disponible</p>
       </div>
-      <div class="info-item">
-        <label>Tipo de carga</label>
-        <p><strong>Empresarial</strong></p>
-      </div>
-      <div class="info-item">
-        <label>Origen</label>
-        <p><strong>31 Avenida H, 14 calle B, Colonia Santa María, Zona 11</strong></p>
-      </div>
-      <div class="info-item">
-        <label>Destino</label>
-        <p><strong>31 Avenida H, 14 calle B, Colonia Santa María, Zona 11</strong></p>
-      </div>
-      <div class="info-item full-width">
-        <label>Detalles</label>
-        <p><strong>Entrega urgente, manejar con cuidado</strong></p>
-      </div>
+
+      <template v-else>
+        <div class="info-item">
+          <label>Precio</label>
+          <p>{{ formatPrice(currentOrderData.totalAmount) }}</p>
+        </div>
+        <div class="info-item">
+          <label>Tipo de carga</label>
+          <p><strong>{{ getCargoTypeInSpanish(currentOrderData.type) }}</strong></p>
+        </div>
+        <div class="info-item">
+          <label>Origen</label>
+          <p><strong>{{ currentOrderData.origin || 'No especificado' }}</strong></p>
+        </div>
+        <div class="info-item">
+          <label>Destino</label>
+          <p><strong>{{ currentOrderData.destination || 'No especificado' }}</strong></p>
+        </div>
+        <div class="info-item full-width">
+          <label>Detalles</label>
+          <p><strong>{{ currentOrderData.details || 'Sin detalles adicionales' }}</strong></p>
+        </div>
+      </template>
     </div>
   </section>
 
@@ -57,7 +150,11 @@ const closeModal = () => {
       </header>
 
       <section>
-        <OrderForm :isEdit="true" />
+        <OrderForm 
+          :isEdit="true" 
+          :orderData="localOrderData" 
+          @submit="handleOrderSubmit"
+        />
       </section>
     </article>
   </div>
@@ -76,6 +173,13 @@ const closeModal = () => {
   grid-template-columns: repeat(2, 1fr);
   gap: 2.5rem 1.5rem;
   position: relative;
+}
+
+.no-data {
+  grid-column: span 2;
+  text-align: center;
+  color: #666;
+  padding: 2rem;
 }
 
 .info-item label {

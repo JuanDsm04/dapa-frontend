@@ -1,16 +1,166 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 import ShippingInformation from '../assignments/ShippingInformation.vue'
 import NotificationModal from '../NotificationModal.vue'
+
+const props = defineProps({
+  selectedOrder: {
+    type: Object,
+    default: null
+  }
+})
 
 const selectedDriver = ref('')
 const selectedVehicle = ref('')
 const showModal = ref(false)
+const orderDetails = ref(null)
+const drivers = ref([])
+const vehicles = ref([])
+const loading = ref(false)
+
+// Obtener detalles de la orden por ID
+const getOrderById = async (orderId) => {
+  if (!orderId) return
+  
+  loading.value = true
+  try {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al cargar detalles de la orden')
+    }
+
+    const data = await response.json()
+    orderDetails.value = data
+
+    // Inicializar valores para conductor y vehículo
+    selectedDriver.value = data.userId ? String(data.userId) : ''
+    selectedVehicle.value = data.vehicleId ? String(data.vehicleId) : ''
+
+  } catch (error) {
+    console.error("Error obteniendo detalles de la orden:", error)
+    toast.error("Error al cargar detalles de la orden")
+  } finally {
+    loading.value = false
+  }
+}
+
+// Obtener conductores disponibles
+const getDrivers = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al cargar conductores')
+    }
+
+    const data = await response.json()
+    drivers.value = data.filter(user => user.role === 'driver')
+
+  } catch (error) {
+    console.error("Error obteniendo conductores:", error)
+    toast.error("Error al cargar conductores")
+  }
+}
+
+// Obtener vehículos
+const getVehicles = async () => {
+  try {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al cargar vehículos')
+    }
+
+    const data = await response.json()
+    vehicles.value = data;
+
+  } catch (error) {
+    console.error("Error obteniendo vehículos:", error)
+    toast.error("Error al cargar vehículos")
+  }
+}
+
+// Asignar orden
+const assignOrder = async () => {
+  if (!orderDetails.value || !selectedDriver.value || !selectedVehicle.value) {
+    toast.error("Selecciona un conductor y un vehículo")
+    return
+  }
+
+  try {
+    const token = localStorage.getItem('token')
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderDetails.value.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        userId: parseInt(selectedDriver.value),
+        vehicleId: parseInt(selectedVehicle.value)
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Error al asignar la orden')
+    }
+
+    toast.success("Orden asignada exitosamente")
+    showModal.value = false
+
+  } catch (error) {
+    console.error("Error asignando orden:", error)
+    toast.error("Error al asignar la orden")
+  }
+}
 
 const handleConfirm = () => {
-  showModal.value = false
-  // Lógica para manejar la confirmación
+  assignOrder()
 }
+
+// Manejar la actualización de la orden desde ShippingInformation
+const handleOrderUpdated = (updatedOrder) => {
+  orderDetails.value = { ...updatedOrder }
+}
+
+// Watch para cambios en la orden seleccionada
+watch(() => props.selectedOrder, (newOrder) => {
+  if (newOrder) {
+    getOrderById(newOrder.id)
+  } else {
+    orderDetails.value = null
+  }
+}, { immediate: true })
+
+// Obtener datos al montar el componente
+onMounted(() => {
+  getDrivers()
+  getVehicles()
+})
 </script>
 
 <template>
@@ -18,42 +168,70 @@ const handleConfirm = () => {
     <!-- Encabezado -->
     <header>
       <h2>Asignación</h2>
-      <div class="header-actions">
+      <div class="header-actions" v-if="orderDetails">
         <button class="form-btn">
           <span class="material-symbols-outlined">attach_file</span>
         </button>
-        <button class="assign-btn" @click="showModal = true">
+        <button 
+          class="assign-btn" 
+          @click="showModal = true"
+          :disabled="!selectedDriver || !selectedVehicle"
+        >
           <span class="material-symbols-outlined">check</span>
           Asignar
         </button>
       </div>
     </header>
 
-    <!-- Formulario de asignación -->
-    <div class="form-section">
-      <div class="field-group">
-        <div class="form-field">
-          <label for="driver">Elegir conductor</label>
-          <select id="driver" v-model="selectedDriver">
-            <option disabled value="">Selecciona un conductor</option>
-            <option value="armando">Armando</option>
-            <option value="lucia">Lucía</option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label for="vehicle">Elegir vehículo</label>
-          <select id="vehicle" v-model="selectedVehicle">
-            <option disabled value="">Selecciona un vehículo</option>
-            <option value="camion1">Camión 1</option>
-            <option value="camion2">Camión 2</option>
-          </select>
-        </div>
-      </div>
+    <div v-if="!props.selectedOrder" class="no-selection">
+      <p>Selecciona una orden para ver los detalles y realizar la asignación</p>
     </div>
 
-    <!-- Información de envío -->
-    <ShippingInformation :editable="true" />
+    <div v-else-if="loading" class="loading-state">
+      <p>Cargando detalles de la orden...</p>
+    </div>
+
+    <div v-else-if="orderDetails">
+      <!-- Formulario de asignación -->
+      <div class="form-section">
+        <div class="field-group">
+          <div class="form-field">
+            <label for="driver">Elegir conductor</label>
+            <select id="driver" v-model="selectedDriver">
+              <option disabled value="">Selecciona un conductor</option>
+              <option 
+                v-for="driver in drivers" 
+                :key="driver.id" 
+                :value="driver.id"
+              >
+                {{ driver.name }} {{ driver.last_name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="vehicle">Elegir vehículo</label>
+            <select id="vehicle" v-model="selectedVehicle">
+              <option disabled value="">Selecciona un vehículo</option>
+              <option 
+                v-for="vehicle in vehicles" 
+                :key="vehicle.id" 
+                :value="vehicle.id"
+              >
+                {{ vehicle.brand }} - {{ vehicle.licensePlate }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información de envío - ACTUALIZADO: Agregado el listener -->
+      <ShippingInformation 
+        :orderData="orderDetails" 
+        :editable="true" 
+        @orderUpdated="handleOrderUpdated"
+      />
+    </div>
 
     <!-- Confirmar asignación -->
     <NotificationModal
@@ -127,12 +305,23 @@ header h2 {
   height: 55px;
 }
 
-.assign-btn:hover {
+.assign-btn:hover:not(:disabled) {
   background-color: #235dda;
+}
+
+.assign-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .assign-btn span {
   margin-right: 5px;
+}
+
+.no-selection, .loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 }
 
 .form-section {
@@ -174,24 +363,6 @@ textarea {
 
 textarea {
   min-height: 100px;
-}
-
-.details h3 {
-  margin-bottom: 0.5rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.subtext {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 1rem;
-}
-
-.details-content {
-  font-size: 1rem;
-  color: #333;
-  line-height: 1.6;
 }
 
 @media (max-width: 770px) {

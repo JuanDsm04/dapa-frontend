@@ -212,7 +212,7 @@ onMounted(async() => {
           { label: 'Capacidad (kg)', field: 'capacityKg' },
           { 
             label: 'Disponibilidad', 
-            field: 'available',
+            field: 'isAvailable',
             formatter: (value) => value ? 'Disponible' : 'No disponible'
           },
           { 

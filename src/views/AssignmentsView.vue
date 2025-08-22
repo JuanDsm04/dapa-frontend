@@ -5,6 +5,11 @@ import AssigmentForm from '@/components/assignments/AssigmentForm.vue';
 import OrderTracking from '@/components/assignments/OrderTracking.vue';
 
 const activeTab = ref('left')
+const selectedOrder = ref(null)
+
+const handleOrderSelected = (order) => {
+  selectedOrder.value = order
+}
 </script>
 
 <template>
@@ -29,13 +34,14 @@ const activeTab = ref('left')
               :availableFilters="[
                 { value: 'recent', label: 'Fecha más reciente' },
                 { value: 'oldest', label: 'Fecha más antigua' },
-                { value: 'pending', label: 'Asignado en espera' },
-                { value: 'assigned', label: 'Pendiente de asignar' }
+                { value: 'pending', label: 'Pendiente de asignar'},
+                { value: 'assigned', label: 'Asignado en espera' },
               ]"
+              @order-selected="handleOrderSelected"
             />
         </div>
         <div class="details">
-            <AssigmentForm />
+            <AssigmentForm :selectedOrder="selectedOrder" />
         </div>
     </section>
 
@@ -44,9 +50,10 @@ const activeTab = ref('left')
         <div class="list">
             <OrderList
               title="En progreso"
-              :defaultStatuses="['pickup', 'collected', 'transporting', 'delivered']"
+              :defaultStatuses="['pickup', 'collected', 'delivered']"
               :availableFilters="[
-                { value: 'in_progress', label: 'En progreso' },
+                { value: 'pickup', label: 'En camino a recoger' },
+                { value: 'collected', label: 'Carga recogida' },
                 { value: 'delivered', label: 'Completado' }
               ]"
             />

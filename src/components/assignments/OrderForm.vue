@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 // Props
-defineProps<{
+const props = defineProps<{
   isEdit?: boolean
+  orderData?: object | null
 }>()
 
 // Emitir evento para volver al componente padre
-const emit = defineEmits(["volver"])
+const emit = defineEmits(["volver", "submit"])
 
 const price = ref('')
 const cargoType = ref('personal')
@@ -17,10 +18,35 @@ const details = ref('')
 
 const errors = ref<Record<string, string>>({})
 
-const handleSubmit = () => {
+// Mapeo de tipos de carga del backend al frontend
+const cargoTypeBackendToFrontend = {
+  business: 'negocio',
+  personal: 'personal',
+  corporate: 'empresarial'
+}
+
+// Mapeo de tipos de carga del frontend al backend
+const cargoTypeFrontendToBackend = {
+  personal: 'personal',
+  empresarial: 'corporate',
+  negocio: 'business'
+}
+
+// Función para cargar los datos de la orden en el formulario
+const loadOrderData = () => {
+  if (props.orderData && props.isEdit) {
+    price.value = props.orderData.totalAmount ? props.orderData.totalAmount.toString() : ''
+    cargoType.value = cargoTypeBackendToFrontend[props.orderData.type] || 'personal'
+    origin.value = props.orderData.origin || ''
+    destination.value = props.orderData.destination || ''
+    details.value = props.orderData.details || ''
+  }
+}
+
+// Validar y preparar datos para envío
+const handleSubmit = async () => {
   errors.value = {}
 
-  // Validaciones
   const numericPrice = parseFloat(price.value)
   if (!price.value.trim()) {
     errors.value.price = 'El precio es requerido *'
@@ -43,6 +69,18 @@ const handleSubmit = () => {
   }
 
   if (Object.keys(errors.value).length > 0) return
+
+  // Construir payload
+  const payload = {
+    totalAmount: numericPrice,
+    type: cargoTypeFrontendToBackend[cargoType.value],
+    origin: origin.value,
+    destination: destination.value,
+    details: details.value
+  }
+
+  // Emitir evento con los datos al componente padre
+  emit("submit", payload)
 }
 
 // Filtrar el input de precio
@@ -51,6 +89,16 @@ const filterPriceInput = (event: Event) => {
   input.value = input.value.replace(/[^0-9.]/g, '')
   price.value = input.value
 }
+
+// Watch para cambios en orderData
+watch(() => props.orderData, () => {
+  loadOrderData()
+}, { immediate: true, deep: true })
+
+// Cargar datos al montar el componente
+onMounted(() => {
+  loadOrderData()
+})
 </script>
 
 <template>
@@ -100,7 +148,7 @@ const filterPriceInput = (event: Event) => {
     </div>
 
     <!-- Botón (solo si es edición) -->
-    <button class ="edit-button" v-if="isEdit" type="submit">Confirmar</button>
+    <button class="edit-button" v-if="isEdit" type="submit">Confirmar</button>
 
     <!-- Botones (solo si no es edición) -->
     <div v-if="!isEdit" class="action-container">
