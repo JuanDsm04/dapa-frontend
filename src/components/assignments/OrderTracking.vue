@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { getOrderById } from '@/services/orderService'
@@ -13,10 +13,12 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['back-to-list'])
+
 const orderDetails = ref(null)
 const loading = ref(false)
 
-// Obtener detalles de la orden
+// Obtener detalles de la orden por ID usando el servicio
 const getOrderDetails = async (orderId) => {
   if (!orderId) return
   
@@ -24,11 +26,9 @@ const getOrderDetails = async (orderId) => {
   try {
     const data = await getOrderById(orderId)
     orderDetails.value = data
-
   } catch (error) {
     console.error("Error obteniendo detalles de la orden:", error)
     toast.error("Error al cargar detalles de la orden")
-
   } finally {
     loading.value = false
   }
@@ -47,6 +47,10 @@ watch(() => props.selectedOrder, (newOrder) => {
     orderDetails.value = null
   }
 }, { immediate: true })
+
+const handleBackToList = () => {
+  emit('back-to-list')
+}
 </script>
 
 <template>
@@ -62,6 +66,10 @@ watch(() => props.selectedOrder, (newOrder) => {
     <div v-else-if="orderDetails">
       <!-- Encabezado -->
       <header>
+        <!-- Botón de regresar solo en móvil -->
+        <button class="back-btn mobile-only" @click="handleBackToList">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
         <div class="header-information">
           <h2>Estado actual</h2>
           <p class="steps-info">
@@ -95,6 +103,7 @@ watch(() => props.selectedOrder, (newOrder) => {
 .tracking-container {
   padding: 2rem;
   background-color: #fff;
+  border-radius: 10px;
 }
 
 .no-selection, .loading-state {
@@ -107,6 +116,25 @@ header {
   display: flex;
   justify-content: space-between;
   margin-bottom: 2rem;
+}
+
+.back-btn {
+  position: absolute; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: none;
+  z-index: 1;
+  padding: 0rem;
+}
+
+.back-btn:hover {
+  color: #235dda;
+}
+
+.mobile-only {
+  display: none;
 }
 
 .form-btn {
@@ -136,5 +164,20 @@ header h2 {
   color: #444;
   margin-top: 0.5rem;
   line-height: 1.4;
+}
+
+@media (max-width: 770px) {
+  .tracking-container {
+    padding: 1.5rem;
+    background-color: #fff;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  .header-information {
+    margin-top: 2.5rem;
+  }
 }
 </style>
