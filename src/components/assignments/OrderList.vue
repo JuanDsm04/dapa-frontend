@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import { getOrders } from '@/services/orderService'
 import OrderCard from './OrderCard.vue'
 
 const props = defineProps({
@@ -63,26 +64,12 @@ const filteredOrders = computed(() => {
   }
 })
 
-// Obtener ordenes del API
-const getOrders = async () => {
+// Obtener ordenes
+const getOrdersData = async () => {
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al cargar órdenes')
-    }
-
-    const data = await response.json()
+    const data = await getOrders()
     orders.value = data
-
   } catch (error) {
     console.error("Error obteniendo órdenes:", error)
     toast.error("Error al cargar órdenes")
@@ -93,7 +80,7 @@ const getOrders = async () => {
 
 // Obtener ordenes al montar el componente
 onMounted(() => {
-  getOrders()
+  getOrdersData()
 })
 </script>
 

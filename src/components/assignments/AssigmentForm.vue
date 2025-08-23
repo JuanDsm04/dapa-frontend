@@ -2,6 +2,9 @@
 import { ref, watch, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import { getOrderById, assignOrder } from '@/services/orderService'
+import { getUsers } from '@/services/userService'
+import { getVehicles } from '@/services/vehicleService'
 import ShippingInformation from '../assignments/ShippingInformation.vue'
 import NotificationModal from '../NotificationModal.vue'
 
@@ -21,25 +24,12 @@ const vehicles = ref([])
 const loading = ref(false)
 
 // Obtener detalles de la orden por ID
-const getOrderById = async (orderId) => {
+const getOrderDetails = async (orderId) => {
   if (!orderId) return
   
   loading.value = true
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al cargar detalles de la orden')
-    }
-
-    const data = await response.json()
+    const data = await getOrderById(orderId)
     orderDetails.value = data
 
     // Inicializar valores para conductor y vehículo
@@ -54,25 +44,11 @@ const getOrderById = async (orderId) => {
   }
 }
 
-// Obtener conductores disponibles
+// Obtener conductores
 const getDrivers = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al cargar conductores')
-    }
-
-    const data = await response.json()
+    const data = await getUsers()
     drivers.value = data.filter(user => user.role === 'driver')
-
   } catch (error) {
     console.error("Error obteniendo conductores:", error)
     toast.error("Error al cargar conductores")
@@ -80,24 +56,10 @@ const getDrivers = async () => {
 }
 
 // Obtener vehículos
-const getVehicles = async () => {
+const getVehiclesData = async () => {
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al cargar vehículos')
-    }
-
-    const data = await response.json()
-    vehicles.value = data;
-
+    const data = await getVehicles()
+    vehicles.value = data
   } catch (error) {
     console.error("Error obteniendo vehículos:", error)
     toast.error("Error al cargar vehículos")
@@ -105,29 +67,18 @@ const getVehicles = async () => {
 }
 
 // Asignar orden
-const assignOrder = async () => {
+const assignOrderToDriver = async () => {
   if (!orderDetails.value || !selectedDriver.value || !selectedVehicle.value) {
     toast.error("Selecciona un conductor y un vehículo")
     return
   }
 
   try {
-    const token = localStorage.getItem('token')
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${orderDetails.value.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        userId: parseInt(selectedDriver.value),
-        vehicleId: parseInt(selectedVehicle.value)
-      })
-    })
-
-    if (!response.ok) {
-      throw new Error('Error al asignar la orden')
-    }
+    await assignOrder(
+      orderDetails.value.id,
+      parseInt(selectedDriver.value),
+      parseInt(selectedVehicle.value)
+    )
 
     toast.success("Orden asignada exitosamente")
     showModal.value = false
@@ -139,7 +90,7 @@ const assignOrder = async () => {
 }
 
 const handleConfirm = () => {
-  assignOrder()
+  assignOrderToDriver()
 }
 
 // Manejar la actualización de la orden desde ShippingInformation
@@ -150,7 +101,7 @@ const handleOrderUpdated = (updatedOrder) => {
 // Watch para cambios en la orden seleccionada
 watch(() => props.selectedOrder, (newOrder) => {
   if (newOrder) {
-    getOrderById(newOrder.id)
+    getOrderDetails(newOrder.id)
   } else {
     orderDetails.value = null
   }
@@ -159,7 +110,7 @@ watch(() => props.selectedOrder, (newOrder) => {
 // Obtener datos al montar el componente
 onMounted(() => {
   getDrivers()
-  getVehicles()
+  getVehiclesData()
 })
 </script>
 

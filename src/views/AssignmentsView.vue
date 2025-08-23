@@ -56,10 +56,11 @@ const handleOrderSelected = (order) => {
                 { value: 'collected', label: 'Carga recogida' },
                 { value: 'delivered', label: 'Completado' }
               ]"
+              @order-selected="handleOrderSelected"
             />
         </div>
         <div class="details">
-            <OrderTracking />
+            <OrderTracking :selectedOrder="selectedOrder" />
         </div>
     </section>
   </main>

@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
+import { updateOrder } from '@/services/orderService'
 import OrderForm from './OrderForm.vue'
 
 const props = defineProps<{
@@ -34,33 +35,16 @@ const closeModal = () => {
 
 // Función para manejar la actualización de la orden
 const handleOrderSubmit = async (payload) => {
-  const token = localStorage.getItem('token')
-
   try {
     if (!props.orderData?.id) {
       throw new Error("No se encontró el ID de la orden")
     }
 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/orders/${props.orderData.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload)
-    })
+    const data = await updateOrder(props.orderData.id, payload)
 
-    const data = await response.json()
-
-    if (!response.ok) {
-      throw new Error(data.Message || data.message || 'Error al actualizar la orden')
-    }
-
-    // Crear el objeto actualizado combinando los datos actuales con el payload
     const updatedOrderData = {
       ...localOrderData.value,
       ...payload,
-      // Si el servidor devuelve datos actualizados, usar esos también
       ...(data.id ? data : {})
     }
 
