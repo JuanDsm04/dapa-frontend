@@ -87,7 +87,7 @@ onMounted(() => {
 <template>
   <section class="order-list">
     <header>
-      <h2>{{ title }}</h2>
+      <h2 class="text-subtitle">{{ title }}</h2>
       <div class="filter-wrapper">
         <button class="filter-btn" @click="toggleFilterOptions">
           <span class="material-symbols-outlined">tune</span>
@@ -190,5 +190,11 @@ h2 {
   flex-direction: column;
   gap: 1rem;
   padding-bottom: 20px;
+}
+
+@media (max-width: 770px) {
+  .text-subtitle {
+    font-size: 1.25rem;
+  }
 }
 </style>

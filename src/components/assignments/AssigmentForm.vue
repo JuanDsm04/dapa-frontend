@@ -15,6 +15,8 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['back-to-list'])
+
 const selectedDriver = ref('')
 const selectedVehicle = ref('')
 const showModal = ref(false)
@@ -23,7 +25,7 @@ const drivers = ref([])
 const vehicles = ref([])
 const loading = ref(false)
 
-// Obtener detalles de la orden por ID
+// Obtener detalles de la orden por ID usando el servicio
 const getOrderDetails = async (orderId) => {
   if (!orderId) return
   
@@ -44,7 +46,7 @@ const getOrderDetails = async (orderId) => {
   }
 }
 
-// Obtener conductores
+// Obtener conductores disponibles usando el servicio
 const getDrivers = async () => {
   try {
     const data = await getUsers()
@@ -55,7 +57,7 @@ const getDrivers = async () => {
   }
 }
 
-// Obtener vehículos
+// Obtener vehículos usando el servicio
 const getVehiclesData = async () => {
   try {
     const data = await getVehicles()
@@ -66,7 +68,7 @@ const getVehiclesData = async () => {
   }
 }
 
-// Asignar orden
+// Asignar orden usando el servicio
 const assignOrderToDriver = async () => {
   if (!orderDetails.value || !selectedDriver.value || !selectedVehicle.value) {
     toast.error("Selecciona un conductor y un vehículo")
@@ -91,6 +93,10 @@ const assignOrderToDriver = async () => {
 
 const handleConfirm = () => {
   assignOrderToDriver()
+}
+
+const handleBackToList = () => {
+  emit('back-to-list')
 }
 
 // Manejar la actualización de la orden desde ShippingInformation
@@ -118,6 +124,10 @@ onMounted(() => {
   <div class="assignment-form">
     <!-- Encabezado -->
     <header>
+      <!-- Botón de regresar solo en móvil -->
+      <button class="back-btn mobile-only" @click="handleBackToList">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </button>
       <h2>Asignación</h2>
       <div class="header-actions" v-if="orderDetails">
         <button class="form-btn">
@@ -211,6 +221,24 @@ header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+  position: relative;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: none;
+  padding: 0.5rem;
+}
+
+.back-btn:hover {
+  color: #2f67f6;
+}
+
+.mobile-only {
+  display: none;
 }
 
 header h2 {
@@ -317,8 +345,21 @@ textarea {
 }
 
 @media (max-width: 770px) {
+
+  .assignment-form {
+    padding: 1.5rem;
+  }
+
   .field-group {
     flex-direction: column;
+  }
+
+  .mobile-only {
+    display: block;
+  }
+
+  header h2 {
+    display: none;
   }
 }
 </style>
