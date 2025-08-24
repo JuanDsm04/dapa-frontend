@@ -13,6 +13,7 @@ import FormsView from "@/views/FormsView.vue";
 import DriverAssignmentsView from "@/views/DriverAssignments.vue";
 import ReportsView from "@/views/reports/ReportsView.vue";
 import FinancialReportView from "@/views/reports/FinancialReportView.vue";
+import PerformanceReportView from "@/views/reports/PerformanceReportView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -92,6 +93,12 @@ const router = createRouter({
       path: "/reports/financial",
       name: "FinancialReport",
       component: FinancialReportView,
+      meta: {requiresAuth: true, roles: ['admin']}
+    },
+    {
+      path: "/reports/performance",
+      name: "PerformanceReport",
+      component: PerformanceReportView,
       meta: {requiresAuth: true, roles: ['admin']}
     }
   ],
