@@ -5,10 +5,11 @@ import router from '@/router';
 function goToControl() { }
 
 function goToReport() {
-  router.push("/reports/financial")
+  router.push('/reports/financial')
 }
 
 function goToPerformance() { }
+  router.push('/reports/performance')
 </script>
 
 <template>

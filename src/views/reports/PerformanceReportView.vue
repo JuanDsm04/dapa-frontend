@@ -1,6 +1,17 @@
 <script setup>
+import LineChart from '@/components/charts/LineChart.vue';
 import { ref } from 'vue';
 const activeTab = ref('left')
+// Temporary dummy data
+const data = ref({
+  series: [
+    { name: 'Transportista A', data: [95, 90, 92] },
+    { name: 'Transportista B', data: [88, 85, 87] },
+    { name: 'Transportista C', data: [92, 94, 91] }
+  ],
+  categories: ['Ene', 'Feb', 'Mar'],
+  title: 'Desempeño de empleados'
+})
 </script>
 
 <template>
@@ -15,6 +26,7 @@ const activeTab = ref('left')
       <div class="toggle-button" @click="activeTab = 'right'">Empleados</div>
     </div>
 
+    <LineChart :categories="data.categories" :series="data.series" :title="data.title"/>
   </main>
 </template>
 
