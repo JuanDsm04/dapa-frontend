@@ -1,5 +1,8 @@
 <script setup>
 import LineChart from '@/components/charts/LineChart.vue';
+import CircularChart from '@/components/charts/CircularChart.vue';
+import BarChart from '@/components/charts/BarChart.vue';
+import PieChart from '@/components/charts/PieChart.vue';
 import { ref } from 'vue';
 const activeTab = ref('left')
 // Temporary dummy data
@@ -11,6 +14,27 @@ const data = ref({
   ],
   categories: ['Ene', 'Feb', 'Mar'],
   title: 'Desempeño de empleados'
+})
+
+const pieData = ref({
+  series: [44, 55, 13, 43, 22],
+  labels: ['Equipo A', 'Equipo B', 'Equipo C', 'Equipo D', 'Equipo E'],
+  title: 'Distribución de carga de trabajo'
+})
+
+const financialBarData = ref({
+  series: [
+    { name: 'Ingresos', data: [120, 150, 180] },
+    { name: 'Egresos', data: [80, 90, 100] }
+  ],
+  categories: ['Ene', 'Feb', 'Mar'],
+  title: 'Resumen Financiero'
+})
+
+const financialPieData = ref({
+  series: [30, 40, 20, 10],
+  labels: ['Transporte', 'Almacenamiento', 'Logística', 'Otros'],
+  title: 'Distribución de Costos'
 })
 </script>
 
@@ -26,7 +50,12 @@ const data = ref({
       <div class="toggle-button" @click="activeTab = 'right'">Empleados</div>
     </div>
 
-    <LineChart :categories="data.categories" :series="data.series" :title="data.title"/>
+    <div class="charts-wrapper">
+      <LineChart :categories="data.categories" :series="data.series" :title="data.title"/>
+      <CircularChart :labels="pieData.labels" :series="pieData.series" :title="pieData.title"/>
+      <BarChart :categories="financialBarData.categories" :series="financialBarData.series" :title="financialBarData.title"/>
+      <PieChart :labels="financialPieData.labels" :series="financialPieData.series" :title="financialPieData.title"/>
+    </div>
   </main>
 </template>
 
@@ -90,5 +119,11 @@ h1 {
 
 .active-right .toggle-indicator {
   left: 50%;
+}
+
+.charts-wrapper {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 </style>

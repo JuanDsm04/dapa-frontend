@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   series: Array<any>
-  categories: string[]
+  labels: string[]
   title: string
   height?: number
   width?: number
@@ -14,11 +14,11 @@ const props = withDefaults(defineProps<{
 
 const computedOptions = computed(() => ({
   chart: {
-    id: 'bar-chart',
-    type: 'bar',
+    id: 'donut-chart',
+    type: 'donut',
     animations: {
       enabled: true,
-      speed: 200,
+      speed: 100,
       animateGradually: {
         enabled: true,
         delay: 150
@@ -28,54 +28,31 @@ const computedOptions = computed(() => ({
         speed: 350
       }
     },
-    toolbar: {
-      show: true
-    }
   },
   title: {
     text: props.title,
     align: 'center',
+    offsetX: 0,
     offsetY: 12,
     style: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold',
+      fontSize:  '1.25rem',
+      fontWeight:  'bold',
     },
   },
-  xaxis: {
-    categories: props.categories,
-  },
-  plotOptions: {
-    bar: {
-      horizontal: false, // 👈 Verticales
-      columnWidth: '60%',
-      borderRadius: 6
-    }
-  },
-  dataLabels: {
-    enabled: true,
-    style: {
-      fontSize: '0.9rem',
-    }
+  labels: props.labels,
+  theme: {
+    mode: 'light',
+    palette: 'palette1',
   },
   legend: {
     show: true
   },
-  theme: {
-    mode: 'light',
-    palette: 'palette2',
-  }
 }))
 </script>
 
 <template>
   <div class="chart-container">
-    <apexchart
-      type="bar"
-      :options="computedOptions"
-      :series="series"
-      :height="props.height"
-      :width="props.width"
-    />
+    <apexchart type="donut" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
   </div>
 </template>
 
@@ -83,7 +60,7 @@ const computedOptions = computed(() => ({
 .chart-container {
   width: fit-content;
   padding: 2rem;
-  background-color: #fff;
+  background-color: #ffff;
   border-radius: 1rem;
 }
 </style>

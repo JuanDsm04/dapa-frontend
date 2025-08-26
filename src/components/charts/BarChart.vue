@@ -1,64 +1,58 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  series: number[]
-  labels: string[]
+  series: Array<any>
+  categories: string[]
   title: string
   height?: number
   width?: number
 }>(), {
   height: 400,
-  width: 400
+  width: 600
 })
 
 const computedOptions = computed(() => ({
   chart: {
-    id: 'pie-chart',
-    type: 'pie',
+    id: 'bar-chart',
+    type: 'bar',
     animations: {
       enabled: true,
-      speed: 300,
+      speed: 100,
       animateGradually: {
         enabled: true,
-        delay: 200
+        delay: 150
       },
       dynamicAnimation: {
         enabled: true,
-        speed: 400
+        speed: 350
       }
-    }
+    },
   },
   title: {
     text: props.title,
     align: 'center',
+    offsetX: 0,
     offsetY: 12,
     style: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold',
+      fontSize:  '1.25rem',
+      fontWeight:  'bold',
     },
   },
-  labels: props.labels,
-  legend: {
-    show: true,
-    position: 'bottom'
-  },
+  xaxis: { categories: props.categories },
   theme: {
     mode: 'light',
-    palette: 'palette3',
-  }
+    palette: 'palette1',
+  },
+  legend: {
+    show: true
+  },
 }))
 </script>
 
 <template>
   <div class="chart-container">
-    <apexchart
-      type="pie"
-      :options="computedOptions"
-      :series="series"
-      :height="props.height"
-      :width="props.width"
-    />
+    <apexchart type="bar" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
   </div>
 </template>
 
@@ -66,7 +60,7 @@ const computedOptions = computed(() => ({
 .chart-container {
   width: fit-content;
   padding: 2rem;
-  background-color: #fff;
+  background-color: #ffff;
   border-radius: 1rem;
 }
 </style>
