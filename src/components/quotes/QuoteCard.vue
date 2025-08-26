@@ -1,32 +1,88 @@
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   quote: {
     type: Object,
     required: true,
-    default: () => ({ id: '', date: '' })
+    default: () => ({ id: '', submittedAt: '', status: 'pending', answers: [] })
   }
+})
+
+// Formatear fecha para mostrar
+const formattedDate = computed(() => {
+  if (!props.quote.submittedAt) return '----'
+  
+  const date = new Date(props.quote.submittedAt)
+  return date.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+})
+
+// Obtener clase CSS según el estado
+const statusClass = computed(() => {
+  switch (props.quote.status) {
+    case 'approved':
+      return 'status-approved'
+    case 'cancelled':
+      return 'status-cancelled'
+    case 'pending':
+    default:
+      return 'status-pending'
+  }
+})
+
+// Texto del estado en español
+const statusText = computed(() => {
+  switch (props.quote.status) {
+    case 'approved':
+      return 'Aprobado'
+    case 'cancelled':
+      return 'Cancelado'
+    case 'pending':
+    default:
+      return 'Pendiente'
+  }
+})
+
+// Contar respuestas completadas
+const answersCount = computed(() => {
+  return props.quote.answers?.length || 0
 })
 </script>
 
 <template>
   <div class="quote-card">
+    <!-- Indicador de estado -->
+    <div class="status-indicator" :class="statusClass"></div>
 
-    <!-- Información de la cotización -->
+    <!-- Información de la submission -->
     <div class="info">
       <div class="field">
         <label>Número de formulario</label>
         <p>#{{ quote.id }}</p>
       </div>
       <div class="field">
-        <label>Fecha</label>
-        <p>{{ quote.date || '----' }}</p>
+        <label>Fecha de envío</label>
+        <p>{{ formattedDate }}</p>
+      </div>
+      <div class="field">
+        <label>Estado</label>
+        <p class="status-text" :class="statusClass">{{ statusText }}</p>
+      </div>
+      <div class="field">
+        <label>Respuestas</label>
+        <p>{{ answersCount }} respuesta{{ answersCount !== 1 ? 's' : '' }}</p>
       </div>
     </div>
 
     <div class="image-container">
-      <img src="../../assets/images/package.png" alt="Cotización" />
+      <img src="../../assets/images/package.png" alt="Submission" />
     </div>
-
   </div>
 </template>
 
@@ -43,29 +99,81 @@ defineProps({
   background-color: white;
   max-width: 100%;
   overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
 .quote-card:hover {
   background-color: rgb(245, 245, 245);
 }
 
+.status-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  border-radius: 10px 0 0 10px;
+}
+
+.status-pending {
+  background-color: #f59e0b;
+}
+
+.status-approved {
+  background-color: #10b981;
+}
+
+.status-cancelled {
+  background-color: #ef4444;
+}
+
 .info {
   flex: 1;
+  padding-left: 0.5rem;
 }
 
 .field {
   margin-bottom: 0.5rem;
 }
 
+.field:last-child {
+  margin-bottom: 0;
+}
+
 label {
   font-size: 0.9rem;
   color: #666;
+  display: block;
+  margin-bottom: 0.2rem;
 }
 
 p {
   margin: 0;
   font-size: 1rem;
   color: #000;
+  font-weight: 500;
+}
+
+.status-text {
+  font-weight: 600;
+  display: inline-block;
+  height: 25px;
+  border-radius: 12px;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.status-text.status-pending {
+  color: #fff;
+}
+
+.status-text.status-approved {
+  color: #fff;
+}
+
+.status-text.status-cancelled {
+  color: #fff;
 }
 
 .image-container {
@@ -77,11 +185,30 @@ p {
 .image-container img {
   width: 100px;
   object-fit: contain;
+  opacity: 0.8;
 }
 
 @media (max-width: 1500px) {
   .image-container {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .quote-card {
+    padding: 0.8rem;
+  }
+  
+  .field {
+    margin-bottom: 0.4rem;
+  }
+  
+  label {
+    font-size: 0.8rem;
+  }
+  
+  p {
+    font-size: 0.9rem;
   }
 }
 </style>

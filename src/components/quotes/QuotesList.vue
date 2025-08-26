@@ -1,38 +1,44 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import QuoteCard from './QuoteCard.vue'
+import { type Submission } from '@/types/form'
 
-const props = defineProps({
-  title: String,
-})
+const props = defineProps<{
+  title: string
+  submissions: Submission[]
+}>()
 
-const quotes = ref([
-  { id: 'q001', client: 'Armando', date: '2025-04-10' },
-  { id: 'q002', client: 'Lucía', date: '2025-04-15' },
-  { id: 'q003', client: 'Carlos', date: '2025-05-01' },
-  { id: 'q004', client: 'Laura', date: '2025-05-05' }
-])
-
-const filter = ref(null)
+const filter = ref<string | undefined>(undefined)
 const showFilters = ref(false)
 
 function toggleFilterOptions() {
   showFilters.value = !showFilters.value
+  console.log(props.submissions)
 }
 
-function setFilter(option) {
+function setFilter(option?: string) {
   filter.value = option
   showFilters.value = false
 }
 
-const filteredQuotes = computed(() => {
+const filteredSubmissions = computed(() => {
   switch (filter.value) {
     case 'recent':
-      return [...quotes.value].sort((a, b) => new Date(b.date) - new Date(a.date))
+      return [...props.submissions].sort((a, b) => 
+        new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+      )
     case 'oldest':
-      return [...quotes.value].sort((a, b) => new Date(a.date) - new Date(b.date))
+      return [...props.submissions].sort((a, b) => 
+        new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime()
+      )
+    case 'pending':
+      return props.submissions.filter(submission => submission.status === 'pending')
+    case 'approved':
+      return props.submissions.filter(submission => submission.status === 'approved')
+    case 'cancelled':
+      return props.submissions.filter(submission => submission.status === 'cancelled')
     default:
-      return quotes.value
+      return props.submissions
   }
 })
 </script>
@@ -48,15 +54,19 @@ const filteredQuotes = computed(() => {
         <div v-if="showFilters" class="filter-options">
           <button @click="setFilter('recent')">Más recientes</button>
           <button @click="setFilter('oldest')">Más antiguos</button>
+          <button @click="setFilter('pending')">Pendientes</button>
+          <button @click="setFilter('approved')">Aprobados</button>
+          <button @click="setFilter('cancelled')">Cancelados</button>
+          <button @click="setFilter(undefined)">Todos</button>
         </div>
       </div>
     </header>
 
     <div class="card-list">
       <QuoteCard
-        v-for="quote in filteredQuotes"
-        :key="quote.id"
-        :quote="quote"
+        v-for="submission in filteredSubmissions"
+        :key="submission.id"
+        :quote="submission"
       />
     </div>
   </section>
