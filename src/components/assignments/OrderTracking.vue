@@ -1,64 +1,158 @@
 <script setup>
-import OrderSteps from './OrderSteps.vue';
+import { ref, watch, onMounted } from 'vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+import { getOrderById } from '@/services/orderService'
+import OrderSteps from './OrderSteps.vue'
+import ShippingInformation from './ShippingInformation.vue'
+
+const props = defineProps({
+  selectedOrder: {
+    type: Object,
+    default: null
+  }
+})
+
+const emit = defineEmits(['back-to-list'])
+
+const orderDetails = ref(null)
+const loading = ref(false)
+
+// Obtener detalles de la orden por ID usando el servicio
+const getOrderDetails = async (orderId) => {
+  if (!orderId) return
+  
+  loading.value = true
+  try {
+    const data = await getOrderById(orderId)
+    orderDetails.value = data
+  } catch (error) {
+    console.error("Error obteniendo detalles de la orden:", error)
+    toast.error("Error al cargar detalles de la orden")
+  } finally {
+    loading.value = false
+  }
+}
+
+// Manejar la actualización de la orden desde ShippingInformation
+const handleOrderUpdated = (updatedOrder) => {
+  orderDetails.value = { ...updatedOrder }
+}
+
+// Watch para cambios en la orden seleccionada
+watch(() => props.selectedOrder, (newOrder) => {
+  if (newOrder) {
+    getOrderDetails(newOrder.id)
+  } else {
+    orderDetails.value = null
+  }
+}, { immediate: true })
+
+const handleBackToList = () => {
+  emit('back-to-list')
+}
 </script>
 
 <template>
-  <main class="tracking-container">
-    <!-- Título -->
-    <header>
-      <h2>Estado actual</h2>
-      <p class="steps-info">
-        1 - En camino a recoger la carga<br />
-        2 - Carga recogida<br />
-        3 - En camino al destino<br />
-        4 - Envío completado
-      </p>
-    </header>
+  <section class="tracking-container">
+    <div v-if="!props.selectedOrder" class="no-selection">
+      <p>Selecciona una orden para ver el estado y detalles</p>
+    </div>
 
-    <!-- Etapas del tracking -->
-    <OrderSteps />
+    <div v-else-if="loading" class="loading-state">
+      <p>Cargando detalles de la orden...</p>
+    </div>
 
-    <!-- Información de envío -->
-    <section class="shipment-info">
-      <div class="info-box">
-        <div class="info-item">
-          <label>Conductor</label>
-          <p>Gerardo Gómez</p>
+    <div v-else-if="orderDetails">
+      <!-- Encabezado -->
+      <header>
+        <!-- Botón de regresar solo en móvil -->
+        <button class="back-btn mobile-only" @click="handleBackToList">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <div class="header-information">
+          <h2>Estado actual</h2>
+          <p class="steps-info">
+            1 - En camino a recoger la carga<br />
+            2 - Carga recogida<br />
+            3 - Envío completado
+          </p>
         </div>
-        <div class="info-item">
-          <label>Vehículo</label>
-          <p>Honda 3B - PEX909</p>
-        </div>
-        <div class="info-item">
-          <label>Precio</label>
-          <p>Q 150.00</p>
-        </div>
-        <div class="info-item">
-          <label>Tipo de carga</label>
-          <p><strong>Empresarial</strong></p>
-        </div>
-      </div>
-    </section>
 
-    <!-- Comentario adicional -->
-    <article class="extra-comment">
-      <label>Comentario adicional</label>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-    </article>
-  </main>
+        <div class="header-button">
+           <button class="form-btn">
+            <span class="material-symbols-outlined">attach_file</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Etapas del tracking -->
+      <OrderSteps :orderStatus="orderDetails.status" />
+
+      <!-- Información de envío -->
+      <ShippingInformation 
+        :orderData="orderDetails" 
+        :editable="false" 
+        @orderUpdated="handleOrderUpdated"
+      />
+    </div>
+  </section>
 </template>
 
 <style scoped>
 .tracking-container {
   padding: 2rem;
   background-color: #fff;
+  border-radius: 10px;
+}
+
+.no-selection, .loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
 }
 
 header {
-  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.back-btn {
+  position: absolute; 
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: none;
+  z-index: 1;
+  padding: 0rem;
+}
+
+.back-btn:hover {
+  color: #235dda;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.form-btn {
+  padding: 0.6rem;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 55px;
+  color: #235dda;
+  border: 1px solid #235dda;
+  border-radius: 10px;
+  background-color: white;
+}
+
+.form-btn:hover {
+  background-color: #f9f9fc;
 }
 
 header h2 {
@@ -72,126 +166,18 @@ header h2 {
   line-height: 1.4;
 }
 
-.steps {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 2rem 0;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #ccc;
-}
-
-.step.active {
-  color: #2f67f6;
-}
-
-.icon {
-  background-color: #ccc;
-  border-radius: 50%;
-  padding: 0.8rem;
-  color: white;
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  transition: background-color 0.3s ease;
-}
-
-.step.active .icon {
-  background-color: #2f67f6;
-}
-
-.shipment-info {
-  margin-bottom: 2rem;
-}
-
-.info-box {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.line {
-  height: 4px;
-  background-color: #ccc;
-  flex: 1;
-  margin: -25px 8px 0 8px;
-  border-radius: 2px;
-  transition: background-color 0.3s ease;
-}
-
-.line.active {
-  background-color: #2f67f6;
-}
-
-.steps {
-  display: flex;
-  align-items: center;
-  margin: 2rem 0;
-}
-
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #ccc;
-  min-width: 40px;
-}
-
-.step.active {
-  color: #2f67f6;
-}
-
-.step .icon {
-  background-color: #ccc;
-  border-radius: 50%;
-  padding: 0.8rem;
-  color: white;
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
-  transition: background-color 0.3s ease;
-}
-
-.step.active .icon {
-  background-color: #2f67f6;
-}
-
 @media (max-width: 770px) {
-  .info-box {
-    grid-template-columns: 1fr;
+  .tracking-container {
+    padding: 1.5rem;
+    background-color: #fff;
   }
-}
 
-.info-item label {
-  font-size: 0.9rem;
-  color: #666;
-}
+  .mobile-only {
+    display: block;
+  }
 
-.info-item p {
-  margin: 0;
-  font-size: 1rem;
-}
-
-.extra-comment {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 1rem;
-}
-
-.extra-comment label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-}
-
-.extra-comment p {
-  margin: 0;
-  line-height: 1.5;
+  .header-information {
+    margin-top: 2.5rem;
+  }
 }
 </style>

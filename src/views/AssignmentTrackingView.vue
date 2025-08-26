@@ -19,8 +19,7 @@ import OrderSteps from '@/components/assignments/OrderSteps.vue';
       <p class="steps-info">
         1 - En camino a recoger la carga<br />
         2 - Carga recogida<br />
-        3 - En camino al destino<br />
-        4 - Envío completado
+        3 - Envío completado<br />
       </p>
       <OrderSteps />
       <div class="info-box">

@@ -5,50 +5,79 @@ import AssigmentForm from '@/components/assignments/AssigmentForm.vue';
 import OrderTracking from '@/components/assignments/OrderTracking.vue';
 
 const activeTab = ref('left')
+const selectedOrder = ref(null)
+const showDetailView = ref(false)
+
+const handleOrderSelected = (order) => {
+  selectedOrder.value = order
+  showDetailView.value = true
+}
+
+const handleBackToList = () => {
+  showDetailView.value = false
+  selectedOrder.value = null
+}
 </script>
 
 <template>
   <main>
     <header>
-      <h1>Control de pedidos y asignaciones</h1>
+      <h1 class="text-title">Control de pedidos y asignaciones</h1>
     </header>
 
+    <!-- Switch para cambiar entre pestañas -->
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
       <div class="toggle-indicator"></div>
       <div class="toggle-button" @click="activeTab = 'left'">Pendientes</div>
-      <div class="toggle-button" @click="activeTab = 'right'">Asignados</div>
+      <div class="toggle-button" @click="activeTab = 'right'">En progreso</div>
     </div>
 
+    <!-- Pedidos pendientes -->
     <section class="pending-orders" v-if="activeTab === 'left'">
-        <div class="list">
+        <!-- Lista de órdenes - se oculta en móvil cuando hay una orden seleccionada -->
+        <div class="list" :class="{ 'mobile-hidden': showDetailView }">
             <OrderList
               title="Pendientes"
               :defaultStatuses="['pending', 'assigned']"
               :availableFilters="[
                 { value: 'recent', label: 'Fecha más reciente' },
                 { value: 'oldest', label: 'Fecha más antigua' },
-                { value: 'pending', label: 'Asignado en espera' },
-                { value: 'assigned', label: 'Pendiente de asignar' }
+                { value: 'pending', label: 'Pendiente de asignar'},
+                { value: 'assigned', label: 'Asignado en espera' },
               ]"
+              @order-selected="handleOrderSelected"
             />
         </div>
-        <div class="details">
-            <AssigmentForm />
+        <!-- Detalles - se muestra en móvil cuando hay una orden seleccionada -->
+        <div class="details" :class="{ 'mobile-shown': showDetailView }">
+            <AssigmentForm 
+              :selectedOrder="selectedOrder" 
+              @back-to-list="handleBackToList"
+            />
         </div>
     </section>
+
+    <!-- Pedidos en progreso -->
     <section class="pending-orders" v-else>
-        <div class="list">
+        <!-- Lista de órdenes - se oculta en móvil cuando hay una orden seleccionada -->
+        <div class="list" :class="{ 'mobile-hidden': showDetailView }">
             <OrderList
-              title="Asignados"
-              :defaultStatuses="['pickup', 'collected', 'transporting', 'delivered']"
+              title="En progreso"
+              :defaultStatuses="['pickup', 'collected', 'delivered']"
               :availableFilters="[
-                { value: 'in_progress', label: 'En progreso' },
+                { value: 'pickup', label: 'En camino a recoger' },
+                { value: 'collected', label: 'Carga recogida' },
                 { value: 'delivered', label: 'Completado' }
               ]"
+              @order-selected="handleOrderSelected"
             />
         </div>
-        <div class="details">
-            <OrderTracking />
+        <!-- Detalles - se muestra en móvil cuando hay una orden seleccionada -->
+        <div class="details" :class="{ 'mobile-shown': showDetailView }">
+            <OrderTracking 
+              :selectedOrder="selectedOrder" 
+              @back-to-list="handleBackToList"
+            />
         </div>
     </section>
   </main>
@@ -96,7 +125,6 @@ h1 {
   background-color: white;
   border-radius: 10px;
   transition: all 0.3s ease;
-  z-index: 1;
 }
 
 .toggle-button {
@@ -104,7 +132,7 @@ h1 {
   text-align: center;
   line-height: 48px;
   cursor: pointer;
-  z-index: 2;
+  z-index: 1;
   user-select: none;
 }
 
@@ -161,8 +189,31 @@ h1 {
     text-align: center;
   }
 
-  h1 {
+  /* Título principal de la página */
+  .text-title {
     margin-left: 50px;
+    font-size: 1.5rem;
+  }
+
+  /* Switch */
+  .toggle-wrapper {
+    width: 250px;
+    height: 50px;
+    font-size: 0.9rem;
+    align-items: center;
+  }
+
+  /* Responsive behavior para móvil */
+  .pending-orders .list.mobile-hidden {
+    display: none;
+  }
+
+  .pending-orders .details.mobile-shown {
+    display: block;
+  }
+
+  .pending-orders .details {
+    display: none;
   }
 }
 </style>

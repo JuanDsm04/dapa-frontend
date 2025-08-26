@@ -1,80 +1,92 @@
-<script setup lang="ts">
-import FormPreview from '@/components/form/FormPreview.vue'
-import { ref } from 'vue'
-import { type Question } from '@/types/form'
-
-// Ejemplo de preguntas: solo se mostrarán aquellas con active: true
-const formQuestions = ref<Question[]>([
-  {
-    id: '1',
-    text: '¿Cuál es tu nombre completo?',
-    type: 'text',
-    active: true
-  },
-  {
-    id: '2',
-    text: '¿Cuál es tu color favorito?',
-    type: 'multiple',
-    options: ['Rojo', 'Verde', 'Azul'],
-    active: true
-  },
-  {
-    id: '3',
-    text: '¿En qué ciudad vives?',
-    type: 'dropdown',
-    options: ['Ciudad de Guatemala', 'Quetzaltenango', 'Escuintla', 'Otra'],
-    active: true
-  }
-])
+<script setup>
+import InformationQuote from '@/components/quotes/InformationQuote.vue';
+import QuotesList from '@/components/quotes/QuotesList.vue';
 </script>
 
 <template>
-  <main class="main-content">
-    <section class="form-response">
-      <div class="form-header">
-          <h2 class="title">Formulario de cotización</h2>
-      </div>
-      <FormPreview :questions="formQuestions" />
+  <main>
+    <header>
+      <h1>Cotizaciones</h1>
+    </header>
+
+    <section class="pending-orders">
+        <div class="list">
+            <QuotesList title="Pendientes"/>
+        </div>
+        <div class="details">
+            <InformationQuote/>
+        </div>
     </section>
   </main>
 </template>
 
 <style scoped>
-.main-content{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+main {
   width: 100%;
-  height: 100dvh;
-  background: var(--bg-general);
+  padding: 2rem;
+  background-color: var(--bg-general);
+  min-height: 100vh;
 }
 
-.form-response {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 800px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.form-heaader{
+main header {
   display: flex;
   justify-content: space-between;
-  width: 90%;
   align-items: center;
-  padding: 1rem 0;
-  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 2rem;
 }
 
-.title{
+h1 {
   font-weight: 600;
-  margin-top: 2rem;
-  color: #333;
-  font-size: 1.5rem;
+  margin: 0;
+}
+
+.pending-orders {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 0.75fr 1fr;
+  height: calc(100vh - 150px); 
+  background-color: var(--white);
+  border-radius: 10px;
+}
+
+.pending-orders .list {
+  overflow-y: auto;
+}
+
+.pending-orders .details {
+  display: block;
+  overflow-y: auto;
+}
+
+@media (max-width: 1000px) {
+  .pending-orders {
+    grid-template-columns: 1fr;
+  }
+
+  .pending-orders .details {
+    display: none;
+  }
+}
+
+@media (max-width: 770px) {
+  main {
+    margin-left: 0;
+    padding: 2rem 1rem;
+  }
+  
+  main header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .header-content {
+    text-align: center;
+  }
+
+  h1 {
+    margin-left: 50px;
+  }
 }
 </style>
 

@@ -6,6 +6,7 @@ import UserForm from '@/components/UserForm.vue';
 import TableUsers from '@/components/Table.vue'
 import type { HighlightConfig } from '@/types/table';
 import type { User } from '@/types/user';
+import NotificationModal from '@/components/NotificationModal.vue';
 
 const showModal = ref(false);
 const users = ref<User[]>([])
@@ -50,35 +51,43 @@ const handleEditUser = (user: User) => {
   showModal.value = true;
 };
 
+// Estados para el modal de confirmación de eliminación
+const showConfirmModal = ref(false)
+const confirmTitle = ref('')
+const confirmMessage = ref('')
+const confirmAction = ref<(() => void) | null>(null)
+
 // Eliminar a un usuario después de su confirmación y actualizar la lista
-const handleDeleteUser = async (user: User) => {
+const handleDeleteUser = (user: User) => {
+  confirmTitle.value = '¿Eliminar usuario?'
+  confirmMessage.value = `¿Estás seguro de que quieres eliminar a ${user.name} ${user.lastName}?`
 
-  if (!confirm(`¿Estás seguro de que quieres eliminar a ${user.name} ${user.lastName}?`)) {
-    return;
+  confirmAction.value = async () => {
+    selectedUser.value = { ...user };
+    const userID = selectedUser.value.id
+    loading.value = true;
+
+    try {
+      const token = localStorage.getItem('token') 
+      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userID}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
+      })
+
+      await getUsers()
+      toast.warning('Usuario eliminado')
+
+    } catch (error) {
+      console.log("Error eliminando usuario:", error)
+      toast.error('Error eliminando usuario')
+
+    } finally {
+      loading.value = false;
+    }
   }
 
-  selectedUser.value = { ...user };
-  const userID = selectedUser.value.id
-  loading.value = true;
-
-  try {
-    const token = localStorage.getItem('token') 
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userID}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-    })
-
-    await getUsers()
-    toast.warning('Usuario eliminado')
-
-  } catch (error) {
-    console.log("Error eliminando usuario:", error)
-    toast.error('Error eliminando usuario')
-
-  } finally {
-    loading.value = false;
-  }
-};
+  showConfirmModal.value = true
+}
 
 // Obtener los usuarios desde la API
 const getUsers = async () => {
@@ -246,7 +255,7 @@ onMounted(() => {
     <article>
       <header>
         <h3>{{ selectedUser ? 'Editar Usuario' : 'Agregar Usuario' }}</h3>
-        <button class="close-btn" @click="closeModal">&times;</button>
+        <button class="close-btn" @click="closeModal">✕</button>
       </header>
 
       <section>
@@ -259,6 +268,21 @@ onMounted(() => {
       </section>
     </article>
   </div>
+
+  <!-- Modal para confirmar una eliminación-->
+  <NotificationModal
+    v-if="showConfirmModal"
+    :show="showConfirmModal"
+    :title="confirmTitle"
+    :message="confirmMessage"
+    confirmText="Confirmar"
+    cancelText="Cancelar"
+    @close="showConfirmModal = false"
+    @confirm="() => { 
+      if (confirmAction) confirmAction()
+      showConfirmModal = false
+    }"
+  />
 </template>
 
 <style scoped>

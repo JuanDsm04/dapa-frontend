@@ -1,5 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+import { getOrders } from '@/services/orderService'
 import OrderCard from './OrderCard.vue'
 
 const props = defineProps({
@@ -14,16 +17,13 @@ const props = defineProps({
   }
 })
 
-const orders = ref([
-  { id: '123456', name: 'Armando', date: '2025-04-16', status: 'pending' }, // Pendientes: Las cotizaciones que si aceptaron
-  { id: '789012', name: 'Lucía', date: '2025-05-01', status: 'assigned' }, // Asignados: Chofer, pero no necesariamente ya empezó (todavia puede cambiar la persona y vehiculo asignado)
-  { id: '345678', name: 'Carlos', date: '2025-05-10', status: 'pickup' }, // Aceptado - En camino a recoger
-  { id: '901234', name: 'Laura', date: '2025-05-15', status: 'collected' }, // Carga recogida
-  { id: '432109', name: 'Ana', date: '2025-06-10', status: 'delivered' } // Completado - Entregado
-])
+const emit = defineEmits(['order-selected'])
 
+const orders = ref([])
 const filter = ref(null)
 const showFilters = ref(false)
+const loading = ref(false)
+const selectedOrderId = ref(null)
 
 function toggleFilterOptions() {
   showFilters.value = !showFilters.value
@@ -32,6 +32,11 @@ function toggleFilterOptions() {
 function setFilter(option) {
   filter.value = option
   showFilters.value = false
+}
+
+const handleOrderClick = (order) => {
+  selectedOrderId.value = order.id
+  emit('order-selected', order)
 }
 
 const filteredOrders = computed(() => {
@@ -48,20 +53,41 @@ const filteredOrders = computed(() => {
       return sorted.filter(order => order.status === 'pending')
     case 'assigned':
       return sorted.filter(order => order.status === 'assigned')
-    case 'in_progress':
-      return sorted.filter(order => ['pickup', 'collected', 'transporting'].includes(order.status))
+    case 'pickup':
+      return sorted.filter(order => order.status === 'pickup')
+    case 'collected':
+      return sorted.filter(order => order.status === 'collected')
     case 'delivered':
       return sorted.filter(order => order.status === 'delivered')
     default:
       return sorted
   }
 })
+
+// Obtener ordenes
+const getOrdersData = async () => {
+  loading.value = true
+  try {
+    const data = await getOrders()
+    orders.value = data
+  } catch (error) {
+    console.error("Error obteniendo órdenes:", error)
+    toast.error("Error al cargar órdenes")
+  } finally {
+    loading.value = false
+  }
+}
+
+// Obtener ordenes al montar el componente
+onMounted(() => {
+  getOrdersData()
+})
 </script>
 
 <template>
   <section class="order-list">
     <header>
-      <h2>{{ title }}</h2>
+      <h2 class="text-subtitle">{{ title }}</h2>
       <div class="filter-wrapper">
         <button class="filter-btn" @click="toggleFilterOptions">
           <span class="material-symbols-outlined">tune</span>
@@ -78,12 +104,19 @@ const filteredOrders = computed(() => {
       </div>
     </header>
 
-    <div class="card-list">
+    <div v-if="loading" class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+
+    <div v-else class="card-list">
       <OrderCard
         v-for="order in filteredOrders"
         :key="order.id"
         :order="order"
+        :isSelected="selectedOrderId === order.id"
+        @click="handleOrderClick(order)"
       />
+      <p v-if="!loading && filteredOrders.length === 0">No hay órdenes disponibles</p>
     </div>
   </section>
 </template>
@@ -116,14 +149,14 @@ h2 {
   justify-content: center;
   padding: 0.5rem 1rem;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: white;
   font-size: 1rem;
   cursor: pointer;
 }
 
 .filter-btn:hover {
-  background-color: rgb(245, 245, 245);
+  background-color: #f5f5f5;
 }
 
 .filter-options {
@@ -157,5 +190,11 @@ h2 {
   flex-direction: column;
   gap: 1rem;
   padding-bottom: 20px;
+}
+
+@media (max-width: 770px) {
+  .text-subtitle {
+    font-size: 1.25rem;
+  }
 }
 </style>
