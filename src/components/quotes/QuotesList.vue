@@ -11,9 +11,14 @@ const props = defineProps<{
 const filter = ref<string | undefined>(undefined)
 const showFilters = ref(false)
 
+const emit = defineEmits(['quote-selected'])
+
+const handleQuoteSelected = (submission: Submission) => {
+  emit('quote-selected', submission)
+}
+
 function toggleFilterOptions() {
   showFilters.value = !showFilters.value
-  console.log(props.submissions)
 }
 
 function setFilter(option?: string) {
@@ -31,12 +36,6 @@ const filteredSubmissions = computed(() => {
       return [...props.submissions].sort((a, b) => 
         new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime()
       )
-    case 'pending':
-      return props.submissions.filter(submission => submission.status === 'pending')
-    case 'approved':
-      return props.submissions.filter(submission => submission.status === 'approved')
-    case 'cancelled':
-      return props.submissions.filter(submission => submission.status === 'cancelled')
     default:
       return props.submissions
   }
@@ -54,9 +53,6 @@ const filteredSubmissions = computed(() => {
         <div v-if="showFilters" class="filter-options">
           <button @click="setFilter('recent')">Más recientes</button>
           <button @click="setFilter('oldest')">Más antiguos</button>
-          <button @click="setFilter('pending')">Pendientes</button>
-          <button @click="setFilter('approved')">Aprobados</button>
-          <button @click="setFilter('cancelled')">Cancelados</button>
           <button @click="setFilter(undefined)">Todos</button>
         </div>
       </div>
@@ -67,6 +63,7 @@ const filteredSubmissions = computed(() => {
         v-for="submission in filteredSubmissions"
         :key="submission.id"
         :quote="submission"
+        @quote-selected="handleQuoteSelected"
       />
     </div>
   </section>

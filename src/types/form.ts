@@ -24,7 +24,7 @@ export interface Answer {
   submissionId: number;
   question: Question;
   answer?: string;
-  questionOptions?: QuestionOption[];
+  options?: QuestionOption[];
 }
 
 export interface Submission {

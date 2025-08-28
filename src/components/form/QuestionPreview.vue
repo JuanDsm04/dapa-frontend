@@ -5,6 +5,7 @@ import { XCircleIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
   question: Question
+  readOnly?: boolean
   value?: any
   error?: string
 }>()
@@ -23,10 +24,16 @@ function getInitialValue() {
     case 'text':
       return ''
     case 'multiple':
+      if (Array.isArray(props.value)) {
+        return props.value
+      }
+      if (typeof props.value === 'number') {
+        return [props.value]
+      }
       return []
     case 'dropdown':
     case 'unique':
-      return ''
+      return typeof props.value === 'number' ? props.value : ''
     default:
       return ''
   }
@@ -40,26 +47,35 @@ watch(localValue, (newValue) => {
 
 watch(() => props.value, (newValue) => {
   if (newValue !== undefined) {
-    localValue.value = newValue
+    if (props.question.type.type === 'multiple') {
+      localValue.value = Array.isArray(newValue)
+        ? newValue
+        : typeof newValue === 'number'
+          ? [newValue]
+          : []
+    } else {
+      localValue.value = newValue
+    }
   }
 })
 
-const handleCheckboxChange = (option: string, checked: boolean) => {
+const handleCheckboxChange = (optionId: number, checked: boolean) => {
   if (!Array.isArray(localValue.value)) {
     localValue.value = []
   }
-  
+
   if (checked) {
-    if (!localValue.value.includes(option)) {
-      localValue.value.push(option)
+    if (!localValue.value.includes(optionId)) {
+      localValue.value.push(optionId)
     }
   } else {
-    const index = localValue.value.indexOf(option)
+    const index = localValue.value.indexOf(optionId)
     if (index > -1) {
       localValue.value.splice(index, 1)
     }
   }
 }
+
 </script>
 
 <template>
@@ -77,6 +93,7 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
         class="text-input"
         :class="{ 'error': hasError }"
         placeholder="Escribe tu respuesta aquí..."
+        :readonly="props.readOnly"
       />
     </div>
 
@@ -91,10 +108,11 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
           <input
             :id="`${question.id}-${option.option}`"
             type="checkbox"
-            :value="option"
-            :checked="Array.isArray(localValue) && localValue.includes(option)"
-            @change="handleCheckboxChange(option.option, ($event.target as HTMLInputElement).checked)"
+            :value="option.id"
+            :checked="Array.isArray(localValue) && localValue.includes(option.id)"
+            @change="handleCheckboxChange(option.id, ($event.target as HTMLInputElement).checked)"
             class="checkbox-input"
+            :disabled="props.readOnly"
           />
           <label
             :for="`${question.id}-${option.option}`"
@@ -112,12 +130,13 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
         v-model="localValue" 
         class="select-input"
         :class="{ 'error': hasError }"
+        :disabled="props.readOnly"
       >
         <option value="">Selecciona una opción</option>
         <option
           v-for="option in question.options"
           :key="option.id"
-          :value="option"
+          :value="option.id"
         >
           {{ option.option }}
         </option>
@@ -136,8 +155,9 @@ const handleCheckboxChange = (option: string, checked: boolean) => {
             :id="`${question.id}-${option.option}`"
             v-model="localValue"
             type="radio"
-            :value="option"
+            :value="option.id"
             class="radio-input"
+            :disabled="props.readOnly"
           />
           <label
             :for="`${question.id}-${option.option}`"

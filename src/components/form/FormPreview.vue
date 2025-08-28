@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { type Question } from '@/types/form'
+import { ref, watch } from 'vue'
+import { type Question, type QuestionOption, type Answer } from '@/types/form'
 import QuestionPreview from './QuestionPreview.vue'
 import { createSubmission } from '@/services/submissionService'
 import { EyeIcon, WrenchScrewdriverIcon } from '@heroicons/vue/24/solid'
@@ -9,6 +9,7 @@ import 'vue3-toastify/dist/index.css'
 
 const props = defineProps<{
     questions: Question[]
+    answers?: Answer[] // Cambié el tipo a Answer[] para tipado fuerte
     isPreview?: boolean
 }>()
 
@@ -18,19 +19,51 @@ const emit = defineEmits<{
     (e: 'submit-error', error: any): void
 }>()
 
-const formData = ref<Record<number, any>>({})
+// Estado principal
+const formData = ref<Record<number, string | number | number[]>>({})
 const isSubmitting = ref(false)
 const submitError = ref<string | null>(null)
 const submitSuccess = ref(false)
 const formKey = ref(0)
-const questionErrors = ref<Record<number, string>>({}) // Errores por pregunta
+const questionErrors = ref<Record<number, string>>({})
+const isReadOnly = ref(false)
+
+// Si recibimos respuestas, activamos modo lectura
+watch(
+    () => props.answers,
+    (newAnswers) => {
+        if (Array.isArray(newAnswers) && newAnswers.length > 0) {
+            const filledForm: Record<number, any> = {}
+
+            for (const ans of newAnswers) {
+                if (ans.options && ans.options.length > 0) {
+                    // Pregunta de selección múltiple
+                    if (ans.question.type.type === 'multiple') {
+                        filledForm[ans.question.id] = ans.options.map((opt: QuestionOption) => opt.id)
+                    } else {
+                        // Dropdown o única selección
+                        filledForm[ans.question.id] = ans.options[0]?.id ?? ''
+                    }
+                }
+            }
+
+            formData.value = filledForm
+            isReadOnly.value = true
+        } else {
+            formData.value = {}
+            isReadOnly.value = false
+        }
+    },
+    { immediate: true }
+)
 
 const handleQuestionChange = (questionId: number, value: any) => {
+    if (isReadOnly.value) return
+
     formData.value[questionId] = value
     submitError.value = null
     submitSuccess.value = false
-    
-    // Limpiar error de la pregunta específica cuando el usuario empiece a escribir
+
     if (questionErrors.value[questionId]) {
         delete questionErrors.value[questionId]
         questionErrors.value = { ...questionErrors.value }
@@ -40,42 +73,44 @@ const handleQuestionChange = (questionId: number, value: any) => {
 const validateForm = (): boolean => {
     questionErrors.value = {}
     let hasErrors = false
-    
+
     for (const question of props.questions) {
-        const value = formData.value[question.id!]
+        const value = formData.value[question.id]
         let isValid = true
-        
+
+        // Si no se seleccionó nada o está vacío
         if (value === undefined || value === null || value === '') {
             isValid = false
         }
-        
-        // Validación específica para arrays (preguntas de selección múltiple)
+
+        // Validar arrays (checkboxes)
         if (Array.isArray(value) && value.length === 0) {
             isValid = false
         }
-        
+
         if (!isValid) {
-            questionErrors.value[question.id!] = 'Este campo es obligatorio'
+            questionErrors.value[question.id] = 'Este campo es obligatorio'
             hasErrors = true
         }
     }
-    
+
     if (hasErrors) {
         submitError.value = 'Por favor, completa todos los campos obligatorios'
         return false
     }
-    
+
     return true
 }
 
 const submitForm = async () => {
+    if (isReadOnly.value) return
 
     if (!validateForm()) {
-        toast.error(submitError)
+        toast.error(submitError.value || 'Formulario incompleto')
         return
     }
 
-    // Modo preview no se envía nada
+    // Si es modo preview, no enviamos nada
     if (props.isPreview) {
         console.log('Datos del formulario (Preview):', formData.value)
         toast.success('Formulario enviado (Preview)')
@@ -86,51 +121,38 @@ const submitForm = async () => {
     isSubmitting.value = true
 
     try {
-        const answers = Object.entries(formData.value).map(([questionIdStr, value]) => {
-            const questionId = parseInt(questionIdStr)
-            const question = props.questions.find(q => q.id === questionId)
+        // Construir payload en el formato que tu API espera
+        const answers = Object.entries(formData.value)
+            .map(([questionIdStr, value]) => {
+                const questionId = parseInt(questionIdStr)
+                const question = props.questions.find(q => q.id === questionId)
+                if (!question) return null
 
-            if (!question) {
-                console.warn(`Pregunta con ID ${questionId} no encontrada`)
-                return null
-            }
-
-            if (question.options && question.options.length > 0) {
-                let selectedOptionIds: number[] = []
-
-                if (Array.isArray(value)) {
-                    // Caso: checkboxes (múltiples opciones seleccionadas)
-                    selectedOptionIds = question.options
-                        .filter(opt => value.includes(opt.option))
-                        .map(opt => opt.id)
-                } else {
-                    // Caso: radio o select (una sola opción seleccionada)
-                    const selected = question.options.find(opt => opt.option === value.option)
-                    if (selected) {
-                        selectedOptionIds = [selected.id]
+                // Preguntas con opciones
+                if (question.options && question.options.length > 0) {
+                    const selectedOptionIds = Array.isArray(value) ? value : [value]
+                    return {
+                        questionId,
+                        optionsId: selectedOptionIds
                     }
                 }
 
+                // Preguntas abiertas
                 return {
                     questionId,
-                    optionsId: selectedOptionIds 
+                    answer: value as string
                 }
-            }
-
-            // Caso preguntas abiertas o de texto
-            return {
-                questionId,
-                answer: value
-            }
-        }).filter(Boolean)
+            })
+            .filter(Boolean)
 
         const payload = { answers }
-        const response = await createSubmission(payload)
 
+        console.log('Payload final:', payload)
+
+        const response = await createSubmission(payload)
         emit('submit-success', response)
         toast.success('¡Formulario enviado exitosamente!')
         resetForm()
-
     } catch (error: any) {
         console.error('Error al enviar formulario:', error)
         emit('submit-error', error)
@@ -150,50 +172,48 @@ const resetForm = () => {
 <template>
     <div class="form-viewer-container">
         <div class="form-viewer-body">
-            <!-- Indicador de modo -->
-            <div v-if="isPreview" class="preview-mode-indicator">
-                <EyeIcon class="icon"/>
+            <!-- Indicador de modo preview -->
+            <div v-if="isPreview && !isReadOnly" class="preview-mode-indicator">
+                <EyeIcon class="icon" />
                 Modo Vista Previa
             </div>
 
             <form @submit.prevent="submitForm" class="form-content">
                 <!-- Estado vacío -->
                 <div v-if="questions.length === 0" class="empty-state">
-                    <WrenchScrewdriverIcon class="empty-icon"/>
+                    <WrenchScrewdriverIcon class="empty-icon" />
                     <h3>No hay preguntas activas</h3>
-                    <p>{{ isPreview ? 'Activa al menos una pregunta para ver la vista previa' : 'Intenta de nuevo más tarde' }}</p>
+                    <p>
+                        {{
+                            isPreview
+                                ? 'Activa al menos una pregunta para ver la vista previa'
+                                : 'Intenta de nuevo más tarde'
+                        }}
+                    </p>
                 </div>
 
                 <!-- Preguntas -->
                 <div v-else class="questions-container" :key="formKey">
-                    <QuestionPreview 
-                        v-for="question in questions" 
-                        :key="question.id" 
-                        :question="question"
-                        :value="formData[question.id]" 
-                        :error="questionErrors[question.id]"
-                        @change="handleQuestionChange" 
-                    />
+                    <QuestionPreview v-for="question in questions" :key="question.id" :question="question"
+                        :value="formData[question.id]" :error="questionErrors[question.id]" :readOnly="isReadOnly"
+                        @change="handleQuestionChange" />
                 </div>
 
-                <!-- Acciones del formulario -->
-                <div v-if="questions.length > 0" class="form-actions">
-                    <button 
-                        type="submit" 
-                        class="btn-submit"
-                        :disabled="isSubmitting"
-                        :class="{ 'submitting': isSubmitting }"
-                    >
+                <!-- Acciones -->
+                <div v-if="questions.length > 0 && !isReadOnly" class="form-actions">
+                    <button type="submit" class="btn-submit" :disabled="isSubmitting"
+                        :class="{ submitting: isSubmitting }">
                         <span v-if="isSubmitting" class="spinner"></span>
-                        {{ isSubmitting ? 'Enviando...' : (isPreview ? 'Prueba de envío' : 'Enviar formulario') }}
+                        {{
+                            isSubmitting
+                                ? 'Enviando...'
+                                : isPreview
+                                    ? 'Prueba de envío'
+                        : 'Enviar formulario'
+                        }}
                     </button>
-                    
-                    <button 
-                        type="button" 
-                        @click="resetForm" 
-                        class="btn-reset"
-                        :disabled="isSubmitting"
-                    >
+
+                    <button type="button" @click="resetForm" class="btn-reset" :disabled="isSubmitting">
                         Limpiar respuestas
                     </button>
                 </div>
@@ -207,15 +227,12 @@ const resetForm = () => {
     background: white;
     width: 100%;
     max-width: 800px;
-    max-height: 90vh;
-    overflow: hidden;
     display: flex;
     flex-direction: column;
 }
 
 .form-viewer-body {
     flex: 1;
-    overflow-y: auto;
     padding: 1.5rem;
 }
 
@@ -250,7 +267,7 @@ const resetForm = () => {
     margin-bottom: 1rem;
 }
 
-.icon{
+.icon {
     width: 1rem;
     height: 1rem;
 }

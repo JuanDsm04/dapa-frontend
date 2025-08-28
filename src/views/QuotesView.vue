@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, computed} from 'vue'
 import InformationQuote from '@/components/quotes/InformationQuote.vue';
 import QuotesList from '@/components/quotes/QuotesList.vue';
-import { getSubmissions } from '@/services/submissionService';
+import { getSubmissions, getSubmissionById } from '@/services/submissionService';
 import {  type Submission } from '@/types/form';
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
 const submissions = ref<Submission[]>([])
+const selectedSubmission = ref<Submission | undefined>(undefined)
+const isLoading = ref(false)
 onMounted(async()=>{
   await loadSubmissions()
 })
@@ -21,6 +23,23 @@ const loadSubmissions = async() => {
     toast.error(`Error al cargar formularios: ${error.message}`)
   }
 }
+
+const handleQuoteSelected = async (submission: Submission) => {
+  try {
+    isLoading.value = true
+    selectedSubmission.value = await getSubmissionById(submission.id)
+  } catch (error) {
+    console.error('Error loading submission details:', error)
+    toast.error('Error cargando los detalles del formulario')
+  } finally {
+    isLoading.value = false
+  }
+}
+
+const pendingSubmissions = computed(() => {
+  return submissions.value.filter(submission => submission.status === 'pending')
+})
+
 </script>
 
 <template>
@@ -31,10 +50,10 @@ const loadSubmissions = async() => {
 
     <section class="pending-orders">
         <div class="list">
-            <QuotesList title="Pendientes" :submissions="submissions"/>
+            <QuotesList title="Pendientes" :submissions="pendingSubmissions" @quote-selected="handleQuoteSelected"/>
         </div>
         <div class="details">
-            <InformationQuote/>
+            <InformationQuote :submission="selectedSubmission"/>
         </div>
     </section>
   </main>

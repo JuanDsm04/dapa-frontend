@@ -9,6 +9,12 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits(['quote-selected'])
+
+const handleClick = () => {
+  emit('quote-selected', props.quote)
+}
+
 // Formatear fecha para mostrar
 const formattedDate = computed(() => {
   if (!props.quote.submittedAt) return '----'
@@ -56,10 +62,7 @@ const answersCount = computed(() => {
 </script>
 
 <template>
-  <div class="quote-card">
-    <!-- Indicador de estado -->
-    <div class="status-indicator" :class="statusClass"></div>
-
+  <div class="quote-card" @click="handleClick">
     <!-- Información de la submission -->
     <div class="info">
       <div class="field">
@@ -105,15 +108,6 @@ const answersCount = computed(() => {
 
 .quote-card:hover {
   background-color: rgb(245, 245, 245);
-}
-
-.status-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 4px;
-  height: 100%;
-  border-radius: 10px 0 0 10px;
 }
 
 .status-pending {

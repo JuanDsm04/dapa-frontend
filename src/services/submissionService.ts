@@ -22,6 +22,17 @@ export const getSubmissions = async (): Promise<Submission[]> => {
   return response as Submission[]
 }
 
+export const getSubmissionById = async (id: number): Promise<Submission> => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/submissions/${id}`,{
+      method: 'GET',
+      headers: getHeaders(),
+    })
+  )
+
+  return response as Submission
+}
+
 export const getSubmissionStats = async (): Promise<SubmissionStats> => {
   const response = await handleResponse(
     await fetch(`${API_URL}/api/submissions-stats`, {
