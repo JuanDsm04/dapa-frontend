@@ -1,19 +1,61 @@
 <script setup>
-  import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
-  import { ref } from 'vue'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+import router from '@/router'
 
-  const password = ref('')
-  const confirmPassword = ref('')
-  const showPassword = ref(false)	
-  const showConfirmPassword = ref(false)
+const route = useRoute()
+const token = route.query.token
 
-  const togglePassVisibility = () => {
-    showPassword.value = !showPassword.value
-  }
+const password = ref('')
+const confirmPassword = ref('')
+const showPassword = ref(false)	
+const showConfirmPassword = ref(false)
 
-  const toggleConfirmPassVisibility = () => {
-    showConfirmPassword.value = !showConfirmPassword.value
-  }
+const togglePassVisibility = () => {
+	showPassword.value = !showPassword.value
+}
+
+const toggleConfirmPassVisibility = () => {
+	showConfirmPassword.value = !showConfirmPassword.value
+}
+
+const handleResetButton = async () => {
+	if (!password.value || !confirmPassword.value) {
+		alert('Por favor completa ambos campos')
+		return
+	}
+
+	if (password.value !== confirmPassword.value) {
+		alert('Las contraseñas no coinciden')
+		return
+	}
+
+	try {
+		const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/reset`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				token: token,
+				newPassword: password.value,
+			}),
+		})
+
+		if (response.ok) {
+			alert('Contraseña restablecida correctamente')
+			router.push('/login')
+
+		} else {
+			const errorData = await response.json()
+			alert(`Error: ${errorData.message || 'No se pudo restablecer la contraseña'}`)
+		}
+	} catch (error) {
+		console.error(error)
+		alert('Ocurrió un error al procesar la solicitud')
+	}
+}
 </script>
 
 <template>
@@ -48,7 +90,7 @@
           </div>
           <input :type="showConfirmPassword ? 'text' : 'password'" id="ConfirmPassword" name="ConfirmPassword" v-model="confirmPassword" />
         </div>
-	  <button>Reestablecer</button>
+	  <button type="button" @click="handleResetButton">Reestablecer</button>
       </div>
     </section>
   </main>
