@@ -2,7 +2,9 @@
 import BigButton from '@/components/BigButton.vue';
 import router from '@/router';
 
-function goToControl() { }
+function goToControl() { 
+  router.push('/reports/financial_control')
+}
 
 function goToReport() {
   router.push('/reports/financial')
