@@ -10,6 +10,9 @@ import 'vue3-toastify/dist/index.css'
 const submissions = ref<Submission[]>([])
 const selectedSubmission = ref<Submission | undefined>(undefined)
 const isLoading = ref(false)
+const showDetailView = ref(false)
+const selectedSubmissionId = ref<string | number | null>(null)
+
 onMounted(async()=>{
   await loadSubmissions()
 })
@@ -27,13 +30,21 @@ const loadSubmissions = async() => {
 const handleQuoteSelected = async (submission: Submission) => {
   try {
     isLoading.value = true
+    selectedSubmissionId.value = submission.id
     selectedSubmission.value = await getSubmissionById(submission.id)
+    showDetailView.value = true
   } catch (error) {
     console.error('Error loading submission details:', error)
     toast.error('Error cargando los detalles del formulario')
   } finally {
     isLoading.value = false
   }
+}
+
+const handleBackToList = () => {
+  showDetailView.value = false
+  selectedSubmission.value = undefined
+  selectedSubmissionId.value = null
 }
 
 const pendingSubmissions = computed(() => {
@@ -49,11 +60,21 @@ const pendingSubmissions = computed(() => {
     </header>
 
     <section class="pending-orders">
-        <div class="list">
-            <QuotesList title="Pendientes" :submissions="pendingSubmissions" @quote-selected="handleQuoteSelected"/>
+        <!-- Lista de órdenes -->
+        <div class="list" :class="{ 'mobile-hidden': showDetailView }">
+            <QuotesList 
+              title="Pendientes" 
+              :submissions="pendingSubmissions" 
+              :selectedSubmissionId="selectedSubmissionId"
+              @quote-selected="handleQuoteSelected"
+            />
         </div>
-        <div class="details">
-            <InformationQuote :submission="selectedSubmission"/>
+        <!-- Detalles -->
+        <div class="details" :class="{ 'mobile-shown': showDetailView }">
+            <InformationQuote 
+              :submission="selectedSubmission"
+              @back-to-list="handleBackToList"
+            />
         </div>
     </section>
   </main>
@@ -97,7 +118,7 @@ h1 {
   overflow-y: auto;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 770px) {
   .pending-orders {
     grid-template-columns: 1fr;
   }
@@ -105,9 +126,7 @@ h1 {
   .pending-orders .details {
     display: none;
   }
-}
 
-@media (max-width: 770px) {
   main {
     margin-left: 0;
     padding: 2rem 1rem;
@@ -126,6 +145,18 @@ h1 {
   h1 {
     margin-left: 50px;
   }
+
+  /* Responsive behavior para móvil */
+  .pending-orders .list.mobile-hidden {
+    display: none;
+  }
+
+  .pending-orders .details.mobile-shown {
+    display: block;
+  }
+
+  .pending-orders .details {
+    display: none;
+  }
 }
 </style>
-

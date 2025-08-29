@@ -6,6 +6,7 @@ import { type Submission } from '@/types/form'
 const props = defineProps<{
   title: string
   submissions: Submission[]
+  selectedSubmissionId?: string | number | null
 }>()
 
 const filter = ref<string | undefined>(undefined)
@@ -63,8 +64,10 @@ const filteredSubmissions = computed(() => {
         v-for="submission in filteredSubmissions"
         :key="submission.id"
         :quote="submission"
+        :isSelected="props.selectedSubmissionId === submission.id"
         @quote-selected="handleQuoteSelected"
       />
+      <p v-if="filteredSubmissions.length === 0">No hay formularios disponibles</p>
     </div>
   </section>
 </template>

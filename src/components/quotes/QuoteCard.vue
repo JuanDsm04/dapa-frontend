@@ -6,6 +6,10 @@ const props = defineProps({
     type: Object,
     required: true,
     default: () => ({ id: '', submittedAt: '', status: 'pending', answers: [] })
+  },
+  isSelected: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -62,7 +66,11 @@ const answersCount = computed(() => {
 </script>
 
 <template>
-  <div class="quote-card" @click="handleClick">
+  <div 
+    class="quote-card" 
+    :class="{ 'selected': isSelected }"
+    @click="handleClick"
+  >
     <!-- Información de la submission -->
     <div class="info">
       <div class="field">
@@ -103,11 +111,17 @@ const answersCount = computed(() => {
   max-width: 100%;
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.3s ease;
 }
 
 .quote-card:hover {
   background-color: rgb(245, 245, 245);
+}
+
+.quote-card.selected {
+  border-color: #2563eb;
+  background-color: #f0f4ff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
 }
 
 .status-pending {
@@ -188,7 +202,7 @@ p {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 770px) {
   .quote-card {
     padding: 0.8rem;
   }

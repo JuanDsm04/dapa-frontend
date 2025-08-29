@@ -8,6 +8,8 @@ const props = defineProps<{
   submission: Submission | undefined
 }>();
 
+const emit = defineEmits(['back-to-list'])
+
 // Estado que indica si se está en modo formulario
 const showOrderForm = ref(false);
 
@@ -18,6 +20,10 @@ const aceptar = () => {
 const volver = () => {
     showOrderForm.value = false;
 };
+
+const handleBackToList = () => {
+  emit('back-to-list')
+}
 
 // Formatear fecha para mostrar
 const formattedDate = computed(() => {
@@ -83,7 +89,12 @@ const formatAnswer = (answer: Answer) => {
     <div class="information-quote">
         <!-- Encabezado -->
         <header>
-            <div v-if="!showOrderForm">
+            <!-- Botón de regresar solo en móvil -->
+            <button class="back-btn mobile-only" @click="handleBackToList">
+                <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            
+            <div v-if="!showOrderForm" class="header-content">
                 <h2>Respuestas del formulario</h2>
                 <div v-if="submission" class="submission-info">
                     <span class="submission-id">#{{ submission.id }}</span>
@@ -91,7 +102,7 @@ const formatAnswer = (answer: Answer) => {
                     <span class="submission-status" :class="statusClass">{{ statusText }}</span>
                 </div>
             </div>
-            <h2 v-else>Ingresar información</h2>
+            <h2 v-else class="header-content">Ingresar información</h2>
         </header>
 
         <!-- Mensaje cuando no hay submission seleccionada -->
@@ -159,16 +170,36 @@ const formatAnswer = (answer: Answer) => {
 
 header {
     display: flex;
-    align-self: flex-end;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 2rem;
+    position: relative;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: none;
+  padding: 0.5rem;
+}
+
+.back-btn:hover {
+  color: #2f67f6;
+}
+
+.mobile-only {
+  display: none;
+}
+
+.header-content {
+    width: 100%;
 }
 
 header h2 {
     font-weight: 600;
     margin: 0;
-    width: 100%;
     text-align: left;
 }
 
@@ -295,7 +326,7 @@ button span {
     margin-right: 0.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 770px) {
     .information-quote {
         padding: 1rem;
     }
@@ -312,6 +343,14 @@ button span {
     .action-container {
         flex-direction: column;
         gap: 1rem;
+    }
+
+    .mobile-only {
+        display: block;
+    }
+
+    .header-content h2 {
+        display: none;
     }
 }
 </style>
