@@ -69,7 +69,7 @@
       </div>
 
       <button type="submit" class="submit-btn">Iniciar sesión</button>
-      <a href="">¿Olvidaste tu contraseña?</a>
+      <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
     </form>
 
   </main>
