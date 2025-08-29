@@ -19,6 +19,7 @@ const questionTypeLabels: Record<string, string> = {
   multiple: 'Selección múltiple',
   dropdown: 'Lista desplegable',
   unique: 'Selección única',
+  area: 'Respuesta larga'
 };
 
 // Computed para obtener las opciones como strings

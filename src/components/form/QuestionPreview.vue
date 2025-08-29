@@ -23,6 +23,8 @@ function getInitialValue() {
   switch (props.question.type.type) {
     case 'text':
       return ''
+    case 'area':
+      return ''
     case 'multiple':
       if (Array.isArray(props.value)) {
         return props.value
@@ -95,6 +97,17 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
         placeholder="Escribe tu respuesta aquí..."
         :readonly="props.readOnly"
       />
+    </div>
+
+    <!-- Pregunta de texto larga -->
+    <div v-if="question.type.type === 'area'" class="input-group">
+      <textarea
+        v-model="localValue"
+        class="text-input"
+        :class="{ 'error': hasError }"
+        placeholder="Escribe tu respuesta aquí..."
+        :readonly="props.readOnly"
+      ></textarea>
     </div>
 
     <!-- Pregunta de selección múltiple -->
@@ -233,6 +246,10 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
   font-size: 1rem;
   transition: all 0.2s ease;
   box-sizing: border-box;
+}
+
+textarea.text-input{
+  height: 10rem;
 }
 
 .text-input:focus {

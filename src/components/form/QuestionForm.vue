@@ -255,7 +255,8 @@ const getTypeDisplayName = (typeObj: QuestionType | null) => {
     'text': 'Respuesta corta',
     'multiple': 'Selección múltiple',
     'dropdown': 'Lista desplegable',
-    'unique': 'Selección única'
+    'unique': 'Selección única',
+    'area': 'Respuesta larga'
   }
   return displayNames[typeObj.type] || typeObj.type
 }

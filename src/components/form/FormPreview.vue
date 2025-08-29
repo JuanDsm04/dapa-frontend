@@ -9,7 +9,7 @@ import 'vue3-toastify/dist/index.css'
 
 const props = defineProps<{
     questions: Question[]
-    answers?: Answer[] // Cambié el tipo a Answer[] para tipado fuerte
+    answers?: Answer[]
     isPreview?: boolean
 }>()
 
@@ -28,7 +28,7 @@ const formKey = ref(0)
 const questionErrors = ref<Record<number, string>>({})
 const isReadOnly = ref(false)
 
-// Si recibimos respuestas, activamos modo lectura
+// Si se reciben respuestas se activa el modo lectura
 watch(
     () => props.answers,
     (newAnswers) => {
@@ -44,6 +44,8 @@ watch(
                         // Dropdown o única selección
                         filledForm[ans.question.id] = ans.options[0]?.id ?? ''
                     }
+                }else{
+                    filledForm[ans.question.id] = ans.answer
                 }
             }
 
@@ -112,7 +114,6 @@ const submitForm = async () => {
 
     // Si es modo preview, no enviamos nada
     if (props.isPreview) {
-        console.log('Datos del formulario (Preview):', formData.value)
         toast.success('Formulario enviado (Preview)')
         resetForm()
         return
@@ -146,9 +147,6 @@ const submitForm = async () => {
             .filter(Boolean)
 
         const payload = { answers }
-
-        console.log('Payload final:', payload)
-
         const response = await createSubmission(payload)
         emit('submit-success', response)
         toast.success('¡Formulario enviado exitosamente!')
