@@ -5,21 +5,21 @@ import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
 import { ref } from 'vue';
 const activeTab = ref('left')
+const selectedMonth = ref<String>('Diciembre 2024')
+
 // Temporary dummy data
-const data = ref({
+const linealData = ref({
   series: [
-    { name: 'Transportista A', data: [95, 90, 92] },
-    { name: 'Transportista B', data: [88, 85, 87] },
-    { name: 'Transportista C', data: [92, 94, 91] }
+    { name: 'Cotizaciones', data: [20, 40, 35, 48] },
   ],
-  categories: ['Ene', 'Feb', 'Mar'],
-  title: 'Desempeño de empleados'
+  categories: ['Diciembre 2024', 'Enero 2025', 'Febrero 2025', 'Marzo 2025'],
+  title: 'Cotizaciones completadas'
 })
 
 const pieData = ref({
-  series: [44, 55, 13, 43, 22],
-  labels: ['Equipo A', 'Equipo B', 'Equipo C', 'Equipo D', 'Equipo E'],
-  title: 'Distribución de carga de trabajo'
+  series: [50, 6.3, 12.5, 31.3],
+  labels: ['Completadas', 'Pendientes', 'Aprobadas', 'En progreso'],
+  title: 'Cotizaciones 2025'
 })
 
 const financialBarData = ref({
@@ -40,8 +40,13 @@ const financialPieData = ref({
 
 <template>
   <main>
-    <header>
+    <header class="header">
       <h1>Reporte de desempeño</h1>
+      <select v-model="selectedMonth" class="month-select">
+        <option v-for="(month, index) in linealData.categories" :key="index" :value="month">
+          {{ month }}
+        </option>
+      </select>
     </header>
 
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
@@ -50,12 +55,18 @@ const financialPieData = ref({
       <div class="toggle-button" @click="activeTab = 'right'">Empleados</div>
     </div>
 
-    <div class="charts-wrapper">
-      <LineChart :categories="data.categories" :series="data.series" :title="data.title"/>
-      <CircularChart :labels="pieData.labels" :series="pieData.series" :title="pieData.title"/>
-      <BarChart :categories="financialBarData.categories" :series="financialBarData.series" :title="financialBarData.title"/>
-      <PieChart :labels="financialPieData.labels" :series="financialPieData.series" :title="financialPieData.title"/>
-    </div>
+    <section class="quotes" v-if="activeTab == 'left'">
+      <div class="charts-wrapper">
+        <LineChart :categories="linealData.categories" :series="linealData.series" :title="linealData.title"/>
+        <CircularChart :labels="pieData.labels" :series="pieData.series" :title="pieData.title"/>
+      </div>
+    </section>
+    <section class="employees" v-if="activeTab == 'right'">
+      <div class="charts-wrapper">
+        <BarChart :categories="financialBarData.categories" :series="financialBarData.series" :title="financialBarData.title"/>
+        <PieChart :labels="financialPieData.labels" :series="financialPieData.series" :title="financialPieData.title"/>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -72,6 +83,13 @@ main header {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 2rem;
+}
+
+.month-select {
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  background: white;
 }
 
 h1 {

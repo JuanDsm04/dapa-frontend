@@ -8,8 +8,9 @@ function goToReport() {
   router.push('/reports/financial')
 }
 
-function goToPerformance() { }
+function goToPerformance() { 
   router.push('/reports/performance')
+}
 </script>
 
 <template>
