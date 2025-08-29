@@ -1,17 +1,20 @@
-import QuotesView from "@/views/QuotesView.vue";
+import { getUserRole, isTokenExpired } from '@/utils/auth';
+import AssignmentsView from "@/views/AssignmentsView.vue";
+import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
+import DriverAssignmentsView from "@/views/DriverAssignments.vue";
+import FormsView from "@/views/FormsView.vue";
 import LandingPageView from "@/views/LandingPageView.vue";
 import LoginView from "@/views/LoginView.vue";
-import UsersView from "@/views/UsersView.vue";
-import ProfileView from "@/views/ProfileView.vue";
-import { createRouter, createWebHistory } from "vue-router";
-import { getUserRole, isTokenExpired } from '@/utils/auth';
-import VehiclesView from "@/views/VehiclesView.vue";
-import AssignmentsView from "@/views/AssignmentsView.vue";
 import NotFoundView from "@/views/NotFoundView.vue";
-import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
-import FormsView from "@/views/FormsView.vue";
-import FinanceControlView from "@/views/FinanceControlView.vue";
-import DriverAssignmentsView from "@/views/DriverAssignments.vue";
+import ProfileView from "@/views/ProfileView.vue";
+import QuotesView from "@/views/QuotesView.vue";
+import FinancialControlView from "@/views/reports/FinancialControlView.vue";
+import FinancialReportView from "@/views/reports/FinancialReportView.vue";
+import PerformanceReportView from "@/views/reports/PerformanceReportView.vue";
+import ReportsView from "@/views/reports/ReportsView.vue";
+import UsersView from "@/views/UsersView.vue";
+import VehiclesView from "@/views/VehiclesView.vue";
+import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -83,8 +86,28 @@ const router = createRouter({
     },
     {
       path: "/reports",
-      component: FinanceControlView
+      name: "Reports",
+      component: ReportsView,
+      meta: {requiresAuth: true, roles: ['admin']}
     },
+    {
+      path: "/reports/financial",
+      name: "FinancialReport",
+      component: FinancialReportView,
+      meta: {requiresAuth: true, roles: ['admin']}
+    },
+    {
+      path: "/reports/performance",
+      name: "PerformanceReport",
+      component: PerformanceReportView,
+      meta: {requiresAuth: true, roles: ['admin']}
+    },
+    {
+      path: "/reports/financial_control",
+      name: "FinancialControl",
+      component: FinancialControlView,
+      meta: {requiresAuth: true, roles: ['admin']}
+    }
   ],
 });
 
