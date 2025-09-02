@@ -4,37 +4,35 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import VehicleForm from '@/components/VehicleForm.vue';
 import TableVehicles from '@/components/Table.vue';
+import NotificationModal from '@/components/NotificationModal.vue';
 import type { HighlightConfig } from '@/types/table';
 import type { Vehicle } from '@/types/vehicle';
-import NotificationModal from '@/components/NotificationModal.vue';
+import { getVehicles as fetchVehicles, deleteVehicle, createVehicle, updateVehicle } from '@/services/vehicleService';
 
 const showModal = ref(false);
-const vehicles = ref<Vehicle[]>([])
-const selectedVehicle = ref<Vehicle | undefined>(undefined)
+const vehicles = ref<Vehicle[]>([]);
+const selectedVehicle = ref<Vehicle | undefined>(undefined);
 const loading = ref(false);
 const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
 
-// Identificador del registro según la fecha de vencimiento de su seguro vehicular
+//  Funciones de utilidad
 const highlightVeh = (item: any): HighlightConfig | undefined => {
   if (!item.insuranceDate) return undefined;
 
   const insurance = new Date(item.insuranceDate);
   const now = new Date();
-
   const diffInMs = insurance.getTime() - now.getTime();
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
   if (diffInDays < 0) {
     return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' };
-
   } else if (diffInDays <= 7) {
     return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' };
   }
-
   return undefined;
 };
 
-// Abrir y cerrar el modal
+// Modals
 const openModal = () => {
   selectedVehicle.value = undefined;
   showModal.value = true;
@@ -45,74 +43,52 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-// Preparar a un vehículo para editarlo
 const handleEditVehicle = (vehicle: Vehicle) => {
   selectedVehicle.value = { ...vehicle };
   showModal.value = true;
 };
 
-// Estados para el modal de eliminación
-const showConfirmModal = ref(false)
-const confirmTitle = ref('')
-const confirmMessage = ref('')
-const confirmAction = ref<(() => void) | null>(null)
+// Modal de confirmación
+const showConfirmModal = ref(false);
+const confirmTitle = ref('');
+const confirmMessage = ref('');
+const confirmAction = ref<(() => void) | null>(null);
 
-// Eliminar a un vehículo después de su confirmación y actualizar la lista
+// Eliminar vehículo
 const handleDeleteVehicle = (vehicle: Vehicle) => {
-  confirmTitle.value = '¿Eliminar vehículo?'
-  confirmMessage.value = `¿Estás seguro de que quieres eliminar al vehículo con placa ${vehicle.licensePlate}?`
+  confirmTitle.value = '¿Eliminar vehículo?';
+  confirmMessage.value = `¿Estás seguro de que quieres eliminar al vehículo con placa ${vehicle.licensePlate}?`;
 
   confirmAction.value = async () => {
-    selectedVehicle.value = { ...vehicle }
-    const vehicleID = selectedVehicle.value.id
-    loading.value = true
+    selectedVehicle.value = { ...vehicle };
+    loading.value = true;
 
     try {
-      const token = localStorage.getItem('token')
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${vehicleID}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-      })
-
-      await getVehicles()
-      toast.warning('Vehículo eliminado')
+      await deleteVehicle(selectedVehicle.value.id);
+      await loadVehicles();
+      toast.warning('Vehículo eliminado exitosamente');
     } catch (error) {
-      console.error("Error eliminando vehículo:", error)
-      toast.error('Error eliminando vehículo')
+      console.error("Error eliminando vehículo:", error);
+      toast.error('Error eliminando vehículo');
     } finally {
-      loading.value = false
+      loading.value = false;
     }
-  }
+  };
 
-  showConfirmModal.value = true
-}
+  showConfirmModal.value = true;
+};
 
-// Obtener los vehículos desde la API
-const getVehicles = async () => {
+// Obtener vehículos
+const loadVehicles = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
-
+    const data = await fetchVehicles();
     vehicles.value = data;
 
     // Detectar seguros vencidos
     const hoy = new Date();
-
     const vencidos = vehicles.value.filter((v: Vehicle) => {
       if (!v.insuranceDate) return false;
-      const fechaSeguro = new Date(v.insuranceDate);
-      return fechaSeguro < hoy;
+      return new Date(v.insuranceDate) < hoy;
     });
 
     if (vencidos.length > 0) {
@@ -121,72 +97,35 @@ const getVehicles = async () => {
         position: toast.POSITION.TOP_CENTER,
       });
     }
-
   } catch (error) {
     console.error("Error obteniendo vehículos:", error);
+    toast.error("Error al obtener los vehículos");
   }
 };
 
-// Manejar el registro o actualización de un vehículo según si tiene id o no
+// Crear o actualizar vehículos
 const handleCreationOrUpdate = async (payload: Partial<Vehicle>) => {
-  const token = localStorage.getItem('token');
-
   try {
-    let response;
-    let data;
-
     if (payload.id) {
-      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles/${payload.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.Message || 'Error al actualizar el vehículo');
-      }
-
+      await updateVehicle(payload.id, payload);
       toast.info('Vehículo actualizado exitosamente');
-
     } else {
-      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/vehicles`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
-
-      data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.Message || 'Error al registrar el vehículo');
-      }
+      await createVehicle(payload);
       toast.success('Vehículo registrado exitosamente');
     }
 
-    getVehicles();
+    await loadVehicles();
     closeModal();
-
-  } catch (error) {
-    const err = error as Error;
-    console.error('Error al guardar vehículo:', err);
-    toast.error(`Error: ${err.message}`);
-    
+  } catch (error: any) {
+    console.error('Error al guardar vehículo:', error.message);
+    toast.error(`Error: No se pudo guardar el vehículo`);
   }
 };
 
-// Cargar la lista de vehículos al montar el componente
-onMounted(async() => {
-  getVehicles();
+// Montar el componente
+onMounted(async () => {
+  await loadVehicles();
 });
-
 </script>
 
 <template>

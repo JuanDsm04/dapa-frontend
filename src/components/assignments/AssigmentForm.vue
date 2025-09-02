@@ -16,7 +16,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['back-to-list'])
-
 const selectedDriver = ref('')
 const selectedVehicle = ref('')
 const showModal = ref(false)

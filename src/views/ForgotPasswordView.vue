@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { forgotPassword } from '@/services/authService'
+import { toast } from 'vue3-toastify'
 
 const email = ref('')
 const emailSent = ref(false)
 const errors = ref<{ email?: string }>({})
 
+// Validar el email
 const validateEmail = () => {
 	errors.value.email = ''
 
@@ -22,24 +25,18 @@ const validateEmail = () => {
 	return true
 }
 
+// Manejar el envío del formulariof
 const handleForgotButton = async () => {
 	if (!validateEmail()) return
 
 	try {
-		const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/forgot`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				email: email.value,
-			}),
-		})
-
+		const result = await forgotPassword(email.value)
+		toast.success('Se ha enviado un correo con las instrucciones para restablecer tu contraseña')
 		emailSent.value = true
 
-	} catch (e) {
-		console.log(e)
+	} catch (error) {
+		console.error('Error enviando email de recuperación:', error)
+		toast.error('Error al enviar el correo. Por favor intenta de nuevo.')
 	}
 }
 </script>

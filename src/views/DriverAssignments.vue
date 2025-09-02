@@ -1,4 +1,6 @@
-<script></script>
+<script>
+// VISTA PARA QUE LOS CONDUCTORES PUEDAN VER SUS FLETES ASIGNADOS
+</script>
 
 <template>
     <main>

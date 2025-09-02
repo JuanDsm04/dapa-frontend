@@ -12,7 +12,6 @@ const props = defineProps<{
 
 // Emit para comunicar cambios al componente padre
 const emit = defineEmits(['orderUpdated'])
-
 const showModal = ref(false)
 const localOrderData = ref(null)
 
@@ -25,6 +24,8 @@ watch(() => props.orderData, (newOrderData) => {
   }
 }, { immediate: true, deep: true })
 
+
+// Modals
 const openModal = () => {
   showModal.value = true
 }

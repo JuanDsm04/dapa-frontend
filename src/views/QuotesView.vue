@@ -17,6 +17,7 @@ onMounted(async()=>{
   await loadSubmissions()
 })
 
+// Obtener cotizaciones
 const loadSubmissions = async() => {
   try{
     submissions.value = await getSubmissions()
@@ -27,6 +28,7 @@ const loadSubmissions = async() => {
   }
 }
 
+// Manejar selección de cotización
 const handleQuoteSelected = async (submission: Submission) => {
   try {
     isLoading.value = true
@@ -41,12 +43,14 @@ const handleQuoteSelected = async (submission: Submission) => {
   }
 }
 
+// Manejar regreso a la lista
 const handleBackToList = () => {
   showDetailView.value = false
   selectedSubmission.value = undefined
   selectedSubmissionId.value = null
 }
 
+// Filtrar cotizaciones pendientes
 const pendingSubmissions = computed(() => {
   return submissions.value.filter(submission => submission.status === 'pending')
 })

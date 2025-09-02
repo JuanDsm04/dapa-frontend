@@ -3,38 +3,36 @@ import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 import UserForm from '@/components/UserForm.vue';
-import TableUsers from '@/components/Table.vue'
+import TableUsers from '@/components/Table.vue';
+import NotificationModal from '@/components/NotificationModal.vue';
 import type { HighlightConfig } from '@/types/table';
 import type { User } from '@/types/user';
-import NotificationModal from '@/components/NotificationModal.vue';
+import { getUsers as fetchUsers, createUser, updateUser, deleteUser } from '@/services/userService';
 
 const showModal = ref(false);
-const users = ref<User[]>([])
+const users = ref<User[]>([]);
 const selectedUser = ref<User | undefined>(undefined);
 const loading = ref(false);
-const activeUsers = computed(() => users.value.filter(user => user.isActive))
+const activeUsers = computed(() => users.value.filter(user => user.isActive));
 
-// Identificador del registro según la fecha de vencimiento de su licencia
+//  Funciones de utilidad
 const highlightUser = (item: any): HighlightConfig | undefined => {
   if (item.role !== 'driver' || !item.licenseExpirationDate) return undefined;
 
   const expiration = new Date(item.licenseExpirationDate);
   const now = new Date();
-
   const diffInMs = expiration.getTime() - now.getTime();
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
 
   if (diffInDays < 0) {
     return { borderColor: '#CC2D44', backgroundColor: '#FFF4F4' };
-
   } else if (diffInDays <= 7) {
     return { borderColor: '#FFB601', backgroundColor: '#FFFEEE' };
   }
-
   return undefined;
 };
 
-// Abrir y cerrar el modal 
+// Modals
 const openModal = () => {
   selectedUser.value = undefined;
   showModal.value = true;
@@ -45,73 +43,52 @@ const closeModal = () => {
   showModal.value = false;
 };
 
-// Preparar a un usuario para editarlo
 const handleEditUser = (user: User) => {
   selectedUser.value = { ...user };
   showModal.value = true;
 };
 
-// Estados para el modal de confirmación de eliminación
-const showConfirmModal = ref(false)
-const confirmTitle = ref('')
-const confirmMessage = ref('')
-const confirmAction = ref<(() => void) | null>(null)
+// Modal de confirmación
+const showConfirmModal = ref(false);
+const confirmTitle = ref('');
+const confirmMessage = ref('');
+const confirmAction = ref<(() => void) | null>(null);
 
-// Eliminar a un usuario después de su confirmación y actualizar la lista
+// Eliminar usuario
 const handleDeleteUser = (user: User) => {
-  confirmTitle.value = '¿Eliminar usuario?'
-  confirmMessage.value = `¿Estás seguro de que quieres eliminar a ${user.name} ${user.lastName}?`
+  confirmTitle.value = '¿Eliminar usuario?';
+  confirmMessage.value = `¿Estás seguro de que quieres eliminar a ${user.name} ${user.lastName}?`;
 
   confirmAction.value = async () => {
-    selectedUser.value = { ...user };
-    const userID = selectedUser.value.id
+    if (!user.id) return;
     loading.value = true;
 
     try {
-      const token = localStorage.getItem('token') 
-      await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${userID}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-      })
-
-      await getUsers()
-      toast.warning('Usuario eliminado')
-
+      await deleteUser(user.id);
+      await loadUsers();
+      toast.warning('Usuario eliminado exitosamente');
     } catch (error) {
-      console.log("Error eliminando usuario:", error)
-      toast.error('Error eliminando usuario')
-
+      console.error("Error eliminando usuario:", error);
+      toast.error('Error eliminando usuario');
     } finally {
       loading.value = false;
     }
-  }
+  };
 
-  showConfirmModal.value = true
-}
+  showConfirmModal.value = true;
+};
 
-// Obtener los usuarios desde la API
-const getUsers = async () => {
-  loading.value = true;
-
+// Obtener usuarios
+const loadUsers = async () => {
   try {
-    const token = localStorage.getItem('token');
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    const data = await response.json();
+    const data = await fetchUsers();
     users.value = data;
 
-    // Verificar licencias vencidas (solo para 'driver')
+    // Detectar licencias vencidas
     const hoy = new Date();
     const vencidos = users.value.filter((u: User) => {
       if (u.role !== 'driver' || !u.licenseExpirationDate) return false;
-      const fechaLicencia = new Date(u.licenseExpirationDate);
-      return fechaLicencia < hoy;
+      return new Date(u.licenseExpirationDate) < hoy;
     });
 
     if (vencidos.length > 0) {
@@ -120,79 +97,35 @@ const getUsers = async () => {
         position: toast.POSITION.TOP_CENTER,
       });
     }
-
   } catch (error) {
-    console.log("Error obteniendo usuarios de la base de datos:", error);
-    toast.error('Error al cargar usuarios');
-  } finally {
-    loading.value = false;
+    console.error("Error obteniendo usuarios:", error);
+    toast.error("Error al obtener los usuarios");
   }
 };
 
-// Manejar el registro o actualización de un usuario según si tiene id o no
-const handleRegisterOrUpdate = async (payload: Partial<User>) => {
-  const token = localStorage.getItem('token')
-  loading.value = true;
-
+// Crear o actualizar usuarios
+const handleCreationOrUpdate = async (payload: Partial<User>) => {
   try {
-    let response
-    let data
-
     if (payload.id) {
-      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${payload.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      })
-
-      data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.Message || 'Error al actualizar el usuario')
-      }
-
-      toast.info('Usuario modificado exitosamente')
-
+      await updateUser(payload.id, payload);
+      toast.info('Usuario actualizado exitosamente');
     } else {
-      response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      })
-
-      data = await response.json()
-
-      if (!response.ok) {
-        throw new Error(data.Message || 'Error al registrar el usuario')
-      }
-
-      toast.success('Usuario agregado exitosamente')
+      await createUser(payload);
+      toast.success('Usuario registrado exitosamente');
     }
 
-    getUsers()
-    closeModal()
-
-  } catch (error) {
-    const err = error as Error;
-    console.error('Error al guardar usuario:', err)
-    toast.error(`Error: ${err.message}`)
-
-  } finally {
-    loading.value = false;
+    await loadUsers();
+    closeModal();
+  } catch (error: any) {
+    console.error('Error al guardar usuario:', error);
+    toast.error(`Error: ${error.message || 'No se pudo guardar el usuario'}`);
   }
-}
+};
 
-// Cargar la lista de usuarios al montar el componente
-onMounted(() => {
-  getUsers()
-})
-
+// Montar el componente
+onMounted(async () => {
+  await loadUsers();
+});
 </script>
 
 <template>
@@ -247,10 +180,10 @@ onMounted(() => {
         @edit="handleEditUser"
         @delete="handleDeleteUser"
       />
-
     </section>
   </main>
 
+  <!-- Modal de registro/edición -->
   <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
     <article>
       <header>
@@ -261,7 +194,7 @@ onMounted(() => {
       <section>
         <UserForm 
           :initialData="selectedUser" 
-          @submit="handleRegisterOrUpdate" 
+          @submit="handleCreationOrUpdate" 
           :updating="!!selectedUser"
           :loading="loading"
         />
@@ -269,7 +202,7 @@ onMounted(() => {
     </article>
   </div>
 
-  <!-- Modal para confirmar una eliminación-->
+  <!-- Modal de confirmación -->
   <NotificationModal
     v-if="showConfirmModal"
     :show="showConfirmModal"

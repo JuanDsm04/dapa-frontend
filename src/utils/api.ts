@@ -15,7 +15,7 @@ export const handleResponse = async (res: Response) => {
     
     try {
       const errorData = JSON.parse(errorText)
-      errorMessage = errorData.message || errorData.error || errorText
+      errorMessage = errorData.message || errorData.error || errorData.Message || errorText
     } catch {
       errorMessage = errorText || res.statusText
     }

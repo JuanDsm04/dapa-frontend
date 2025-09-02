@@ -70,19 +70,19 @@ const statusClass = computed(() => {
 });
 
 // Formatear respuesta según el tipo de pregunta
-const formatAnswer = (answer: Answer) => {
-  if (!answer.answer && (!answer.options || answer.options.length === 0)) {
-    return 'Sin respuesta'
-  }
+// const formatAnswer = (answer: Answer) => {
+//   if (!answer.answer && (!answer.options || answer.options.length === 0)) {
+//     return 'Sin respuesta'
+//   }
   
-  // Si es una pregunta con opciones múltiples
-  if (answer.options && answer.options.length > 0) {
-    return answer.options.map(option => option.option).join(', ')
-  }
+//   // Si es una pregunta con opciones múltiples
+//   if (answer.options && answer.options.length > 0) {
+//     return answer.options.map(option => option.option).join(', ')
+//   }
   
-  // Si es una respuesta de texto
-  return answer.answer || 'Sin respuesta'
-};
+//   // Si es una respuesta de texto
+//   return answer.answer || 'Sin respuesta'
+// };
 </script>
 
 <template>

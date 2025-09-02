@@ -1,6 +1,6 @@
 <script setup lang="ts">
+// VISTA QUE VERÁN LOS USUARIOS PARA DARLE SEGUIMIENTO A SUS PEDIDOS
 import OrderSteps from '@/components/assignments/OrderSteps.vue';
-
 </script>
 
 <template>

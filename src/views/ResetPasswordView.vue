@@ -3,17 +3,18 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import router from '@/router'
+import { resetPassword } from '@/services/authService'
+import { toast } from 'vue3-toastify';
 
 const route = useRoute()
 const token = route.query.token
-
 const password = ref('')
 const confirmPassword = ref('')
 const showPassword = ref(false)	
 const showConfirmPassword = ref(false)
-
 const errors = ref({})
 
+// Funciones para alternar la visibilidad de la contraseña
 const togglePassVisibility = () => {
 	showPassword.value = !showPassword.value
 }
@@ -22,6 +23,7 @@ const toggleConfirmPassVisibility = () => {
 	showConfirmPassword.value = !showConfirmPassword.value
 }
 
+// Validaciones
 const validateForm = () => {
 	errors.value = {}
 
@@ -38,31 +40,22 @@ const validateForm = () => {
 	return Object.keys(errors.value).length === 0
 }
 
+// Manejo del restablecimiento de contraseña
 const handleResetButton = async () => {
 	if (!validateForm()) return
 
 	try {
-		const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/auth/reset`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				token: token,
-				newPassword: password.value,
-			}),
-		})
+		const result = await resetPassword(token, password.value)
 
-		if (response.ok) {
+		if (result.ok) {
 			router.push('/login')
-
 		} else {
-			const errorData = await response.json()
-			errors.value.confirmPassword = errorData.message || 'No se pudo restablecer la contraseña'
+			console.log(result)
+			toast.error('No se pudo restablecer la contraseña')
 		}
 	} catch (error) {
 		console.error(error)
-		errors.value.password = 'Ocurrió un error al procesar la solicitud'
+		toast.error('Ocurrió un error al procesar la solicitud')
 	}
 }
 </script>

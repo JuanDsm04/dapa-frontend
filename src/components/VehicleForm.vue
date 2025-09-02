@@ -8,7 +8,7 @@ const props = defineProps<{
         model?: string
         licensePlate?: string
         capacityKg?: number
-        available?: boolean
+        isAvailable?: boolean
         insuranceDate?: string
     },
     updating?: boolean
@@ -31,9 +31,9 @@ const handleSubmit = () => {
         errors.value.model = 'El modelo es requerido *'
     }
 
-    const plateRegex = /^[A-Z]?\d{3}[A-Z]{3}$/ // P123ABC o 123ABC
+    const plateRegex = /^[A-Z]\d{3}[A-Z]{3}$/ // P123ABC
     if (!plateRegex.test(licensePlate.value.toUpperCase())) {
-        errors.value.licensePlate = 'Formato de placa inválido (Ej: P123ABC o 123ABC) *'
+        errors.value.licensePlate = 'Formato de placa inválido (Ej: P123ABC) *'
     }
 
     if (capacityKg.value === null || capacityKg.value <= 0) {
@@ -59,7 +59,7 @@ const handleSubmit = () => {
         model: model.value,
         licensePlate: licensePlate.value.toUpperCase(),
         capacityKg: capacityKg.value,
-        available: true,
+        isAvailable: true,
         insuranceDate: isoDate,
     })
 }

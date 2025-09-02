@@ -1,24 +1,27 @@
-<script setup>
-import router from '@/router'
-import UserForm from '@/components/UserForm.vue'
-import { getUserID } from "@/utils/auth";
+<script setup lang="ts">
+import router from '@/router';
+import UserForm from '@/components/UserForm.vue';
+import { getUserID } from '@/utils/auth';
 import { ref, onMounted } from 'vue';
+import { getUserById, updateUser } from '@/services/userService';
+import type { User } from '@/types/user';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
-const user = ref(null)
+const user = ref<User | null>(null);
+
+// Obtener datos del usuario actual
 const getCurrentUserData = async () => {
-  const id = getUserID()
+  const id = getUserID();
   if (!id) {
-    console.warn("No UserID found");
+    console.warn("No se encontró el ID del usuario.");
     return;
   }
+
   try {
-    const token = localStorage.getItem('token') 
-    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${id}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-    })
-    const data = await response.json()
-    const currentUser = {
+    const data = await getUserById(Number(id));
+
+    user.value = {
       id: data.id,
       name: data.name,
       lastName: data.lastName,
@@ -27,37 +30,44 @@ const getCurrentUserData = async () => {
       password: data.password,
       licenseExpirationDate: data.licenseExpirationDate,
       role: data.role,
-    }
-    user.value = currentUser
+    };
   } catch (error) {
-    console.log("Error obteniendo al usuario loggeado:", error)
-  }
-}
-const handleLogout = () => {
-    localStorage.removeItem("token")
-    router.push("/login")
-}
-const handleEditProfile = async (payload) => {
-  const id = getUserID()
-  if (!id) {
-    console.warn("No UserID found");
-    return;
-  }
-  const token = localStorage.getItem('token')
-  try {
-    await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/users/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, },
-      body: JSON.stringify(payload),
-    })
-  } catch (error) {
-    console.error('Error al editar perfil:', error)
+    console.error("Error obteniendo al usuario loggeado:", error);
+    toast.error("No se pudo cargar la información del perfil.");
   }
 };
-onMounted(() => {
-  getCurrentUserData()
-})
 
+// Cerrar sesión
+const handleLogout = () => {
+  localStorage.removeItem("token");
+  router.push("/login");
+  toast.info("Sesión cerrada correctamente.");
+};
+
+// Editar perfil
+const handleEditProfile = async (payload: Partial<User>) => {
+  const id = getUserID();
+  if (!id) {
+    console.warn("No se encontró el ID del usuario.");
+    return;
+  }
+
+  try {
+    await updateUser(Number(id), payload);
+    toast.success("Perfil actualizado exitosamente.");
+
+    // Actualizar los datos para reflejar los cambios
+    await getCurrentUserData();
+  } catch (error) {
+    console.error("Error al editar perfil:", error);
+    toast.error("Hubo un error al actualizar el perfil.");
+  }
+};
+
+// Montar el componente
+onMounted(() => {
+  getCurrentUserData();
+});
 </script>
 
 <template>

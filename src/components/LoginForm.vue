@@ -1,48 +1,38 @@
-<script setup>
-  import { ref } from 'vue'
-  import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
-  import router from '@/router'
-  import { getUserRole } from '@/utils/auth'
+<script setup lang="ts">
+import { ref } from 'vue'
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
+import router from '@/router'
+import { getUserRole } from '@/utils/auth'
+import { login } from '@/services/authService'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
-  const email = ref('')
-  const password = ref('')
-  const showPassword = ref(false)
+const email = ref('')
+const password = ref('')
+const showPassword = ref(false)
 
-  const togglePassVisibility = () => {
-    showPassword.value = !showPassword.value
-  }
+const togglePassVisibility = () => {
+  showPassword.value = !showPassword.value
+}
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email.value,
-          password: password.value
-        }),
-      })
+const handleLogin = async () => {
+  try {
+    const data = await login(email.value, password.value)
 
-      if (!response.ok) {
-        throw new Error('Usuario o contraseña incorrectos')
-      }
-
-      const data = await response.json()
-      localStorage.setItem("token", data.data)
-
+    if (data?.data) {
       if (getUserRole() === 'admin') {
         router.push('/users')
       } else {
         router.push('/my-assignments')
       }
-
-    } catch (e) {
-      console.log(e)
-      alert(e.message || 'Ocurrió un error al iniciar sesión')
+    } else {
+      toast.error('Usuario o contraseña incorrectos')
     }
+    
+  } catch (e: any) {
+    toast.error(e.message || 'Ocurrió un error al iniciar sesión')
   }
+}
 </script>
 
 <template>
