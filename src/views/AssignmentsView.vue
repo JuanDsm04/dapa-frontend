@@ -1,14 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import OrderList from '@/components/assignments/OrderList.vue';
 import AssigmentForm from '@/components/assignments/AssigmentForm.vue';
 import OrderTracking from '@/components/assignments/OrderTracking.vue';
+import type { Order } from '@/types/order';
 
-const activeTab = ref('left')
-const selectedOrder = ref(null)
+const activeTab = ref<'left' | 'right'>('left')
+const selectedOrder = ref<Order | null>(null)
 const showDetailView = ref(false)
 
-const handleOrderSelected = (order) => {
+const handleOrderSelected = (order: Order) => {
   selectedOrder.value = order
   showDetailView.value = true
 }
@@ -163,7 +164,7 @@ h1 {
   overflow-y: auto;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 770px) {
   .pending-orders {
     grid-template-columns: 1fr;
   }
@@ -171,9 +172,7 @@ h1 {
   .pending-orders .details {
     display: none;
   }
-}
 
-@media (max-width: 770px) {
   main {
     margin-left: 0;
     padding: 2rem 1rem;

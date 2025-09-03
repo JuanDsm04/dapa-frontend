@@ -1,27 +1,28 @@
-<script setup>
-import CarouselClients from '@/components/Carousel.vue';
+<script setup lang="ts">
+import CarouselClients from '@/components/Carousel.vue'
+import {type Slide } from '@/types/common'
 
-const slides = [
+const slides: Slide[] = [
   {
     src: new URL('@/assets/images/camion1.jpeg', import.meta.url).href,
-    alt: 'Camión 1'
+    alt: 'Camión 1',
   },
   {
     src: new URL('@/assets/images/camion2.jpeg', import.meta.url).href,
-    alt: 'Camión 2'
+    alt: 'Camión 2',
   },
   {
     src: new URL('@/assets/images/camion3.jpeg', import.meta.url).href,
-    alt: 'Camión 3'
+    alt: 'Camión 3',
   },
   {
     src: new URL('@/assets/images/camion4.jpeg', import.meta.url).href,
-    alt: 'Camión 4'
+    alt: 'Camión 4',
   },
   {
     src: new URL('@/assets/images/camion5.jpeg', import.meta.url).href,
-    alt: 'Camión 5'
-  }
+    alt: 'Camión 5',
+  },
 ]
 </script>
 

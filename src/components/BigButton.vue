@@ -1,11 +1,13 @@
-<script setup>
-defineProps({
-  icon: String,
-  title: String,
-  image: String,
-  description: String,
-  onClick: Function
-})
+<script setup lang="ts">
+import { defineProps } from 'vue'
+
+const props = defineProps<{
+  icon: string
+  title: string
+  image: string
+  description: string
+  onClick?: () => void
+}>()
 </script>
 
 <template>

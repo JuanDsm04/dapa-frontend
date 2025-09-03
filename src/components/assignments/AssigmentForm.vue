@@ -1,39 +1,43 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { getOrderById, assignOrder } from '@/services/orderService'
 import { getUsers } from '@/services/userService'
 import { getVehicles } from '@/services/vehicleService'
+import type { User } from '@/types/user'
+import type { Vehicle } from '@/types/vehicle'
+import type { Order } from '@/types/order'
 import ShippingInformation from '../assignments/ShippingInformation.vue'
 import NotificationModal from '../NotificationModal.vue'
 
-const props = defineProps({
-  selectedOrder: {
-    type: Object,
-    default: null
-  }
-})
+const props = defineProps<{
+  selectedOrder: Order | null
+}>()
 
-const emit = defineEmits(['back-to-list'])
-const selectedDriver = ref('')
-const selectedVehicle = ref('')
+// Emit para regresar a la lista
+const emit = defineEmits<{
+  (e: 'back-to-list'): void
+}>()
+
+// Estado interno
+const selectedDriver = ref<string>('')
+const selectedVehicle = ref<string>('')
 const showModal = ref(false)
-const orderDetails = ref(null)
-const drivers = ref([])
-const vehicles = ref([])
+const orderDetails = ref<Order | null>(null)
+const drivers = ref<User[]>([])
+const vehicles = ref<Vehicle[]>([])
 const loading = ref(false)
 
 // Obtener detalles de la orden por ID usando el servicio
-const getOrderDetails = async (orderId) => {
+const getOrderDetails = async (orderId: number | undefined) => {
   if (!orderId) return
-  
+
   loading.value = true
   try {
     const data = await getOrderById(orderId)
     orderDetails.value = data
 
-    // Inicializar valores para conductor y vehículo
     selectedDriver.value = data.userId ? String(data.userId) : ''
     selectedVehicle.value = data.vehicleId ? String(data.vehicleId) : ''
 
@@ -45,7 +49,7 @@ const getOrderDetails = async (orderId) => {
   }
 }
 
-// Obtener conductores disponibles usando el servicio
+// Obtener conductores disponibles
 const getDrivers = async () => {
   try {
     const data = await getUsers()
@@ -56,7 +60,7 @@ const getDrivers = async () => {
   }
 }
 
-// Obtener vehículos usando el servicio
+// Obtener vehículos
 const getVehiclesData = async () => {
   try {
     const data = await getVehicles()
@@ -67,7 +71,7 @@ const getVehiclesData = async () => {
   }
 }
 
-// Asignar orden usando el servicio
+// Asignar orden a conductor y vehículo
 const assignOrderToDriver = async () => {
   if (!orderDetails.value || !selectedDriver.value || !selectedVehicle.value) {
     toast.error("Selecciona un conductor y un vehículo")
@@ -99,7 +103,7 @@ const handleBackToList = () => {
 }
 
 // Manejar la actualización de la orden desde ShippingInformation
-const handleOrderUpdated = (updatedOrder) => {
+const handleOrderUpdated = (updatedOrder: Order) => {
   orderDetails.value = { ...updatedOrder }
 }
 

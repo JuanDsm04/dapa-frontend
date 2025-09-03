@@ -2,10 +2,11 @@
 import { ref } from 'vue'
 import { forgotPassword } from '@/services/authService'
 import { toast } from 'vue3-toastify'
+import type { FieldErrors } from '@/types/common'
 
 const email = ref('')
 const emailSent = ref(false)
-const errors = ref<{ email?: string }>({})
+const errors = ref<FieldErrors>({})
 
 // Validar el email
 const validateEmail = () => {
@@ -25,7 +26,7 @@ const validateEmail = () => {
 	return true
 }
 
-// Manejar el envío del formulariof
+// Manejar el envío del formulario
 const handleForgotButton = async () => {
 	if (!validateEmail()) return
 
@@ -34,9 +35,10 @@ const handleForgotButton = async () => {
 		toast.success('Se ha enviado un correo con las instrucciones para restablecer tu contraseña')
 		emailSent.value = true
 
-	} catch (error) {
-		console.error('Error enviando email de recuperación:', error)
-		toast.error('Error al enviar el correo. Por favor intenta de nuevo.')
+	} catch (err) {
+		const error = err as Error
+		console.error('Error enviando email de recuperación:', error.message)
+		toast.error('No se pudo enviar el correo. Intenta nuevamente más tarde.')
 	}
 }
 </script>

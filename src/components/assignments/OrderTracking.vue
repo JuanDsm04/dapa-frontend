@@ -1,25 +1,26 @@
-<script setup>
-import { ref, watch, onMounted } from 'vue'
+<script setup lang="ts">
+import { ref, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { getOrderById } from '@/services/orderService'
 import OrderSteps from './OrderSteps.vue'
 import ShippingInformation from './ShippingInformation.vue'
+import type { Order } from '@/types/order'
 
-const props = defineProps({
-  selectedOrder: {
-    type: Object,
-    default: null
-  }
-})
+const props = defineProps<{
+  selectedOrder: Order | null
+}>()
 
-const emit = defineEmits(['back-to-list'])
+const emit = defineEmits<{
+  (e: 'back-to-list'): void
+}>()
 
-const orderDetails = ref(null)
+// Estado de la orden
+const orderDetails = ref<Order | null>(null)
 const loading = ref(false)
 
 // Obtener detalles de la orden por ID usando el servicio
-const getOrderDetails = async (orderId) => {
+const getOrderDetails = async (orderId: number | string) => {
   if (!orderId) return
   
   loading.value = true
@@ -35,7 +36,7 @@ const getOrderDetails = async (orderId) => {
 }
 
 // Manejar la actualización de la orden desde ShippingInformation
-const handleOrderUpdated = (updatedOrder) => {
+const handleOrderUpdated = (updatedOrder: Order) => {
   orderDetails.value = { ...updatedOrder }
 }
 
@@ -48,6 +49,7 @@ watch(() => props.selectedOrder, (newOrder) => {
   }
 }, { immediate: true })
 
+// Emitir regreso a la lista
 const handleBackToList = () => {
   emit('back-to-list')
 }

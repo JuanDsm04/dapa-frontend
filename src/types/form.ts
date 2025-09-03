@@ -39,3 +39,8 @@ export interface SubmissionStats {
   submissionsByStatus: { status: string; count: number }[];
   answersByQuestion: { questionId: number; optionId: number; count: number }[];
 }
+
+export interface ResetPasswordErrors {
+  password?: string
+  confirmPassword?: string
+}

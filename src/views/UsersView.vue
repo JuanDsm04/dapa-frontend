@@ -2,21 +2,33 @@
 import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+
 import UserForm from '@/components/UserForm.vue';
 import TableUsers from '@/components/Table.vue';
 import NotificationModal from '@/components/NotificationModal.vue';
+
 import type { HighlightConfig } from '@/types/table';
 import type { User } from '@/types/user';
-import { getUsers as fetchUsers, createUser, updateUser, deleteUser } from '@/services/userService';
 
+import { 
+  getUsers as fetchUsers, 
+  createUser, 
+  updateUser, 
+  deleteUser 
+} from '@/services/userService';
+
+// Estado
 const showModal = ref(false);
 const users = ref<User[]>([]);
-const selectedUser = ref<User | undefined>(undefined);
+const selectedUser = ref<User | undefined>();
 const loading = ref(false);
-const activeUsers = computed(() => users.value.filter(user => user.isActive));
 
-//  Funciones de utilidad
-const highlightUser = (item: any): HighlightConfig | undefined => {
+const activeUsers = computed<User[]>(() => 
+  users.value.filter(user => user.isActive)
+);
+
+// Función para resaltar filas según fecha de licencia
+const highlightUser = (item: User): HighlightConfig | undefined => {
   if (item.role !== 'driver' || !item.licenseExpirationDate) return undefined;
 
   const expiration = new Date(item.licenseExpirationDate);
@@ -52,7 +64,7 @@ const handleEditUser = (user: User) => {
 const showConfirmModal = ref(false);
 const confirmTitle = ref('');
 const confirmMessage = ref('');
-const confirmAction = ref<(() => void) | null>(null);
+const confirmAction = ref<(() => Promise<void>) | null>(null);
 
 // Eliminar usuario
 const handleDeleteUser = (user: User) => {
@@ -81,12 +93,12 @@ const handleDeleteUser = (user: User) => {
 // Obtener usuarios
 const loadUsers = async () => {
   try {
-    const data = await fetchUsers();
+    const data: User[] = await fetchUsers();
     users.value = data;
 
     // Detectar licencias vencidas
     const hoy = new Date();
-    const vencidos = users.value.filter((u: User) => {
+    const vencidos = users.value.filter((u) => {
       if (u.role !== 'driver' || !u.licenseExpirationDate) return false;
       return new Date(u.licenseExpirationDate) < hoy;
     });
@@ -116,9 +128,14 @@ const handleCreationOrUpdate = async (payload: Partial<User>) => {
 
     await loadUsers();
     closeModal();
-  } catch (error: any) {
-    console.error('Error al guardar usuario:', error);
-    toast.error(`Error: ${error.message || 'No se pudo guardar el usuario'}`);
+    
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error al guardar usuario:', error.message);
+      toast.error(`Error: ${error.message}`);
+    } else {
+      toast.error('Error: No se pudo guardar el usuario');
+    }
   }
 };
 
@@ -127,6 +144,7 @@ onMounted(async () => {
   await loadUsers();
 });
 </script>
+
 
 <template>
   <main>

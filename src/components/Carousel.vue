@@ -1,12 +1,14 @@
-<script setup>
-import { onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref, defineProps } from 'vue'
 
-const props = defineProps({
-  slides: {
-    type: Array,
-    required: true
-  }
-})
+type Slide = {
+  src: string
+  alt: string
+}
+
+const props = defineProps<{
+  slides: Slide[]
+}>()
 
 const currentSlide = ref(0)
 
@@ -15,7 +17,6 @@ onMounted(() => {
     currentSlide.value = (currentSlide.value + 1) % props.slides.length
   }, 4000)
 })
-
 </script>
 
 <template>

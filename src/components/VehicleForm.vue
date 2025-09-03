@@ -1,70 +1,18 @@
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits } from 'vue'
+import type { Vehicle } from '@/types/vehicle'
 
 const props = defineProps<{
-    initialData?: {
-        id?: number
-        brand?: string
-        model?: string
-        licensePlate?: string
-        capacityKg?: number
-        isAvailable?: boolean
-        insuranceDate?: string
-    },
-    updating?: boolean
+  initialData?: Vehicle
+  updating?: boolean
 }>()
 
 const emit = defineEmits<{
-    (e: 'submit', payload: any): void
-    (e: 'cancel'): void
+  (e: 'submit', payload: Vehicle): void
+  (e: 'cancel'): void
 }>()
 
-// Validar el formulario y emitir el submit
-const handleSubmit = () => {
-    errors.value = {}
-
-    if (!brand.value.trim()) {
-        errors.value.brand = 'La marca es requerida *'
-    }
-
-    if (!model.value.trim()) {
-        errors.value.model = 'El modelo es requerido *'
-    }
-
-    const plateRegex = /^[A-Z]\d{3}[A-Z]{3}$/ // P123ABC
-    if (!plateRegex.test(licensePlate.value.toUpperCase())) {
-        errors.value.licensePlate = 'Formato de placa inválido (Ej: P123ABC) *'
-    }
-
-    if (capacityKg.value === null || capacityKg.value <= 0) {
-        errors.value.capacityKg = 'La capacidad debe ser mayor a 0 *'
-    }
-
-    if (!insuranceDate.value) {
-        errors.value.insuranceDate = 'La fecha de vencimiento del seguro es requerida *'
-    }
-
-    // Si hay errores, se detiene aquí
-    if (Object.keys(errors.value).length > 0) {
-        return
-    }
-
-    const isoDate = insuranceDate.value
-        ? new Date(insuranceDate.value).toISOString()
-        : undefined
-
-    emit('submit', {
-        id: props.initialData?.id,
-        brand: brand.value,
-        model: model.value,
-        licensePlate: licensePlate.value.toUpperCase(),
-        capacityKg: capacityKg.value,
-        isAvailable: true,
-        insuranceDate: isoDate,
-    })
-}
-
-// Variables para cada campo del formulario y estado de errores
+// Variables para cada campo del formulario
 const brand = ref('')
 const model = ref('')
 const licensePlate = ref('')
@@ -73,18 +21,58 @@ const insuranceDate = ref('')
 const errors = ref<Record<string, string>>({})
 
 // Observar cambios en initialData para llenar el formulario de editar
-watch(() => props.initialData, (newData) => {
+watch(
+  () => props.initialData,
+  (newData) => {
     if (newData) {
-        brand.value = newData.brand || ''
-        model.value = newData.model || ''
-        licensePlate.value = newData.licensePlate || ''
-        capacityKg.value = newData.capacityKg ?? null
-        insuranceDate.value = newData.insuranceDate
-            ? newData.insuranceDate.split('T')[0]
-            : ''
+      brand.value = newData.brand
+      model.value = newData.model
+      licensePlate.value = newData.licensePlate
+      capacityKg.value = newData.capacityKg ?? null
+      insuranceDate.value = newData.insuranceDate
+        ? newData.insuranceDate.split('T')[0]
+        : ''
     }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
+// Validar el formulario y emitir el submit
+const handleSubmit = () => {
+  errors.value = {}
+
+  if (!brand.value.trim()) errors.value.brand = 'La marca es requerida *'
+  if (!model.value.trim()) errors.value.model = 'El modelo es requerido *'
+
+  const plateRegex = /^[A-Z]\d{3}[A-Z]{3}$/ // P123ABC
+  if (!plateRegex.test(licensePlate.value.toUpperCase())) {
+    errors.value.licensePlate = 'Formato de placa inválido (Ej: P123ABC) *'
+  }
+
+  if (capacityKg.value === null || capacityKg.value <= 0) {
+    errors.value.capacityKg = 'La capacidad debe ser mayor a 0 *'
+  }
+
+  if (!insuranceDate.value) {
+    errors.value.insuranceDate = 'La fecha de vencimiento del seguro es requerida *'
+  }
+
+  if (Object.keys(errors.value).length > 0) return
+
+  const isoDate = insuranceDate.value
+    ? new Date(insuranceDate.value).toISOString()
+    : undefined
+
+  emit('submit', {
+    id: props.initialData?.id,
+    brand: brand.value,
+    model: model.value,
+    licensePlate: licensePlate.value.toUpperCase(),
+    capacityKg: capacityKg.value,
+    isAvailable: true,
+    insuranceDate: isoDate!,
+  })
+}
 </script>
 
 <template>

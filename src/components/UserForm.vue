@@ -1,83 +1,19 @@
 <script setup lang="ts">
-import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
 import { ref, watch, defineProps, defineEmits } from 'vue'
+import type { User } from '@/types/user'
 
 const props = defineProps<{
-    initialData?: {
-        id?: number
-        name?: string
-        lastName?: string
-        phone?: string
-        email?: string
-        password?: string
-        role?: string
-        licenseExpirationDate?: string
-    },
-    updating?: boolean
-    isProfile?: boolean
+  initialData?: User
+  updating?: boolean
+  isProfile?: boolean
 }>()
 
 const emit = defineEmits<{
-    (e: 'submit', payload: any): void
-    (e: 'cancel'): void
-    (e: 'submit', payload: any): void
-    (e: 'cancel'): void
+  (e: 'submit', payload: User): void
+  (e: 'cancel'): void
 }>()
 
-// Validar el formulario y emitir el submit
-const handleSubmit = () => {
-    errors.value = {}
-
-    if (!name.value.trim()) {
-        errors.value.name = 'El nombre es requerido *'
-    }
-
-    if (!lastName.value.trim()) {
-        errors.value.lastName = 'El apellido es requerido *'
-    }
-
-    if (!/^\d{8}$/.test(phone.value)) {
-        errors.value.phone = 'El teléfono debe tener 8 dígitos numéricos *'
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-        errors.value.email = 'Correo no válido *'
-    }
-
-    if (!props.updating && password.value.length < 8) { 
-        errors.value.password = 'La contraseña debe tener al menos 8 caracteres *'
-    }
-
-    if (role.value === 'driver' && !licenseExpirationDate.value) {
-        errors.value.licenseExpirationDate = 'Fecha de licencia requerida para pilotos *'
-    }
-
-    if (!role.value.trim()) {
-        errors.value.role = 'El rol es requerido *'
-    }
-
-    // Si hay errores, se detiene aquí
-    if (Object.keys(errors.value).length > 0) {
-        return
-    }
-
-    const licenseDate = licenseExpirationDate.value
-        ? new Date(licenseExpirationDate.value).toISOString()
-        : undefined
-
-    emit('submit', {
-        id: props.initialData?.id,
-        name: name.value,
-        lastName: lastName.value,
-        email: email.value,
-        phone: phone.value,
-        password: password.value,
-        role: role.value,
-        licenseExpirationDate: role.value === 'driver' ? licenseDate : undefined,
-    })
-}
-
-// Variables para cada campo del formulario y estado de errores
+// Variables para cada campo del formulario
 const name = ref('')
 const lastName = ref('')
 const phone = ref('')
@@ -88,33 +24,65 @@ const showPassword = ref(false)
 const licenseExpirationDate = ref('')
 const errors = ref<Record<string, string>>({})
 
+// Observar cambios en initialData para llenar el formulario de editar
+watch(
+  () => props.initialData,
+  (newData) => {
+    if (newData) {
+      name.value = newData.name
+      lastName.value = newData.lastName
+      phone.value = newData.phone
+      email.value = newData.email
+      password.value = newData.password || ''
+      role.value = newData.role?.trim() ? newData.role : 'driver'
+      licenseExpirationDate.value = newData.licenseExpirationDate
+        ? newData.licenseExpirationDate.split('T')[0]
+        : ''
+    }
+  },
+  { immediate: true }
+)
+
+// Validar el formulario y emitir el submit
+const handleSubmit = () => {
+  errors.value = {}
+
+  if (!name.value.trim()) errors.value.name = 'El nombre es requerido *'
+  if (!lastName.value.trim()) errors.value.lastName = 'El apellido es requerido *'
+  if (!/^\d{8}$/.test(phone.value)) errors.value.phone = 'El teléfono debe tener 8 dígitos numéricos *'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) errors.value.email = 'Correo no válido *'
+  if (!props.updating && password.value.length < 8) errors.value.password = 'La contraseña debe tener al menos 8 caracteres *'
+  if (role.value === 'driver' && !licenseExpirationDate.value) errors.value.licenseExpirationDate = 'Fecha de licencia requerida para pilotos *'
+  if (!role.value.trim()) errors.value.role = 'El rol es requerido *'
+
+  if (Object.keys(errors.value).length > 0) return
+
+  const licenseDate = licenseExpirationDate.value
+    ? new Date(licenseExpirationDate.value).toISOString()
+    : undefined
+
+  emit('submit', {
+    id: props.initialData?.id,
+    name: name.value,
+    lastName: lastName.value,
+    email: email.value,
+    phone: phone.value,
+    password: password.value,
+    role: role.value,
+    licenseExpirationDate: role.value === 'driver' ? licenseDate : undefined,
+  })
+}
+
 // Cambiar el estado de visibilidad de la contraseña
 const togglePassVisibility = () => {
-    showPassword.value = !showPassword.value
+  showPassword.value = !showPassword.value
 }
 
 // Controlar que el campo teléfono solo tenga números al ser ingresado
 const onPhoneInput = (event: Event) => {
-    const input = event.target as HTMLInputElement
-    phone.value = input.value.replace(/\D/g, '')
+  const input = event.target as HTMLInputElement
+  phone.value = input.value.replace(/\D/g, '')
 }
-
-// Observar cambios en initialData para llenar el formulario de editar
-watch(() => props.initialData, (newData) => {
-    if (newData) {
-        name.value = newData.name || ''
-        lastName.value = newData.lastName || ''
-        phone.value = newData.phone || ''
-        email.value = newData.email || ''
-        password.value = newData.password || ''
-        role.value = newData.role && newData.role.trim() !== '' ? newData.role : 'driver'
-        licenseExpirationDate.value = newData.licenseExpirationDate
-            ? newData.licenseExpirationDate.split('T')[0]
-            : ''
-    }
-}, { immediate: true })
-
-
 </script>
 
 <template>

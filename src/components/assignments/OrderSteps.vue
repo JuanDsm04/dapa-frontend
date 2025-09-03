@@ -1,17 +1,15 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  orderStatus: {
-    type: String,
-    default: 'pickup'
-  }
-})
+const props = defineProps<{
+  orderStatus?: 'pickup' | 'collected' | 'delivered' | string
+}>()
 
-const stepIcons = ['local_shipping', 'delivery_truck_speed', 'hand_package']
+// Íconos
+const stepIcons: string[] = ['local_shipping', 'delivery_truck_speed', 'hand_package']
 
-// Mapear el status a número de paso
-const getCurrentStep = computed(() => {
+// Mapear el status
+const getCurrentStep = computed<number>(() => {
   switch (props.orderStatus) {
     case 'pickup':
       return 1

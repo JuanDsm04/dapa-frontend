@@ -1,22 +1,33 @@
-<script setup>
-import { getUserRole } from '@/utils/auth'
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { getUserRole } from '@/utils/auth'
 import { useNotificationStore } from '@/stores/notifications'
 import { storeToRefs } from 'pinia'
 
+// Tipo para cada sección del menú
+type Section = {
+  id: string
+  icon: string
+  description: string
+  auth: string[]
+}
+
+const route = useRoute()
+const loggedRole = getUserRole()
+
+// Computar la sección activa según la ruta
 const activeSection = computed(() => {
   const path = route.path.replace('/', '')
   return path || 'quotes'
 })
 
+// Store de notificaciones
 const notificationStore = useNotificationStore()
 const { vehicleAlert } = storeToRefs(notificationStore)
 
-const route = useRoute()
-const loggedRole = getUserRole()
-
-const sections = [
+// Definición de secciones
+const sections: Section[] = [
   { id: 'quotes', icon: 'notifications', description: 'Cotizaciones', auth: ['admin'] },
   { id: 'assignments', icon: 'pin_drop', description: 'Asignaciones', auth: ['admin', 'driver'] },
   { id: 'users', icon: 'people', description: 'Usuarios', auth: ['admin']},
@@ -24,8 +35,9 @@ const sections = [
   { id: 'reports', icon: 'monitoring', description: 'Reportes', auth: ['admin'] },
   { id: 'reviews', icon: 'reviews', description: 'Reseñas', auth: ['admin'] },
   { id: 'forms', icon: 'description', description: 'Formularios', auth: ['admin']}
-];
+]
 
+// Estado del menú
 const isMenuOpen = ref(false)
 
 function toggleMenu() {
@@ -35,7 +47,6 @@ function toggleMenu() {
 function closeMenu() {
   isMenuOpen.value = false
 }
-
 </script>
 
 <template>

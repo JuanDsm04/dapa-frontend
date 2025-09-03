@@ -1,4 +1,4 @@
-<script>
+<script setup lang="ts">
 // VISTA PARA QUE LOS CONDUCTORES PUEDAN VER SUS FLETES ASIGNADOS
 </script>
 

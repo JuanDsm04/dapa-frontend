@@ -1,4 +1,4 @@
-import type { Order } from '@/types/order'
+import type { Order, CreateOrderPayload, UpdateOrderPayload } from '@/types/order'
 import { API_URL, getHeaders, handleResponse } from '@/utils/api'
 
 export const getOrders = async (): Promise<Order[]> => {
@@ -21,7 +21,7 @@ export const getOrderById = async (orderId: number): Promise<Order> => {
   return response
 }
 
-export const createOrder = async (payload: Partial<Order>) => {
+export const createOrder = async (payload: CreateOrderPayload): Promise<Order> => {
   const response = await handleResponse(
     await fetch(`${API_URL}/api/orders`, {
       method: 'POST',
@@ -32,7 +32,7 @@ export const createOrder = async (payload: Partial<Order>) => {
   return response
 }
 
-export const updateOrder = async (orderId: number, payload: any) => {
+export const updateOrder = async (orderId: number, payload: UpdateOrderPayload): Promise<Order> => {
   const response = await handleResponse(
     await fetch(`${API_URL}/api/orders/${orderId}`, {
       method: 'PUT',
@@ -43,7 +43,7 @@ export const updateOrder = async (orderId: number, payload: any) => {
   return response
 }
 
-export const deleteOrder = async (orderId: number) => {
+export const deleteOrder = async (orderId: number): Promise<void> => {
   return handleResponse(
     await fetch(`${API_URL}/api/orders/${orderId}`, {
       method: 'DELETE',
@@ -52,7 +52,7 @@ export const deleteOrder = async (orderId: number) => {
   )
 }
 
-export const assignOrder = async (orderId: number, userId: number, vehicleId: number) => {
+export const assignOrder = async (orderId: number, userId: number, vehicleId: number): Promise<Order> => {
   const response = await handleResponse(
     await fetch(`${API_URL}/api/orders/${orderId}`, {
       method: 'PATCH',

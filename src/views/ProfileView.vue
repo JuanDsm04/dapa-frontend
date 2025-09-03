@@ -12,30 +12,19 @@ const user = ref<User | null>(null);
 
 // Obtener datos del usuario actual
 const getCurrentUserData = async () => {
-  const id = getUserID();
+  const id = getUserID()
   if (!id) {
-    console.warn("No se encontró el ID del usuario.");
-    return;
+    console.warn("No se encontró el ID del usuario.")
+    return
   }
 
   try {
-    const data = await getUserById(Number(id));
-
-    user.value = {
-      id: data.id,
-      name: data.name,
-      lastName: data.lastName,
-      phone: data.phone,
-      email: data.email,
-      password: data.password,
-      licenseExpirationDate: data.licenseExpirationDate,
-      role: data.role,
-    };
+    user.value = await getUserById(Number(id))
   } catch (error) {
-    console.error("Error obteniendo al usuario loggeado:", error);
-    toast.error("No se pudo cargar la información del perfil.");
+    console.error("Error obteniendo al usuario loggeado:", error)
+    toast.error("No se pudo cargar la información del perfil.")
   }
-};
+}
 
 // Cerrar sesión
 const handleLogout = () => {

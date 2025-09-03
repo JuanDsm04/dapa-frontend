@@ -1,62 +1,68 @@
-<script setup>
-import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-import router from '@/router'
-import { resetPassword } from '@/services/authService'
+<script setup lang="ts">
+import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import router from '@/router';
+import { resetPassword } from '@/services/authService';
 import { toast } from 'vue3-toastify';
+import type { ResetPasswordErrors as Errors } from '@/types/form';
 
 const route = useRoute()
-const token = route.query.token
-const password = ref('')
-const confirmPassword = ref('')
-const showPassword = ref(false)	
-const showConfirmPassword = ref(false)
-const errors = ref({})
+const token = route.query.token as string
+const password = ref<string>('')
+const confirmPassword = ref<string>('')
+const showPassword = ref<boolean>(false)	
+const showConfirmPassword = ref<boolean>(false)
+const errors = ref<Errors>({})
 
-// Funciones para alternar la visibilidad de la contraseña
-const togglePassVisibility = () => {
-	showPassword.value = !showPassword.value
+// Alternar la visibilidad de las contraseñas
+const togglePassVisibility = (): void => {
+  showPassword.value = !showPassword.value
 }
 
-const toggleConfirmPassVisibility = () => {
-	showConfirmPassword.value = !showConfirmPassword.value
+const toggleConfirmPassVisibility = (): void => {
+  showConfirmPassword.value = !showConfirmPassword.value
 }
 
-// Validaciones
-const validateForm = () => {
-	errors.value = {}
+// Validar del formulario
+const validateForm = (): boolean => {
+  errors.value = {}
 
-	if (!password.value.trim()) {
-		errors.value.password = 'La contraseña es requerida *'
-	}
-	if (!confirmPassword.value.trim()) {
-		errors.value.confirmPassword = 'La confirmación es requerida *'
-	}
-	if (password.value && confirmPassword.value && password.value !== confirmPassword.value) {
-		errors.value.confirmPassword = 'Las contraseñas no coinciden *'
-	}
+  if (!password.value.trim()) {
+    errors.value.password = 'La contraseña es requerida *'
+  }
+  if (!confirmPassword.value.trim()) {
+    errors.value.confirmPassword = 'La confirmación es requerida *'
+  }
+  if (
+    password.value &&
+    confirmPassword.value &&
+    password.value !== confirmPassword.value
+  ) {
+    errors.value.confirmPassword = 'Las contraseñas no coinciden *'
+  }
 
-	return Object.keys(errors.value).length === 0
+  return Object.keys(errors.value).length === 0
 }
 
-// Manejo del restablecimiento de contraseña
-const handleResetButton = async () => {
-	if (!validateForm()) return
+// Manejar el restablecimiento de contraseña
+const handleResetButton = async (): Promise<void> => {
+  if (!validateForm()) return
 
-	try {
-		const result = await resetPassword(token, password.value)
+  try {
+    const result = await resetPassword(token, password.value)
 
-		if (result.ok) {
-			router.push('/login')
-		} else {
-			console.log(result)
-			toast.error('No se pudo restablecer la contraseña')
-		}
-	} catch (error) {
-		console.error(error)
-		toast.error('Ocurrió un error al procesar la solicitud')
-	}
+    if (result.ok) {
+      router.push('/login')
+
+    } else {
+      console.log(result)
+      toast.error('No se pudo restablecer la contraseña')
+    }
+  } catch (error) {
+    console.error(error)
+    toast.error('Ocurrió un error al procesar la solicitud')
+  }
 }
 </script>
 

@@ -2,21 +2,33 @@
 import { ref, onMounted, computed } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
+
 import VehicleForm from '@/components/VehicleForm.vue';
 import TableVehicles from '@/components/Table.vue';
 import NotificationModal from '@/components/NotificationModal.vue';
+
 import type { HighlightConfig } from '@/types/table';
 import type { Vehicle } from '@/types/vehicle';
-import { getVehicles as fetchVehicles, deleteVehicle, createVehicle, updateVehicle } from '@/services/vehicleService';
 
+import { 
+  getVehicles as fetchVehicles, 
+  deleteVehicle, 
+  createVehicle, 
+  updateVehicle 
+} from '@/services/vehicleService';
+
+// Estado
 const showModal = ref(false);
 const vehicles = ref<Vehicle[]>([]);
-const selectedVehicle = ref<Vehicle | undefined>(undefined);
+const selectedVehicle = ref<Vehicle | undefined>();
 const loading = ref(false);
-const activeVehicles = computed(() => vehicles.value.filter(vehicle => vehicle.isActive));
 
-//  Funciones de utilidad
-const highlightVeh = (item: any): HighlightConfig | undefined => {
+const activeVehicles = computed<Vehicle[]>(() => 
+  vehicles.value.filter(vehicle => vehicle.isActive)
+);
+
+// Función para resaltar filas según fecha de seguro
+const highlightVeh = (item: Vehicle): HighlightConfig | undefined => {
   if (!item.insuranceDate) return undefined;
 
   const insurance = new Date(item.insuranceDate);
@@ -52,7 +64,7 @@ const handleEditVehicle = (vehicle: Vehicle) => {
 const showConfirmModal = ref(false);
 const confirmTitle = ref('');
 const confirmMessage = ref('');
-const confirmAction = ref<(() => void) | null>(null);
+const confirmAction = ref<(() => Promise<void>) | null>(null);
 
 // Eliminar vehículo
 const handleDeleteVehicle = (vehicle: Vehicle) => {
@@ -81,12 +93,12 @@ const handleDeleteVehicle = (vehicle: Vehicle) => {
 // Obtener vehículos
 const loadVehicles = async () => {
   try {
-    const data = await fetchVehicles();
+    const data: Vehicle[] = await fetchVehicles();
     vehicles.value = data;
 
     // Detectar seguros vencidos
     const hoy = new Date();
-    const vencidos = vehicles.value.filter((v: Vehicle) => {
+    const vencidos = vehicles.value.filter((v) => {
       if (!v.insuranceDate) return false;
       return new Date(v.insuranceDate) < hoy;
     });
@@ -116,8 +128,10 @@ const handleCreationOrUpdate = async (payload: Partial<Vehicle>) => {
 
     await loadVehicles();
     closeModal();
-  } catch (error: any) {
-    console.error('Error al guardar vehículo:', error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error al guardar vehículo:', error.message);
+    }
     toast.error(`Error: No se pudo guardar el vehículo`);
   }
 };

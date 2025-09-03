@@ -1,13 +1,13 @@
-<script setup>
-  import LoginForm from '@/components/LoginForm.vue';
+<script setup lang="ts">
+import LoginForm from '@/components/LoginForm.vue';
 </script>
 
 <template>
   <main>
-    <img src="@/assets/images/demo-image.jpg" alt="Demo image of a company's truck">
+    <img src="@/assets/images/demo-image.jpg" alt="Demo image of a company's truck" />
     <section>
       <div class="content-wrapper">
-        <img src="@/assets/images/logo_1.png" alt="Company logo" class="logo">
+        <img src="@/assets/images/logo_1.png" alt="Company logo" class="logo" />
         <LoginForm />
       </div>
     </section>

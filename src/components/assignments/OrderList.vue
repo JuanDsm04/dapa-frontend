@@ -1,42 +1,43 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { getOrders } from '@/services/orderService'
 import OrderCard from './OrderCard.vue'
+import type { Order } from '@/types/order'
 
-const props = defineProps({
-  title: String,
-  defaultStatuses: {
-    type: Array,
-    required: true
-  },
-  availableFilters: {
-    type: Array,
-    required: true
-  }
-})
+const props = defineProps<{
+  title?: string
+  defaultStatuses: string[]
+  availableFilters: string[]
+}>()
 
-const emit = defineEmits(['order-selected'])
+const emit = defineEmits<{
+  (e: 'order-selected', order: Order): void
+}>()
 
-const orders = ref([])
-const filter = ref(null)
+// Estados internos
+const orders = ref<Order[]>([])
+const filter = ref<string | null>(null)
 const showFilters = ref(false)
 const loading = ref(false)
-const selectedOrderId = ref(null)
+const selectedOrderId = ref<number | string | null>(null)
 
+// Manejar selección de orden
+const handleOrderClick = (order: Order) => {
+  selectedOrderId.value = order.id
+  emit('order-selected', order)
+}
+
+// Toggle de filtros
 function toggleFilterOptions() {
   showFilters.value = !showFilters.value
 }
 
-function setFilter(option) {
+// Selección de filtro
+function setFilter(option: string) {
   filter.value = option
   showFilters.value = false
-}
-
-const handleOrderClick = (order) => {
-  selectedOrderId.value = order.id
-  emit('order-selected', order)
 }
 
 const filteredOrders = computed(() => {
@@ -46,9 +47,9 @@ const filteredOrders = computed(() => {
 
   switch (filter.value) {
     case 'recent':
-      return [...sorted].sort((a, b) => new Date(b.date) - new Date(a.date))
+      return [...sorted].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     case 'oldest':
-      return [...sorted].sort((a, b) => new Date(a.date) - new Date(b.date))
+      return [...sorted].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     case 'pending':
       return sorted.filter(order => order.status === 'pending')
     case 'assigned':
@@ -64,7 +65,7 @@ const filteredOrders = computed(() => {
   }
 })
 
-// Obtener ordenes
+// Obtener órdenes desde el servicio
 const getOrdersData = async () => {
   loading.value = true
   try {
@@ -78,7 +79,7 @@ const getOrdersData = async () => {
   }
 }
 
-// Obtener ordenes al montar el componente
+// Montaje del componente
 onMounted(() => {
   getOrdersData()
 })

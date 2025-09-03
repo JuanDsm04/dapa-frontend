@@ -28,7 +28,7 @@ const activeTab = ref('left')
 const questionSelected = ref<Question | undefined>(undefined)
 const showModal = ref(false)
 
-const sortableContainer = ref<HTMLElement>()
+const sortableContainer = ref<HTMLElement | null>(null)
 let sortableInstance: Sortable | null = null
 
 const activeQuestionsCount = computed(() => questions.value.filter(q => q.isActive).length)
