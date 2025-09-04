@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid';
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import router from '@/router';
@@ -91,8 +90,12 @@ const handleResetButton = async (): Promise<void> => {
 						>
 						<button type="button" class="toggle-visibility-btn" @click="togglePassVisibility">
 							<div class="icon-wrapper">
-								<EyeIcon v-if="showPassword" />
-								<EyeSlashIcon v-else />
+								<span v-if="showPassword" class="material-symbols-outlined sm-icon">
+									visibility
+								</span>
+								<span v-else class="material-symbols-outlined sm-icon">
+									visibility_off
+								</span>
 							</div>
 						</button>
 					</div>
@@ -112,8 +115,12 @@ const handleResetButton = async (): Promise<void> => {
 						>
 						<button type="button" class="toggle-visibility-btn" @click="toggleConfirmPassVisibility">
 							<div class="icon-wrapper">
-								<EyeIcon v-if="showConfirmPassword" />
-								<EyeSlashIcon v-else />
+								<span v-if="showConfirmPassword" class="material-symbols-outlined sm-icon">
+									visibility
+								</span>
+								<span v-else class="material-symbols-outlined sm-icon">
+									visibility_off
+								</span>
 							</div>
 						</button>
 					</div>

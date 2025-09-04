@@ -195,8 +195,10 @@ onMounted(async () => {
   <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
     <article>
       <header>
-        <h3>{{ selectedVehicle ? 'Editar' : 'Agregar' }}</h3>
-        <button class="close-btn" @click="closeModal">✕</button>
+        <h3>{{ selectedVehicle ? 'Editar' : 'Agregar' }} Vehículo</h3>
+        <button class="close-btn" @click="closeModal">
+          <span class="material-symbols-outlined md-icon">close</span>
+        </button>
       </header>
 
       <section>
@@ -346,7 +348,6 @@ article section {
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
   color: var(--close-btn);
   cursor: pointer;
 }

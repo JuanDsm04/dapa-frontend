@@ -168,7 +168,7 @@ onMounted(() => {
                 :key="driver.id" 
                 :value="driver.id"
               >
-                {{ driver.name }} {{ driver.last_name }}
+                {{ driver.name }} {{ driver.lastName }}
               </option>
             </select>
           </div>

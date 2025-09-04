@@ -37,22 +37,22 @@ const slides: Slide[] = [
             
             <div>
                 <article>
-                    <span class="material-symbols-outlined">schedule</span>
+                    <span class="material-symbols-outlined lg-icon">schedule</span>
                     <h3>Puntualidad</h3>
                     <p>Llegamos a tiempo, siempre</p>
                 </article>
                 <article>
-                    <span class="material-symbols-outlined">shield</span>
+                    <span class="material-symbols-outlined lg-icon">shield</span>
                     <h3>Seguridad</h3>
                     <p>Tus pertenencias viajan protegidas</p>
                 </article>
                 <article>
-                    <span class="material-symbols-outlined">how_to_reg</span>
+                    <span class="material-symbols-outlined lg-icon">how_to_reg</span>
                     <h3>Profesionalismo</h3>
                     <p>Servicio serio y de calidad</p>
                 </article>
                 <article>
-                    <span class="material-symbols-outlined">payments</span>
+                    <span class="material-symbols-outlined lg-icon">payments</span>
                     <h3>Economía</h3>
                     <p>Tarifas accesibles para cada destino</p>
                 </article>
@@ -151,7 +151,6 @@ const slides: Slide[] = [
     }
 
     section span {
-        font-size: 60px; 
         color: var(--text-on-light);
         margin-bottom: 20px;
     }

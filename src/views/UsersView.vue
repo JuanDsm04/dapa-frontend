@@ -206,7 +206,9 @@ onMounted(async () => {
     <article>
       <header>
         <h3>{{ selectedUser ? 'Editar Usuario' : 'Agregar Usuario' }}</h3>
-        <button class="close-btn" @click="closeModal">✕</button>
+        <button class="close-btn" @click="closeModal">
+          <span class="material-symbols-outlined md-icon">close</span>
+        </button>
       </header>
 
       <section>
@@ -357,7 +359,6 @@ article section {
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
   color: var(--close-btn);
   cursor: pointer;
 }

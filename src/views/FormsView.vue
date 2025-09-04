@@ -57,7 +57,7 @@ const initSortable = () => {
     forceFallback: false,
     fallbackOnBody: true,
     swapThreshold: 0.65,
-    onEnd: async (evt) => {
+    onEnd: async (evt: any) => {
 
       const oldIndex = evt.oldIndex
       const newIndex = evt.newIndex
@@ -267,7 +267,9 @@ const toggleQuestion = async (index: number) => {
       <article>
         <header>
           <h3>{{ questionSelected ? 'Editar Pregunta' : 'Agregar Pregunta' }}</h3>
-          <button class="close-btn" @click="closeModal">&times;</button>
+          <button class="close-btn" @click="closeModal">
+            <span class="material-symbols-outlined md-icon">close</span>
+          </button>
         </header>
 
         <section>

@@ -4,16 +4,17 @@ import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { updateOrder } from '@/services/orderService'
 import OrderForm from './OrderForm.vue'
+import type { Order, UpdateOrderPayload } from '@/types/order'
 
 const props = defineProps<{
   editable?: boolean
-  orderData?: object | null
+  orderData?: Partial<Order>
 }>()
 
 // Emit para comunicar cambios al componente padre
 const emit = defineEmits(['orderUpdated'])
 const showModal = ref(false)
-const localOrderData = ref(null)
+const localOrderData = ref<Partial<Order> | null>(null)
 
 // Watch para actualizar localOrderData cuando cambie orderData
 watch(() => props.orderData, (newOrderData) => {
@@ -35,7 +36,7 @@ const closeModal = () => {
 }
 
 // Función para manejar la actualización de la orden
-const handleOrderSubmit = async (payload) => {
+const handleOrderSubmit = async (payload: UpdateOrderPayload) => {
   try {
     if (!props.orderData?.id) {
       throw new Error("No se encontró el ID de la orden")
@@ -75,12 +76,12 @@ const cargoTypeMap = {
 }
 
 // Función para obtener el tipo de carga en español
-const getCargoTypeInSpanish = (type) => {
+const getCargoTypeInSpanish = (type: any) => {
   return cargoTypeMap[type] || 'No especificado'
 }
 
 // Función para formatear el precio
-const formatPrice = (amount) => {
+const formatPrice = (amount: any) => {
   if (!amount) return 'Q 0.00'
   return `Q ${parseFloat(amount).toFixed(2)}`
 }
@@ -131,7 +132,9 @@ const currentOrderData = computed(() => localOrderData.value)
     <article class="modal-content">
       <header class="modal-header">
         <h3>Editar Orden</h3>
-        <button class="close-btn" @click="closeModal">✕</button>
+        <button class="close-btn" @click="closeModal">
+          <span class="material-symbols-outlined md-icon">close</span>
+        </button>
       </header>
 
       <section>

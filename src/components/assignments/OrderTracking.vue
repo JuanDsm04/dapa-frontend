@@ -20,7 +20,7 @@ const orderDetails = ref<Order | null>(null)
 const loading = ref(false)
 
 // Obtener detalles de la orden por ID usando el servicio
-const getOrderDetails = async (orderId: number | string) => {
+const getOrderDetails = async (orderId: number) => {
   if (!orderId) return
   
   loading.value = true

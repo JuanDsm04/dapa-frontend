@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
 import { type Question } from '@/types/form'
-import { XCircleIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
   question: Question
@@ -184,7 +183,9 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
 
     <!-- Mensaje de error -->
     <div v-if="hasError" class="error-message">
-      <XCircleIcon class="icon"/>
+      <span class="material-symbols-outlined sm-icon">
+        cancel
+      </span>
       {{ error }}
     </div>
   </div>

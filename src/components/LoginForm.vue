@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { EyeIcon, EyeSlashIcon } from '@heroicons/vue/24/solid'
 import router from '@/router'
 import { getUserRole } from '@/utils/auth'
 import { login } from '@/services/authService'
@@ -49,8 +48,12 @@ const handleLogin = async () => {
           <label for="Password">Contraseña</label>
           <button type="button" class="toggle-visibility-btn" @click="togglePassVisibility">
             <div class="icon-wrapper">
-              <EyeIcon v-if="showPassword" />
-              <EyeSlashIcon v-else />
+              <span v-if="showPassword" class="material-symbols-outlined sm-icon">
+                visibility
+              </span>
+              <span v-else class="material-symbols-outlined sm-icon">
+                visibility_off
+              </span>
             </div>
             <span class="toggle-label">{{ showPassword ? 'Ocultar' : 'Ver' }}</span>
           </button>

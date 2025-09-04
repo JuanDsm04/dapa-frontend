@@ -31,12 +31,12 @@ const emit = defineEmits<{
       <!-- Botones -->
       <div class="modal-actions">
         <button class="btn btn-cancel" @click="emit('close')">
-          <span class="material-symbols-outlined">close</span> 
+          <span class="material-symbols-outlined md-icon">close</span> 
           {{ cancelText || 'Cancelar' }}
         </button>
 
         <button class="btn btn-confirm" @click="emit('confirm')">
-          <span class="material-symbols-outlined">check</span>
+          <span class="material-symbols-outlined md-icon">check</span>
           {{ confirmText || 'Confirmar' }}
         </button>
       </div>

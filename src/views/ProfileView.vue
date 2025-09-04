@@ -8,7 +8,7 @@ import type { User } from '@/types/user';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
-const user = ref<User | null>(null);
+const user = ref<User | undefined>(undefined);
 
 // Obtener datos del usuario actual
 const getCurrentUserData = async () => {
@@ -65,7 +65,7 @@ onMounted(() => {
       <header class="sticky-header">
         <h1>Mi perfil</h1>
         <button @click="handleLogout">
-          <span class="material-symbols-outlined">
+          <span class="material-symbols-outlined md-icon">
             power_settings_new
           </span>
         </button>

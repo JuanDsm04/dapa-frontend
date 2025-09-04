@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue'
 import { type Question, type QuestionOption, type QuestionType } from '@/types/form'
-import { XCircleIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps<{
   initialData?: Question
@@ -354,7 +353,9 @@ const hasErrors = computed(() => {
             type="button"
             :title="formData.options.length === 1 ? 'Debe haber al menos una opción' : 'Eliminar opción'"
           >
-            <TrashIcon class="icon"/>
+              <span class="material-symbols-outlined md-icon">
+                delete
+              </span>
           </button>
         </div>
         <button @click="addOption" class="btn-add-option" type="button" :disabled="loading || formData.options.length >= 10">

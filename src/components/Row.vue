@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, computed } from 'vue'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/solid'
 
 const props = defineProps<{
   item: Record<string, any>

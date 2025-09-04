@@ -4,12 +4,12 @@ import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { getOrders } from '@/services/orderService'
 import OrderCard from './OrderCard.vue'
-import type { Order } from '@/types/order'
+import type { Order, orderFilter } from '@/types/order'
 
 const props = defineProps<{
   title?: string
   defaultStatuses: string[]
-  availableFilters: string[]
+  availableFilters: orderFilter[]
 }>()
 
 const emit = defineEmits<{

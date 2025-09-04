@@ -23,7 +23,7 @@ const orderTypeMap = {
 }
 
 // Función para obtener el tipo de pedido en español
-const getOrderTypeInSpanish = (type) => {
+const getOrderTypeInSpanish = (type: any) => {
   return orderTypeMap[type] || '----';
 }
 

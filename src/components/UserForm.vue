@@ -9,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'submit', payload: User): void
+  (e: 'submit', payload: Partial<User>): void
   (e: 'cancel'): void
 }>()
 

@@ -3,7 +3,6 @@ import { ref, watch } from 'vue'
 import { type Question, type QuestionOption, type Answer } from '@/types/form'
 import QuestionPreview from './QuestionPreview.vue'
 import { createSubmission } from '@/services/submissionService'
-import { EyeIcon, WrenchScrewdriverIcon } from '@heroicons/vue/24/solid'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
@@ -172,14 +171,14 @@ const resetForm = () => {
         <div class="form-viewer-body">
             <!-- Indicador de modo preview -->
             <div v-if="isPreview && !isReadOnly" class="preview-mode-indicator">
-                <EyeIcon class="icon" />
+                <span class="material-symbols-outlined">visibility</span>
                 Modo Vista Previa
             </div>
 
             <form @submit.prevent="submitForm" class="form-content">
                 <!-- Estado vacío -->
                 <div v-if="questions.length === 0" class="empty-state">
-                    <WrenchScrewdriverIcon class="empty-icon" />
+                    <span class="material-symbols-outlined">construction</span>
                     <h3>No hay preguntas activas</h3>
                     <p>
                         {{

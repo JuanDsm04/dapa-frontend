@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { type Question, type QuestionType } from "@/types/form";
-import { Bars3Icon, PencilSquareIcon, TrashIcon, CheckCircleIcon, XCircleIcon } from "@heroicons/vue/24/solid";
 
 const props = defineProps<{
   question: Question;
@@ -61,7 +60,9 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 
     <div class="card-body">
       <div class="drag-handle" title="Arrastrar para mover">
-        <Bars3Icon class="drag-icon" />
+        <span class="material-symbols-outlined drag-icon md-icon">
+          menu
+        </span>
       </div>
 
       <div class="card-content">
@@ -103,7 +104,9 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
         <div class="actions-container">
           <div class="actions">
             <button class="btn btn-edit" @click="emit('edit')" title="Editar pregunta">
-              <PencilSquareIcon class="btn-icon" />
+              <span class="material-symbols-outlined btn-icon sm-icon">
+                edit_square
+              </span>
               <span class="btn-text">Editar</span>
             </button>
 
@@ -113,12 +116,14 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
               :title="question.isActive ? 'Desactivar pregunta' : 'Activar pregunta'"
               :class="{ 'btn-toggle-active': question.isActive }"
             >
-              <component :is="question.isActive ? CheckCircleIcon : XCircleIcon" class="btn-icon" />
+              <span class="material-symbols-outlined btn-icon sm-icon">{{ question.isActive ? 'check_circle' : 'cancel' }}</span>
               <span class="btn-text">{{ question.isActive ? 'Desactivar' : 'Activar' }}</span>
             </button>
 
             <button class="btn btn-delete" @click="emit('delete')" title="Eliminar pregunta">
-              <TrashIcon class="btn-icon" />
+              <span class="material-symbols-outlined btn-icon sm-icon">
+                delete
+              </span>
               <span class="btn-text">Eliminar</span>
             </button>
           </div>
@@ -185,11 +190,6 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .drag-handle:active {
   cursor: grabbing;
   transform: scale(0.95);
-}
-
-.drag-icon {
-  width: 24px;
-  height: 24px;
 }
 
 .card-content {
@@ -374,6 +374,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   width: 18px;
   height: 18px;
   flex-shrink: 0;
+  font-weight: 500;
 }
 
 .btn-text {

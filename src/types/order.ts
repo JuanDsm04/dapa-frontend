@@ -36,3 +36,8 @@ export interface UpdateOrderPayload {
   type?: string
   date?: string
 }
+
+export interface orderFilter {
+  value: string,
+  label: string
+}
