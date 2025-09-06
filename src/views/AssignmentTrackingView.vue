@@ -37,64 +37,64 @@ import OrderSteps from '@/components/assignments/OrderSteps.vue';
 </template>
 
 <style scoped>
-  main {
-    width: 100%;
-    padding: 3rem;
-    background-color: var(--bg-general);
-    min-height: 100vh;
-  }
+main {
+  width: 100%;
+  padding: 3rem;
+  background-color: var(--bg-general);
+  min-height: 100vh;
+}
 
-  header {
-    background-color: white;
-    padding: 2rem 3rem;
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 2rem;
-  }
+header {
+  background-color: white;
+  padding: 2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
 
-  h1, h2, h3 {
-    font-weight: 600;
-  }
+h1, h2, h3 {
+  font-weight: 600;
+}
 
-  h2, h3 {
-    margin-bottom: 0.5rem;
-  }
+h2, h3 {
+  margin-bottom: 0.5rem;
+}
 
-  h2 {
-    font-size: 2rem;
-  }
+h2 {
+  font-size: 2rem; /* 32px → rem (ya en rem, 2rem) */
+}
 
-  h3 {
-    margin-top: 2rem;
-  }
+h3 {
+  margin-top: 2rem; /* 32px → rem (ya en rem, 2rem) */
+}
 
-  header img {
-    width: 150px;
-    height: auto;
-  }
+header img {
+  width: 9.375rem; /* 150px → rem */
+  height: auto;
+}
 
-  .info {
-    background-color: white;
-    padding: 2rem 3rem;
-  }
+.info {
+  background-color: white;
+  padding: 2rem 3rem;
+}
 
-  .info-box {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 1rem;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
+.info-box {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
 
-  .info-item label {
-    font-size: 0.9rem;
-    color: #666;
-  }
+.info-item label {
+  font-size: 0.9rem;
+  color: #666;
+}
 
-  .info-item p {
-    margin: 0;
-    font-size: 1rem;
-  }
-
+.info-item p {
+  margin: 0;
+  font-size: 1rem;
+}
 </style>
+

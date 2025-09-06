@@ -90,6 +90,7 @@ main {
   padding: 2rem;
   background-color: var(--bg-general);
   min-height: 100vh;
+  font-size: clamp(0.875rem, 1vw + 0.5rem, 1.125rem);
 }
 
 main header {
@@ -102,13 +103,14 @@ main header {
 h1 {
   font-weight: 600;
   margin: 0;
+  font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem);
 }
 
 .pending-orders {
   width: 100%;
   display: grid;
   grid-template-columns: 0.75fr 1fr;
-  height: calc(100vh - 150px); 
+  height: calc(100vh - 9.375rem);
   background-color: var(--white);
   border-radius: 10px;
 }
@@ -147,7 +149,7 @@ h1 {
   }
 
   h1 {
-    margin-left: 50px;
+    margin-left: 3.125rem;
   }
 
   /* Responsive behavior para móvil */

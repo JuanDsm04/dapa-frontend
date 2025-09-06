@@ -293,7 +293,7 @@ const toggleQuestion = async (index: number) => {
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -304,14 +304,14 @@ const toggleQuestion = async (index: number) => {
 .header-content h1 {
   margin: 0 0 0.5rem 0;
   color: #333;
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   font-weight: 700;
 }
 
 .subtitle {
   margin: 0 0 1.5rem 0;
   color: #666;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
 }
 
 .stats {
@@ -326,17 +326,17 @@ const toggleQuestion = async (index: number) => {
 }
 
 .stat-number {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   font-weight: 700;
   color: var(--add-btn);
   line-height: 1;
 }
 
 .stat-label {
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 0.4vw + 0.5rem, 0.85rem);
   color: #666;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05rem;
 }
 
 .header-actions {
@@ -352,12 +352,13 @@ const toggleQuestion = async (index: number) => {
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2px);
+  transform: translateY(-0.125rem);
   background: var(--add-btn-hover);
 }
 
@@ -369,10 +370,11 @@ const toggleQuestion = async (index: number) => {
 .btn-secondary {
   background: white;
   color: #666;
-  border: 2px solid #e0e0e0;
+  border: 0.125rem solid #e0e0e0;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -411,32 +413,27 @@ const toggleQuestion = async (index: number) => {
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--border);
-  border-top: 4px solid var(--add-btn);
+  width: 2.5rem; /* 40px → rem */
+  height: 2.5rem;
+  border: 0.25rem solid var(--border);
+  border-top: 0.25rem solid var(--add-btn);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .column {
   width: 100%;
-  max-width: 800px;
+  max-width: 50rem; /* 800px → rem */
   padding: 1rem;
   background-color: #fff;
   border-radius: 8px;
   margin: 1rem 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
 
 .column-header {
@@ -445,7 +442,7 @@ const toggleQuestion = async (index: number) => {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 0.125rem solid #e9ecef;
 }
 
 .preview {
@@ -454,12 +451,12 @@ const toggleQuestion = async (index: number) => {
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-width: 800px;
+  max-width: 50rem;
   background-color: #fff;
   border-radius: 8px;
   margin: 1rem 0;
-  padding: 1rem;;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
 
 .preview-header {
@@ -469,14 +466,14 @@ const toggleQuestion = async (index: number) => {
   align-items: center;
   padding-bottom: 1rem;
   margin-bottom: 1.5rem;
-  border-bottom: 2px solid #e9ecef;
+  border-bottom: 0.125rem solid #e9ecef;
 }
 
 .title {
   font-weight: 600;
   margin: 0;
   color: #333;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
 }
 
 .count {
@@ -484,16 +481,16 @@ const toggleQuestion = async (index: number) => {
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 0.4vw + 0.5rem, 0.85rem);
   font-weight: 500;
 }
 
 .draggable-container {
-  min-height: 200px;
+  min-height: 12.5rem; /* 200px → rem */
 }
 
 .draggable-list {
-  min-height: 100px;
+  min-height: 6.25rem; /* 100px → rem */
 }
 
 .sortable-item {
@@ -512,29 +509,30 @@ const toggleQuestion = async (index: number) => {
 }
 
 .empty-subtitle {
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 0.4vw + 0.5rem, 0.9rem);
   opacity: 0.8;
 }
 
+/* Toggle Styles */
 .toggle-wrapper {
   display: flex;
   background-color: #EAEEF4;
   border-radius: 10px;
   position: relative;
-  width: 300px;
-  height: 60px;
-  padding: 6px;
+  width: 18.75rem; /* 300px → rem */
+  height: 3.75rem; /* 60px → rem */
+  padding: 0.375rem; /* 6px → rem */
   font-family: sans-serif;
   font-weight: bold;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.375rem; /* 6px → rem */
 }
 
 .toggle-indicator {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(50% - 6px);
-  height: calc(100% - 12px);
+  top: 0.375rem;
+  left: 0.375rem;
+  width: calc(50% - 0.375rem);
+  height: calc(100% - 0.75rem);
   background-color: white;
   border-radius: 10px;
   transition: all 0.3s ease;
@@ -544,19 +542,14 @@ const toggleQuestion = async (index: number) => {
 .toggle-button {
   flex: 1;
   text-align: center;
-  line-height: 48px;
+  line-height: 3rem; /* 48px → rem */
   cursor: pointer;
   z-index: 2;
   user-select: none;
 }
 
-.active-left .toggle-indicator {
-  left: 6px;
-}
-
-.active-right .toggle-indicator {
-  left: 50%;
-}
+.active-left .toggle-indicator { left: 0.375rem; }
+.active-right .toggle-indicator { left: 50%; }
 
 /* Modal Styles */
 .modal-overlay {
@@ -565,7 +558,7 @@ const toggleQuestion = async (index: number) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0,0,0,0.5);
   z-index: 1001;
   display: flex;
   justify-content: center;
@@ -575,11 +568,11 @@ const toggleQuestion = async (index: number) => {
 article {
   background: var(--modal-bg, white);
   border-radius: 10px;
-  max-width: 600px;
+  max-width: 37.5rem; /* 600px → rem */
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
 }
@@ -593,19 +586,17 @@ article header {
 }
 
 article header h3 {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
   font-weight: 500;
   margin: 0;
 }
 
-article section {
-  padding: 1.5rem;
-}
+article section { padding: 1.5rem; }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
   color: var(--close-btn, #666);
   cursor: pointer;
   padding: 0.5rem;
@@ -618,111 +609,38 @@ article section {
 
 .close-btn:hover {
   color: var(--close-btn-hover, #333);
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgba(0,0,0,0.1);
 }
 
-/* Estilos para el drag and drop con sortablejs */
-:deep(.sortable-ghost) {
-  opacity: 0.4;
-  background: #c1e5f5;
-  transform: scale(1.01);
-  border: 2px dashed #177fd4;
-}
-
-:deep(.sortable-chosen) {
-  opacity: 0.8;
-  background: #e3f2fd;
-}
-
-:deep(.sortable-drag) {
-  opacity: 0.9;
-  background: white;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-  transform: rotate(1deg);
-  border: 2px solid #177fd4;
-  z-index: 1000;
-}
+/* Drag & Drop Styles (sortablejs) */
+:deep(.sortable-ghost) { opacity: 0.4; background: #c1e5f5; transform: scale(1.01); border: 2px dashed #177fd4; }
+:deep(.sortable-chosen) { opacity: 0.8; background: #e3f2fd; }
+:deep(.sortable-drag) { opacity: 0.9; background: white; box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.25); transform: rotate(1deg); border: 2px solid #177fd4; z-index: 1000; }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
-  .form-builder {
-    padding: 1rem;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-  }
-
-  .header-content {
-    margin-bottom: 1rem;
-  }
-
-  .stats {
-    justify-content: center;
-  }
-
-  .header-actions {
-    justify-content: center;
-  }
-
-  .toggle-wrapper {
-    width: 250px;
-  }
+@media (max-width: 64rem) { /* 1024px → rem */
+  .form-builder { padding: 1rem; }
+  .header { flex-direction: column; align-items: stretch; text-align: center; }
+  .header-content { margin-bottom: 1rem; }
+  .stats { justify-content: center; }
+  .header-actions { justify-content: center; }
+  .toggle-wrapper { width: 15.625rem; } /* 250px → rem */
 }
 
-@media (max-width: 768px) {
-  .header-content h1 {
-    font-size: 1.5rem;
-  }
-
-  .stats {
-    gap: 1rem;
-  }
-
-  .stat-number {
-    font-size: 1.5rem;
-  }
-
-  .header-actions {
-    flex-direction: column;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .column-header {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .toggle-wrapper {
-    width: 200px;
-  }
-
-  article {
-    margin: 1rem;
-    max-width: calc(100% - 2rem);
-  }
+@media (max-width: 48rem) { /* 768px → rem */
+  .header-content h1 { font-size: 1.5rem; }
+  .stats { gap: 1rem; }
+  .stat-number { font-size: 1.5rem; }
+  .header-actions { flex-direction: column; }
+  .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+  .column-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
+  .toggle-wrapper { width: 12.5rem; } /* 200px → rem */
+  article { margin: 1rem; max-width: calc(100% - 2rem); }
 }
 
-@media (max-width: 480px) {
-  .form-builder {
-    padding: 0.5rem;
-  }
-
-  .header {
-    padding: 1rem;
-  }
-
-  .stats {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+@media (max-width: 30rem) { /* 480px → rem */
+  .form-builder { padding: 0.5rem; }
+  .header { padding: 1rem; }
+  .stats { flex-direction: column; gap: 0.5rem; }
 }
 </style>

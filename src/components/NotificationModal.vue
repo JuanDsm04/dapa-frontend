@@ -59,10 +59,10 @@ const emit = defineEmits<{
 /* Contenedor del modal */
 .modal {
   background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  padding: 24px;
-  width: 400px;
+  border-radius: 0.75rem; /* 12px -> 0.75rem */
+  box-shadow: 0 0.375rem 1.25rem rgba(0, 0, 0, 0.2); /* 6px 20px */
+  padding: 1.5rem; /* 24px */
+  width: 25rem; /* 400px */
   max-width: 90%;
   text-align: center;
 }
@@ -70,44 +70,50 @@ const emit = defineEmits<{
 /* Título */
 .modal-title {
   font-size: 1.25rem;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem; /* 12px */
+  font-weight: 600;
 }
 
 /* Mensaje */
 .modal-message {
   font-size: 0.9rem;
   color: #555;
-  margin-bottom: 30px;
+  margin-bottom: 1.875rem; /* 30px */
 }
 
 /* Contenedor de botones */
 .modal-actions {
   display: flex;
   justify-content: center;
-  gap: 2rem;
+  gap: 1.25rem; /* 20px */
+  flex-wrap: wrap;
 }
 
 /* Estilos base para botones */
 .btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 0.5rem 1rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 0.625rem; /* 10px */
   cursor: pointer;
   color: white;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 button span {
-    margin-right: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 /* Botón cancelar */
 .btn-cancel {
- background-color: #ff5a70;
+  background-color: #ff5a70;
 }
 .btn-cancel:hover {
   background-color: #f0566a;
+  transform: translateY(-1px);
 }
 
 /* Botón confirmar */
@@ -116,5 +122,25 @@ button span {
 }
 .btn-confirm:hover {
   background-color: #53cd69;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .modal {
+    width: 90%;
+    padding: 1rem;
+  }
+
+  .modal-actions {
+    gap: 0.75rem;
+  }
+
+  .modal-title {
+    font-size: 1.125rem;
+  }
+
+  .modal-message {
+    font-size: 0.85rem;
+  }
 }
 </style>

@@ -117,13 +117,13 @@ const formatDate = (value: string | Date): string => {
 }
 
 label {
-  font-size: 0.9rem;
+  font-size: clamp(0.85rem, 1.5vw, 0.9rem);
   color: #666;
 }
 
 p {
   margin: 0;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 1.5vw, 1rem);
   color: #000;
 }
 
@@ -156,13 +156,13 @@ p {
   padding: 0.7rem 1.5rem;
   border: none;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 1.5vw, 1rem);
   cursor: pointer;
 }
 
 .lock-icon .material-symbols-outlined {
-    font-size: 48px;
-    color: white;
+  font-size: clamp(2.5rem, 5vw, 3rem);
+  color: white;
 }
 
 @media (max-width: 1500px) {

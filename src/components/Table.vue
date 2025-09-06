@@ -203,7 +203,7 @@ watch(() => dt.value, (newDt) => {
 :deep(.data-table) {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem; /* 20px → rem */
 }
 
 :deep(.data-table thead) {
@@ -212,10 +212,10 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.data-table thead th) {
-  padding: 16px 24px;
+  padding: 1rem 1.5rem; /* 16px 24px → rem */
   text-align: center;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem; /* 0.5px → rem */
 }
 
 :deep(.data-table thead th:first-child) {
@@ -227,15 +227,15 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.data-table tbody td) {
-  padding: 12px 18px;
+  padding: 0.75rem 1.125rem; /* 12px 18px → rem */
   text-align: center;
   font-weight: 300;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.03125rem;
   background-color: var(--table-row);
 }
 
 :deep(.data-table tbody tr) {
-  border-bottom: 3px solid var(--border);
+  border-bottom: 0.1875rem solid var(--border); /* 3px → rem */
   transition: all 0.2s ease;
 }
 
@@ -248,7 +248,7 @@ watch(() => dt.value, (newDt) => {
   justify-content: space-evenly;
   align-items: center;
   text-align: center;
-  gap: 10px;
+  gap: 0.625rem; /* 10px → rem */
 }
 
 :deep(.action-buttons button) {
@@ -260,8 +260,8 @@ watch(() => dt.value, (newDt) => {
   text-align: center;
   background: none;
   cursor: pointer;
-  padding: 8px;
-  gap: 10px;
+  padding: 0.5rem; /* 8px → rem */
+  gap: 0.625rem; /* 10px → rem */
   font-weight: 500;
   text-transform: uppercase;
   border-radius: 10px;
@@ -300,21 +300,21 @@ watch(() => dt.value, (newDt) => {
 :deep(.dataTables_filter),
 :deep(.dataTables_info),
 :deep(.dataTables_paginate) {
-  margin: 10px 0;
+  margin: 0.625rem 0; /* 10px → rem */
 }
 
 :deep(.dataTables_filter input) {
   border: 1px solid var(--border);
   border-radius: 5px;
-  padding: 5px 10px;
-  margin-left: 10px;
+  padding: 0.3125rem 0.625rem; /* 5px 10px → rem */
+  margin-left: 0.625rem; /* 10px → rem */
 }
 
 :deep(.paginate_button) {
-  border: 1px solid var(--border) !important;
+  border: 0.0625rem solid var(--border) !important; /* 1px → rem */
   border-radius: 5px !important;
-  margin: 0 2px !important;
-  padding: 5px 10px !important;
+  margin: 0 0.125rem !important; /* 2px → rem */
+  padding: 0.3125rem 0.625rem !important; /* 5px 10px → rem */
   background: white !important;
 }
 
@@ -332,14 +332,10 @@ watch(() => dt.value, (newDt) => {
 :deep(.dataTables_wrapper .dataTables_length select) {
   border: 1px solid var(--border);
   border-radius: 5px;
-  padding: 2px 5px;
+  padding: 0.125rem 0.3125rem; /* 2px 5px → rem */
 }
 
-:deep(.dataTables_wrapper .dataTables_filter label) {
-  font-weight: 600;
-  color: var(--text-on-light);
-}
-
+:deep(.dataTables_wrapper .dataTables_filter label),
 :deep(.dataTables_wrapper .dataTables_length label) {
   font-weight: 600;
   color: var(--text-on-light);
@@ -362,6 +358,6 @@ watch(() => dt.value, (newDt) => {
 :deep(table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before) {
   top: 50%;
   transform: translateY(-15%);
-  left: 5px; 
+  left: 0.3125rem; /* 5px → rem */
 }
 </style>

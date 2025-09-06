@@ -243,7 +243,7 @@ const resetForm = () => {
     padding: 0.75rem 1rem;
     border-radius: 8px;
     margin-bottom: 1.5rem;
-    font-size: 0.875rem;
+    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
     font-weight: 500;
 }
 
@@ -277,6 +277,7 @@ const resetForm = () => {
     border-radius: 8px;
     margin: 1rem 0;
     font-weight: 500;
+    font-size: clamp(0.8rem, 1.5vw, 0.875rem);
 }
 
 .alert-error {
@@ -293,13 +294,13 @@ const resetForm = () => {
 
 .empty-state h3 {
     margin: 0 0 0.5rem 0;
-    font-size: 1.25rem;
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
     color: #374151;
 }
 
 .empty-state p {
     margin: 0;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 1.8vw, 1rem);
     opacity: 0.8;
 }
 
@@ -324,7 +325,7 @@ const resetForm = () => {
     border: none;
     padding: 0.875rem 2rem;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 1.8vw, 1rem);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -357,7 +358,7 @@ const resetForm = () => {
     border: 2px solid #e5e7eb;
     padding: 0.875rem 2rem;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 1.8vw, 1rem);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;

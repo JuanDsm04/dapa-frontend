@@ -103,7 +103,7 @@ const answersCount = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 0.0625rem solid #ccc; /* 1px -> rem */
   border-radius: 10px;
   padding: 1rem;
   margin: 0.5rem 0;
@@ -121,7 +121,7 @@ const answersCount = computed(() => {
 .quote-card.selected {
   border-color: #2563eb;
   background-color: #f0f4ff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 0.125rem 0.5rem rgba(37, 99, 235, 0.2); /* 2px 8px -> rem */
 }
 
 .status-pending {
@@ -150,7 +150,7 @@ const answersCount = computed(() => {
 }
 
 label {
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem); /* responsive */
   color: #666;
   display: block;
   margin-bottom: 0.2rem;
@@ -158,7 +158,7 @@ label {
 
 p {
   margin: 0;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 1.8vw, 1rem); /* responsive */
   color: #000;
   font-weight: 500;
 }
@@ -166,20 +166,14 @@ p {
 .status-text {
   font-weight: 600;
   display: inline-block;
-  height: 25px;
+  height: 1.5625rem; /* 25px -> rem */
   border-radius: 12px;
   padding: 0 1rem;
   text-align: center;
 }
 
-.status-text.status-pending {
-  color: #fff;
-}
-
-.status-text.status-approved {
-  color: #fff;
-}
-
+.status-text.status-pending,
+.status-text.status-approved,
 .status-text.status-cancelled {
   color: #fff;
 }
@@ -191,7 +185,7 @@ p {
 }
 
 .image-container img {
-  width: 100px;
+  width: 6.25rem; /* 100px -> rem */
   object-fit: contain;
   opacity: 0.8;
 }
@@ -212,11 +206,11 @@ p {
   }
   
   label {
-    font-size: 0.8rem;
+    font-size: clamp(0.7rem, 2vw, 0.8rem);
   }
   
   p {
-    font-size: 0.9rem;
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
   }
 }
 </style>

@@ -138,6 +138,7 @@ header {
 h2 {
   margin: 0;
   font-weight: 600;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
 }
 
 .filter-wrapper {
@@ -152,7 +153,7 @@ h2 {
   border: 1px solid #ccc;
   border-radius: 10px;
   background-color: white;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   cursor: pointer;
 }
 
@@ -180,6 +181,7 @@ h2 {
   background: none;
   border: none;
   cursor: pointer;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .filter-options button:hover {
@@ -195,7 +197,7 @@ h2 {
 
 @media (max-width: 770px) {
   .text-subtitle {
-    font-size: 1.25rem;
+    font-size: clamp(1.1rem, 2.5vw, 1.25rem);
   }
 }
 </style>

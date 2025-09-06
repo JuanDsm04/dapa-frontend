@@ -115,7 +115,7 @@ const handleSubmit = () => {
 <style scoped>
 .field-group {
     display: flex;
-    gap: 5px;
+    gap: 0.3125rem; /* 5px → rem */
 }
 
 .field {
@@ -131,13 +131,13 @@ form {
 }
 
 label {
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.00625rem; /* 0.1px → rem */
 }
 
 .error {
-    font-size: 10px;
+    font-size: 0.625rem; /* 10px → rem */
     color: red;
-    margin-left: 5px;
+    margin-left: 0.3125rem; /* 5px → rem */
 }
 
 input,
@@ -150,7 +150,7 @@ select {
 
 button {
     border: 0;
-    padding: 15px 35px;
+    padding: 0.9375rem 2.1875rem; /* 15px 35px → rem */
     border-radius: 10px;
     background-color: var(--add-btn);
     color: var(--white);

@@ -152,7 +152,7 @@ const handleResetButton = async (): Promise<void> => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 20px;
+	padding: 1.25rem;
 }
 
 .main-container::before {
@@ -170,20 +170,20 @@ const handleResetButton = async (): Promise<void> => {
 	position: relative;
 	z-index: 2;
 	background: white;
-	border-radius: 12px;
-	padding: 32px;
+	border-radius: 0.75rem; 
+	padding: 2rem;
 	width: 100%;
-	max-width: 400px;
+	max-width: 25rem; 
 	display: flex;
 	flex-direction: column;
-	min-height: 500px;
-	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+	min-height: 31.25rem; 
+	box-shadow: 0 0.625rem 1.5625rem rgba(0, 0, 0, 0.15);
 }
 
 .error {
-	font-size: 12px;
+	font-size: clamp(0.6875rem, 0.8vw, 0.75rem);
 	color: red;
-	margin-top: 4px;
+	margin-top: 0.25rem;
 	text-align: left;
 }
 
@@ -194,31 +194,31 @@ const handleResetButton = async (): Promise<void> => {
 	align-items: center;
 	justify-content: center;
 	text-align: center;
-	margin-bottom: 20px;
+	margin-bottom: 1.25rem;
 }
 
 .logo-container {
-	margin-bottom: 24px;
+	margin-bottom: 1.5rem;
 }
 
 .logo {
-	width: 64px;
+	width: 4rem;
 	height: auto;
 	object-fit: contain;
 }
 
 .title {
-	font-size: 20px;
+	font-size: clamp(1.125rem, 2vw, 1.375rem);
 	font-weight: 600;
 	color: #1F2937;
-	margin-bottom: 12px;
+	margin-bottom: 0.75rem;
 	line-height: 1.3;
 }
 
 .subtitle {
-	font-size: 14px;
+	font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
 	color: #6B7280;
-	margin-bottom: 24px;
+	margin-bottom: 1.5rem;
 	line-height: 1.4;
 }
 
@@ -227,42 +227,42 @@ const handleResetButton = async (): Promise<void> => {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
-	margin-bottom: 16px;
+	margin-bottom: 1rem;
 }
 
 .email-input {
 	width: 100%;
-	padding: 12px 16px;
+	padding: 0.75rem 1rem;
 	border: 1px solid #D1D5DB;
-	border-radius: 8px;
-	font-size: 14px;
+	border-radius: 0.5rem;
+	font-size: clamp(0.8125rem, 1.2vw, 0.9375rem);
 	transition: all 0.2s;
 	outline: none;
 }
 
 .email-input:focus {
 	border-color: #3B82F6;
-	box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
 }
 
 .action-button-container {
 	display: flex;
 	justify-content: flex-end;
-	margin-bottom: 20px;
+	margin-bottom: 1.25rem;
 }
 
 .action-button {
 	background: #2563eb;
 	color: white;
 	border: none;
-	border-radius: 8px;
-	padding: 12px 24px;
-	font-size: 14px;
+	border-radius: 0.5rem;
+	padding: 0.75rem 1.5rem;
+	font-size: clamp(0.8125rem, 1.2vw, 0.9375rem);
 	font-weight: 500;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 0.5rem;
 	transition: background-color 0.2s;
 }
 
@@ -284,7 +284,7 @@ const handleResetButton = async (): Promise<void> => {
 
 .toggle-visibility-btn {
 	position: absolute;
-	right: 8px;
+	right: 0.5rem;
 	background: transparent;
 	border: none;
 	cursor: pointer;
@@ -297,22 +297,23 @@ const handleResetButton = async (): Promise<void> => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 20px;
-	height: 20px;
+	width: 1.25rem;
+	height: 1.25rem;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 770px) {
 	.form-container {
-		padding: 24px;
-		margin: 10px;
+		padding: 1.5rem;
+		margin: 0.625rem;
 	}
 
 	.title {
-		font-size: 18px;
+		font-size: clamp(1rem, 4vw, 1.125rem);
 	}
 
 	.subtitle {
-		font-size: 13px;
+		font-size: clamp(0.75rem, 3vw, 0.875rem);
 	}
 }
+
 </style>

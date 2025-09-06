@@ -234,6 +234,8 @@ main {
   padding: 2rem;
   background-color: var(--bg-general);
   min-height: 100vh;
+  font-size: clamp(0.875rem, 1vw + 0.5rem, 1.125rem);
+
 }
 
 main header {
@@ -245,6 +247,7 @@ main header {
 
 h1 {
   font-weight: 600;
+  font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem);
 }
 
 main section {
@@ -261,7 +264,7 @@ main section {
   color: var(--text-on-add-btn);
   border: none;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
@@ -336,7 +339,7 @@ article header {
 }
 
 article header h3 {
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 1vw + 0.5rem, 1.5rem);
   font-weight: 500;
   margin: 0;
 }
@@ -369,7 +372,8 @@ article section {
   }
 
   h1 {
-    margin-left: 50px;
+    margin-left: 0;
+    text-align: center;
   }
 }
 </style>

@@ -69,79 +69,110 @@ const handleLogin = async () => {
 </template>
 
 <style scoped>
-  main {
-    width: 500px;
-  }
+/* Contenedor principal */
+main {
+  width: 500px; /* ancho fijo del formulario */
+  margin: 0 auto; /* centrado horizontal */
+}
 
-  form, .field {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+/* Formularios y campos */
+form,
+.field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-  form {
-    gap: 1.75rem;
-  }
+form {
+  gap: 1.75rem; /* espacio entre campos */
+}
 
-  label {
-    margin-bottom: 0.1rem;
-  }
+/* Etiquetas */
+label {
+  margin-bottom: 0.1rem;
+}
 
-  .pass-row {
-    display: flex;
-    justify-content: space-between;
-  }
+/* Fila de contraseña con elementos alineados */
+.pass-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  input {
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-input);
-    font-size: 1rem;
-  }
+/* Inputs */
+input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-input);
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s;
+}
 
-  button {
-    border: 0;
-    padding: 15px 35px;
-    border-radius: 10px;
-    background-color: var(--add-btn);
-    color: var(--white);
-    font-size: 1rem;
-    font-weight: 500;
-    margin: 0 auto;
-  }
+input:focus {
+  border-color: var(--add-btn);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
 
-  form > button:hover {
-    background-color: var(--add-btn-hover);
-  }
+/* Botones */
+button {
+  border: none;
+  padding: 15px 35px;
+  border-radius: 10px;
+  background-color: var(--add-btn);
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
 
-  .toggle-visibility-btn {
-    display: flex;
-    gap: 10px;
-    color: var(--button-secondary);
-    align-items: center;
-    margin-right: 10px;
-    background-color: transparent;
-    padding: 0;
-  }
+form > button:hover {
+  background-color: var(--add-btn-hover);
+}
 
-  .icon-wrapper {
-    display: flex;
-    align-items: center;
-    height: 1rem;
-    width: 1rem;
-  }
+form > button:active {
+  transform: translateY(1px);
+}
 
-  .toggle-label {
-    font-weight: lighter;
-    font-size: 0.90rem;
-  }
+/* Toggle de visibilidad de contraseña */
+.toggle-visibility-btn {
+  display: flex;
+  gap: 10px;
+  color: var(--button-secondary);
+  align-items: center;
+  margin-right: 10px;
+  background-color: transparent;
+  padding: 0;
+  cursor: pointer;
+}
 
-  .submit-btn {
-    cursor: pointer;
-  }
+.icon-wrapper {
+  display: flex;
+  align-items: center;
+  height: 1rem;
+  width: 1rem;
+}
 
-  a {
-    color: var(--text-on-light);
-    align-self: center;
-  }
+.toggle-label {
+  font-weight: lighter;
+  font-size: 0.9rem;
+}
+
+/* Botón de submit */
+.submit-btn {
+  cursor: pointer;
+}
+
+/* Links */
+a {
+  color: var(--text-on-light);
+  align-self: center;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
 </style>

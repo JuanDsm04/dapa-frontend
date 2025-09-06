@@ -100,139 +100,143 @@ function closeMenu() {
 </template>
 
 <style scoped>
+/* Contenedor principal de la barra lateral */
+.side-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+
+  background-color: var(--sidebar-bg);
+  position: fixed;
+  height: 100dvh; /* altura completa de la ventana */
+  overflow-y: auto;
+  text-align: center;
+  width: 5rem; /* 80px */
+}
+
+/* Primer elemento (logo o icono principal) */
+.side-nav li:first-child {
+  margin: 1.25rem auto; /* 20px */
+}
+.side-nav li:first-child img {
+  width: 2.5rem; /* 40px */
+}
+
+/* Último elemento al fondo (ej. logout) */
+.side-nav li:last-child {
+  margin-top: auto;
+}
+
+/* Links de la barra lateral */
+li a {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.3s ease;
+}
+
+li a.active {
+  background-color: var(--sidebar-active-bg);
+}
+
+li a:hover:not(.active) {
+  background-color: var(--sidebar-hover-bg);
+}
+
+/* Iconos y badges */
+li span {
+  color: var(--sidebar-icon-color);
+  margin: 1.25rem 0; /* 20px */
+}
+li span.active {
+  color: var(--sidebar-active-icon-color);
+}
+
+/* Texto asociado al icono */
+li p {
+  display: none;
+  color: var(--sidebar-text-color);
+  margin: 0 auto;
+  padding-bottom: 0.625rem; /* 10px */
+}
+li p.active {
+  color: var(--sidebar-active-text-color);
+}
+
+/* Botón de menú para mobile */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 2.2rem;
+  left: 1rem;
+  font-size: 1.75rem; /* 28px */
+  background: none;
+  border: none;
+  color: var(--black);
+  transition: color 0.3s ease;
+  z-index: 1001;
+}
+.menu-toggle.open {
+  color: var(--white);
+}
+
+/* Overlay cuando la barra está abierta en móvil */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+}
+
+/* Badge de notificación */
+.notification-badge {
+  position: absolute;
+  top: 0.625rem; /* 10px */
+  right: 1.25rem; /* 20px */
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 0.625rem; /* 10px */
+  height: 0.625rem; /* 10px */
+}
+
+/* Responsive: mobile */
+@media (max-width: 770px) {
+  .menu-toggle {
+    display: block;
+  }
+
   .side-nav {
-    list-style-type: none;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 0;
-
-    background-color: var(--sidebar-bg);
-    position: fixed;
-    height: 100dvh;
-    overflow: auto;
-    text-align: center;
-    width: 80px;
+    left: -100%;
+    width: 15.625rem; /* 250px */
+    transition: left 0.3s ease;
+    z-index: 1000;
   }
 
-  .side-nav li:first-child {
-    margin: 20px auto;
-  }
-
-  .side-nav li:first-child img {
-    width: 40px;
-  }
-
-  .side-nav li:last-child {
-    margin-top: auto;
+  .side-nav.open {
+    left: 0;
   }
 
   li a {
-    display: block;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    color: inherit;
-  }
-
-  li a.active {
-    background-color: var(--sidebar-active-bg);
-  }
-
-  li a:hover:not(.active) {
-    background-color: var(--sidebar-hover-bg);
-  }
-
-  li span {
-    color: var(--sidebar-icon-color);
-    margin: 20px 0;
-  }
-
-  li span.active {
-    color: var(--sidebar-active-icon-color);
+    display: flex;
+    align-items: center;
+    padding-left: 1.25rem; /* 20px */
   }
 
   li p {
-    display: none;
-    color: var(--sidebar-text-color);
-    margin: 0 auto;
-    padding-bottom: 10px
+    display: block;
+    margin: 0;
+    margin-left: 0.625rem; /* 10px */
+    font-size: 1rem; /* 16px */
+    padding: 0;
   }
 
-  li p.active {
-    color: var(--sidebar-active-text-color);
+  .side-nav li:last-child {
+    padding-bottom: 0.625rem; /* 10px */
   }
-
-  .menu-toggle {
-    display: none;
-    position: fixed;
-    top: 2.2rem;
-    left: 1rem;
-    font-size: 28px;
-    background: none;
-    border: none;
-    color: var(--black);
-    transition: color 0.3s ease;
-    z-index: 1001;
-  }
-
-  .menu-toggle.open {
-    color: var(--white);
-  }
-
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 999;
-  }
-
-  .notification-badge {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    background-color: red;
-    color: white;
-    border-radius: 50%;
-    width: 10px;
-    height: 10px;
-  }
-
-  @media (max-width: 770px) {
-    .menu-toggle {
-      display: block;
-    }
-
-    .side-nav {
-      position: fixed;
-      left: -100%;
-      width: 250px;
-      transition: left 0.3s ease;
-      z-index: 1000;
-    }
-
-    .side-nav.open {
-      left: 0;
-    }
-
-    li a {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      padding-left: 20px;
-    }
-
-    li p {
-      display: block;
-      padding: 0;
-      margin: 0;
-      margin-left: 10px;
-      font-size: 16px;
-    }
-
-    .side-nav li:last-child {
-      padding-bottom: 10px;
-    }
-  }
+}
 </style>

@@ -193,7 +193,7 @@ form {
 
 input.price-input {
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   width: 100%;
 }
 
@@ -207,6 +207,7 @@ input.price-input {
 .label {
   margin-bottom: 0.25rem;
   font-weight: 500;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .input-container {
@@ -220,7 +221,7 @@ textarea {
   padding: 0.75rem 1rem;
   border-radius: 10px;
   border: 1px solid var(--border-input, #ccc);
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   width: 100%;
 }
 
@@ -231,7 +232,7 @@ textarea {
 }
 
 .error {
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 2vw, 0.85rem);
   color: red;
   margin-top: 0.25rem;
 }
@@ -243,7 +244,7 @@ textarea {
   border-radius: 10px;
   background-color: var(--add-btn, #2563eb);
   color: var(--white, #fff);
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   font-weight: 500;
   margin: 0 auto;
   cursor: pointer;
@@ -268,6 +269,7 @@ textarea {
   border-radius: 10px;
   cursor: pointer;
   color: white;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .action-container button:first-child {

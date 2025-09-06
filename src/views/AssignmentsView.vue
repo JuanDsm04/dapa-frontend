@@ -109,9 +109,9 @@ h1 {
   background-color: #EAEEF4;
   border-radius: 10px;
   position: relative;
-  width: 300px;
-  height: 60px;
-  padding: 6px;
+  width: 18.75rem; /* 300px → rem */
+  height: 3.75rem; /* 60px → rem */
+  padding: 0.375rem; /* 6px → rem */
   font-family: sans-serif;
   font-weight: bold;
   margin-bottom: 2rem;
@@ -119,10 +119,10 @@ h1 {
 
 .toggle-indicator {
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(50% - 6px);
-  height: calc(100% - 12px);
+  top: 0.375rem; /* 6px → rem */
+  left: 0.375rem; /* 6px → rem */
+  width: calc(50% - 0.375rem);
+  height: calc(100% - 0.75rem); /* 12px → rem */
   background-color: white;
   border-radius: 10px;
   transition: all 0.3s ease;
@@ -131,14 +131,14 @@ h1 {
 .toggle-button {
   flex: 1;
   text-align: center;
-  line-height: 48px;
+  line-height: 3rem; /* 48px → rem */
   cursor: pointer;
   z-index: 1;
   user-select: none;
 }
 
 .active-left .toggle-indicator {
-  left: 6px;
+  left: 0.375rem;
 }
 
 .active-right .toggle-indicator {
@@ -149,10 +149,9 @@ h1 {
   width: 100%;
   display: grid;
   grid-template-columns: 0.75fr 1fr;
-  height: calc(100vh - 250px); 
+  height: calc(100vh - 15.625rem); /* 250px → rem */
   background-color: var(--white);
   border-radius: 10px;
-    
 }
 
 .pending-orders .list {
@@ -190,14 +189,14 @@ h1 {
 
   /* Título principal de la página */
   .text-title {
-    margin-left: 50px;
+    margin-left: 3.125rem; /* 50px → rem */
     font-size: 1.5rem;
   }
 
   /* Switch */
   .toggle-wrapper {
-    width: 250px;
-    height: 50px;
+    width: 15.625rem; /* 250px → rem */
+    height: 3.125rem; /* 50px → rem */
     font-size: 0.9rem;
     align-items: center;
   }

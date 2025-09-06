@@ -168,16 +168,17 @@ const currentOrderData = computed(() => localOrderData.value)
   text-align: center;
   color: #666;
   padding: 2rem;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
 }
 
 .info-item label {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.6vw, 0.9rem);
   color: #666;
 }
 
 .info-item p {
   margin: 0;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
 }
 
 .info-item.full-width {
@@ -191,7 +192,7 @@ const currentOrderData = computed(() => localOrderData.value)
   background: transparent;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: clamp(1.1rem, 2vw, 1.2rem);
 }
 
 .info-action:hover {
@@ -232,19 +233,20 @@ article header {
 }
 
 article header h3 {
-  font-size: 1.5rem;
+  font-size: clamp(1.3rem, 2.5vw, 1.5rem);
   font-weight: 500;
   margin: 0;
 }
 
 article section {
   padding: 1.5rem;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: clamp(1.3rem, 2.5vw, 1.5rem);
   color: var(--close-btn);
   cursor: pointer;
 }

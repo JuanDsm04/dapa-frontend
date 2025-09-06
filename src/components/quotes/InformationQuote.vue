@@ -180,7 +180,7 @@ header {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
   display: none;
   padding: 0.5rem;
 }
@@ -201,6 +201,7 @@ header h2 {
     font-weight: 600;
     margin: 0;
     text-align: left;
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
 }
 
 .submission-info {
@@ -208,7 +209,7 @@ header h2 {
     flex-direction: column;
     gap: 0.5rem;
     align-items: flex-end;
-    font-size: 0.9rem;
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
 }
 
 .submission-id {
@@ -224,7 +225,7 @@ header h2 {
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
     font-weight: 500;
-    font-size: 0.8rem;
+    font-size: clamp(0.7rem, 2vw, 0.8rem);
 }
 
 .status-pending {
@@ -245,20 +246,19 @@ header h2 {
 }
 
 .no-selection-content .material-symbols-outlined {
-    font-size: 3rem;
+    font-size: clamp(2.5rem, 6vw, 3rem);
     margin-bottom: 1rem;
     opacity: 0.5;
 }
 
 .answer-container {
-    border: 1px solid #ccc;
+    border: 0.0625rem solid #ccc; /* 1px -> rem */
     border-radius: 10px;
     padding: 1rem;
     margin-bottom: 1rem;
     overflow-y: hidden;
     flex-grow: 2;
 }
-
 
 .order-form-container {
     flex: 1;
@@ -310,6 +310,7 @@ header h2 {
     padding: 1rem 1.5rem;
     border-radius: 10px;
     font-weight: 500;
+    font-size: clamp(0.875rem, 2vw, 1rem);
 }
 
 .status-message.status-approved {

@@ -90,6 +90,7 @@ onMounted(() => {
   box-sizing: border-box;
   overflow-y: auto;
   height: 100vh;
+  font-size: clamp(0.875rem, 1vw + 0.5rem, 1.125rem);
   z-index: 1;
 }
 
@@ -111,13 +112,14 @@ onMounted(() => {
 
 header h1 {
   font-weight: 600;
+  font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem);
 }
 
 button {
-  width: 50px;
-  height: 50px;
+  width: 3.125rem;
+  height: 3.125rem;
   border: 0;
-  border-radius: 50%;
+  border-radius: 50px;
   background-color: var(--on-delete-btn);
   cursor: pointer;
   display: flex;
@@ -127,6 +129,7 @@ button {
 
 span {
   color: var(--white);
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
 }
 
 @media (max-width: 770px) {

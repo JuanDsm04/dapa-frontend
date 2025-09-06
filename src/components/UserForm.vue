@@ -152,7 +152,7 @@ const onPhoneInput = (event: Event) => {
 <style scoped>
 .field-group {
     display: flex;
-    gap: 5px;
+    gap: 0.3125rem; /* 5px → rem */
 }
 
 .field {
@@ -168,13 +168,13 @@ form {
 }
 
 label {
-    margin-bottom: 0.1rem;
+    margin-bottom: 0.00625rem; /* 0.1px → rem */
 }
 
 div p {
-    font-size: 10px;
+    font-size: 0.625rem; /* 10px → rem */
     color: red;
-    margin-left: 5px;
+    margin-left: 0.3125rem; /* 5px → rem */
 }
 
 .pass-row {
@@ -199,7 +199,7 @@ select {
 
 button {
     border: 0;
-    padding: 15px 35px;
+    padding: 0.9375rem 2.1875rem; /* 15px 35px → rem */
     border-radius: 10px;
     background-color: var(--add-btn);
     color: var(--white);
@@ -215,17 +215,17 @@ form>button:hover {
 
 .toggle-visibility-btn {
     display: flex;
-    gap: 10px;
+    gap: 0.625rem; /* 10px → rem */
     color: var(--button-secondary);
     align-items: center;
-    margin-right: 10px;
+    margin-right: 0.625rem; /* 10px → rem */
     background-color: transparent;
     padding: 0;
 }
 
 .toggle-label {
     font-weight: lighter;
-    font-size: 0.90rem;
+    font-size: 0.9rem;
 }
 
 @media screen and (max-width: 770px) {

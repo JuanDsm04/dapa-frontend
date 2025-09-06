@@ -102,143 +102,143 @@ const slides: Slide[] = [
 </template>
 
 <style scoped>
-    header {
+header {
+    width: 100%;
+    height: 100vh;
+}
+
+section {
+    background-color: #D9D9D9;
+    text-align: center;
+    padding: 1.875rem 0 6.25rem 0;
+}
+
+section > p {
+    padding: 3.125rem;
+    font-size: clamp(1rem, 1vw + 0.5rem, 1.25rem);
+}
+
+section div {
+    width: 90%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
+    gap: 3.125rem;
+    justify-content: center;
+    align-items: center;
+}
+
+section article {
+    background-color: #fff;
+    padding: 1.875rem 1.875rem 5rem 1.875rem;
+    border-radius: 8px;
+    align-items: center;
+    text-align: center;
+}
+
+h3 {
+    font-weight: 500;
+    font-size: clamp(1.5rem, 2vw + 1rem, 1.875rem);
+}
+
+h2 {
+    font-weight: 500;
+    padding-bottom: 0.625rem;
+}
+
+section article p {
+    font-size: clamp(0.875rem, 0.5vw + 0.75rem, 1rem);
+}
+
+section span {
+    color: var(--text-on-light);
+    margin-bottom: 1.25rem;
+}
+
+footer {
+    padding-top: 2.5rem;
+}
+
+footer div {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2.5rem;
+}
+
+footer article {
+    width: 40%;
+}
+
+footer address {
+    width: 40%;
+    font-style: normal;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: flex;
+    align-items: center;
+}
+
+li svg {
+    padding: 0.3125rem 0.9375rem 0.3125rem 0;
+    min-width: 1.875rem;
+}
+
+footer > p {
+    text-align: center;
+    padding: 2.5rem 1.25rem 1.25rem 1.25rem;
+}
+
+@media (max-width: 1200px) {
+    footer article {
         width: 100%;
-        height: 100vh;
     }
 
-    section {
-        background-color: #D9D9D9;
-        text-align: center;
-        padding: 30px 0 100px 0;
+    footer address {
+        width: 100%;
     }
+}
 
+@media (max-width: 770px) {
     section > p {
-        padding: 50px;
-        font-size: 20px;
-    }
-
-    section div {
-        width: 90%;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 50px;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    section article {
-        background-color: #fff;
-        padding: 30px 30px 80px 30px;
-        border-radius: 8px;
-        align-items: center;
-        text-align: center;
-    }
-
-    h3 {
-        font-weight: 500;
-        font-size: 30px;
-    }
-
-    h2 {
-        font-weight: 500;
-        padding-bottom: 10px;
+        font-size: clamp(0.875rem, 1vw + 0.5rem, 1rem);
+        padding: 1.875rem;
     }
 
     section article p {
-        font-size: 16px;
+        font-size: clamp(0.75rem, 0.5vw + 0.625rem, 0.875rem);
+    }
+
+    h3 {
+        font-size: clamp(1.25rem, 2vw + 0.75rem, 1.5rem);
+    }
+
+    h2 {
+        font-size: clamp(1.125rem, 1.5vw + 0.75rem, 1.25rem);
     }
 
     section span {
-        color: var(--text-on-light);
-        margin-bottom: 20px;
-    }
-
-    footer {
-        padding-top: 40px;
+        font-size: clamp(2.5rem, 5vw, 2.5rem);
     }
 
     footer div {
-        width: 90%;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        gap: 40px;
+        flex-direction: column;
     }
 
-    footer article {
-        width: 40%;
-    }
-
-    footer address{
-        width: 40%;
-        font-style: normal;
-    }
-
-    ul {
-        list-style-type: none;
-        padding: 0;
+    footer > p {
+        font-size: clamp(0.875rem, 0.5vw + 0.625rem, 0.875rem);
     }
 
     li {
-        display: flex;
-        align-items: center;
+        font-size: clamp(0.625rem, 0.5vw + 0.5rem, 0.625rem);
     }
-
-    li svg {
-        padding: 5px 15px 5px 0;
-        min-width: 30px;
-    }
-
-    footer > p{
-        text-align: center;
-        padding: 40px 20px 20px 20px;
-    }
-
-    @media (max-width: 1200px) {
-        footer article {
-            width: 100%;
-        }
-
-        footer address{
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 770px) {
-        section > p {
-            font-size: 16px;
-            padding: 30px;
-        }
-
-        section article p {
-            font-size: 14px;
-        }
-
-        h3 {
-            font-size: 24px;
-        }
-
-        h2 {
-            font-size: 20px;
-        }
-
-        section span {
-            font-size: 40px;
-        }
-
-        footer div {
-            flex-direction: column;
-        }
-
-        footer > p {
-            font-size: 14px;
-        }
-
-        li{
-            font-size: 10px;
-        }
-    }
+}
 </style>

@@ -88,6 +88,7 @@ header {
 h2 {
   margin: 0;
   font-weight: 600;
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
 }
 
 .filter-wrapper {
@@ -99,10 +100,10 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
+  border: 0.0625rem solid #ccc; /* 1px -> 0.0625rem */
   border-radius: 10px;
   background-color: white;
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
   cursor: pointer;
 }
 
@@ -115,13 +116,13 @@ h2 {
   top: 120%;
   right: 0;
   background-color: white;
-  border: 1px solid #ddd;
+  border: 0.0625rem solid #ddd;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 0.125rem 0.375rem rgba(0,0,0,0.1); /* 2px 6px -> rem */
   display: flex;
   flex-direction: column;
   z-index: 10;
-  min-width: 200px;
+  min-width: 12.5rem; /* 200px -> 12.5rem */
 }
 
 .filter-options button {
@@ -130,6 +131,7 @@ h2 {
   background: none;
   border: none;
   cursor: pointer;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
 }
 
 .filter-options button:hover {
@@ -140,6 +142,6 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding-bottom: 20px;
+  padding-bottom: 1.25rem; /* 20px -> 1.25rem */
 }
 </style>

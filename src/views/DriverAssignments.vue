@@ -45,20 +45,20 @@ h1 {
 }
 
 h2 {
-    font-weight: 600;
-    font-size: 25px;
+  font-weight: 600;
+  font-size: 1.5625rem; /* 25px → rem */
 }
 
 article {
-    background-color: white;
-    width: 100%;
-    padding: 25px;
-    border-radius: 10px;
-    height: calc(100vh - 150px);
+  background-color: white;
+  width: 100%;
+  padding: 1.5625rem; /* 25px → rem */
+  border-radius: 10px;
+  height: calc(100vh - 9.375rem); /* 150px → rem */
 }
 
 article section:nth-of-type(2) {
-    margin-top: 30px;
+  margin-top: 1.875rem; /* 30px → rem */
 }
 
 .info-card {
@@ -67,25 +67,25 @@ article section:nth-of-type(2) {
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 1rem;
-  margin: 0.5rem 0;
+  margin: 0.5rem 0; /* 8px → rem */
   background-color: white;
   max-width: 100%;
-  height: 200px;
+  height: 12.5rem; /* 200px → rem */
 }
 
 .info-card p {
-    margin: 0 auto;
-    text-align: center;
+  margin: 0 auto;
+  text-align: center;
 }
 
-@media (max-width: 1000px) {}
+@media (max-width: 62.5rem) {} /* 1000px → rem */
 
-@media (max-width: 770px) {
+@media (max-width: 48.125rem) { /* 770px → rem */
   main {
     margin-left: 0;
     padding: 2rem 1rem;
   }
-  
+
   main header {
     flex-direction: column;
     gap: 1rem;
@@ -93,15 +93,16 @@ article section:nth-of-type(2) {
   }
 
   h1 {
-    margin-left: 50px;
+    margin-left: 3.125rem; /* 50px → rem */
   }
 
   h2 {
-    font-size: 20px;
+    font-size: 1.25rem; /* 20px → rem */
   }
 
   .info-card p {
-    font-size: 15px;
+    font-size: 0.9375rem; /* 15px → rem */
   }
 }
 </style>
+

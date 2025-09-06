@@ -393,6 +393,7 @@ const hasErrors = computed(() => {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #555;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
 }
 
 .required {
@@ -408,6 +409,7 @@ const hasErrors = computed(() => {
   border-radius: 8px;
   margin-bottom: 1.5rem;
   font-weight: 500;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
 }
 
 .alert-error {
@@ -422,11 +424,11 @@ const hasErrors = computed(() => {
   gap: 0.5rem;
   margin-top: 0.5rem;
   color: #dc2626;
-  font-size: 0.875rem;
+  font-size: clamp(0.75rem, 1.2vw, 0.875rem);
   font-weight: 500;
 }
 
-.icon{
+.icon {
   height: 1.2rem;
   width: 1.2rem;
 }
@@ -434,12 +436,12 @@ const hasErrors = computed(() => {
 .input-help {
   margin-top: 0.25rem;
   margin-left: 0.25rem;
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 1.2vw, 0.8rem);
   color: #6b7280;
 }
 
 .option-help {
-  font-size: 0.75rem;
+  font-size: clamp(0.65rem, 1.2vw, 0.75rem);
   color: #9ca3af;
   margin-top: 0.25rem;
   margin-left: 0.25rem;
@@ -460,6 +462,7 @@ const hasErrors = computed(() => {
 .checkbox-text {
   font-weight: 500;
   color: #333;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
 }
 
 .toggle-switch {
@@ -520,7 +523,7 @@ const hasErrors = computed(() => {
 .toggle-text {
   font-weight: 500;
   color: #374151;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
   transition: color 0.2s ease;
 }
 
@@ -538,7 +541,7 @@ const hasErrors = computed(() => {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
   transition: border-color 0.2s ease;
   box-sizing: border-box;
 }
@@ -605,7 +608,7 @@ const hasErrors = computed(() => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 1.2vw, 0.85rem);
   transition: background-color 0.2s ease;
   white-space: nowrap;
   display: flex;
@@ -631,7 +634,7 @@ const hasErrors = computed(() => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
   transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
@@ -661,7 +664,7 @@ const hasErrors = computed(() => {
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.5vw, 0.95rem);
   font-weight: 500;
   transition: all 0.2s ease;
   min-width: 140px;
@@ -721,7 +724,7 @@ const hasErrors = computed(() => {
   .toggle-switch {
     gap: 0.75rem;
   }
-  
+
   .toggle-text {
     font-size: 0.9rem;
   }

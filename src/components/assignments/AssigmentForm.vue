@@ -231,7 +231,7 @@ header {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
   display: none;
   padding: 0.5rem;
 }
@@ -246,6 +246,7 @@ header {
 
 header h2 {
   font-weight: 600;
+  font-size: clamp(1.2rem, 2.5vw, 1.5rem);
 }
 
 .header-actions {
@@ -257,7 +258,7 @@ header h2 {
 .form-btn {
   padding: 0.6rem;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -280,7 +281,7 @@ header h2 {
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 2vw, 1rem);
   border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
@@ -300,10 +301,12 @@ header h2 {
   margin-right: 5px;
 }
 
-.no-selection, .loading-state {
+.no-selection,
+.loading-state {
   text-align: center;
   padding: 2rem;
   color: #666;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .form-section {
@@ -332,6 +335,7 @@ header h2 {
 label {
   font-weight: 500;
   margin-bottom: 0.5rem;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
 }
 
 select,
@@ -339,7 +343,7 @@ textarea {
   padding: 0.75rem;
   border-radius: 8px;
   border: 1px solid #ccc;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 1.8vw, 1rem);
   resize: none;
 }
 
@@ -348,7 +352,6 @@ textarea {
 }
 
 @media (max-width: 770px) {
-
   .assignment-form {
     padding: 1.5rem;
   }

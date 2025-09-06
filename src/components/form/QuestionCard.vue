@@ -221,7 +221,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .question-title {
   margin: 0;
   color: var(--text-on-light);
-  font-size: 1.35rem;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
   font-weight: 600;
   line-height: 1.3;
   flex: 1;
@@ -231,7 +231,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .question-description {
   color: var(--terciary-dark);
   border: 1px solid #e9ecef;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
   line-height: 1.6;
   font-style: italic;
   padding: 0.75rem 1rem;
@@ -242,7 +242,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .type-badge {
   padding: 0.5rem 1rem;
   border-radius: 25px;
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
   font-weight: 600;
   background-color: var(--add-btn);
   color: var(--text-on-add-btn);
@@ -252,7 +252,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .status-badge {
   padding: 0.5rem 1rem;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 1.2vw, 0.8rem);
   font-weight: 600;
   white-space: nowrap;
   transition: all 0.2s ease;
@@ -283,12 +283,12 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 }
 
 .options-icon {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 1.5vw, 1.1rem);
 }
 
 .options-label {
   margin: 0;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
   font-weight: 600;
   color: var(--terciary-dark);
 }
@@ -307,7 +307,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   background: var(--white);
   border: 1px solid #e0e4e7;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.6vw, 0.9rem);
   color: var(--text-on-light);
   font-weight: 500;
   transition: all 0.2s ease;
@@ -321,7 +321,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .option-bullet {
   color: var(--primary);
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: clamp(1.05rem, 2vw, 1.2rem);
 }
 
 .warning-message {
@@ -335,13 +335,13 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 }
 
 .warning-icon {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2vw, 1.2rem);
 }
 
 .warning-text {
   margin: 0;
   color: var(--on-delete-btn);
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.8vw, 0.95rem);
   font-weight: 500;
 }
 
@@ -364,7 +364,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   padding: 0.75rem 1.25rem;
   border: none;
   border-radius: 10px;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.6vw, 0.9rem);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -381,10 +381,11 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   white-space: nowrap;
 }
 
+/* Mantengo px en hover, media queries y tamaños específicos */
 .btn-edit {
   background: var(--white);
   color: var(--on-edit-btn);
-  border:2px solid var(--on-edit-btn);
+  border: 2px solid var(--on-edit-btn);
 }
 
 .btn-edit:hover {
@@ -396,7 +397,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .btn-delete {
   background: var(--white);
   color: var(--on-delete-btn);
-  border:2px solid var(--on-delete-btn);
+  border: 2px solid var(--on-delete-btn);
 }
 
 .btn-delete:hover {

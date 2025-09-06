@@ -44,109 +44,106 @@ onMounted(() => {
 </template>
 
 <style scoped>
-  .carousel {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-  .carousel-img-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
+.carousel-img-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
 
-  .carousel-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
+.carousel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-  .carousel-shadow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1;
-  }
+.carousel-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
 
-  .carousel-overlay {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 2rem;
-  }
+.carousel-overlay {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+}
 
-  .overlay-img {
-    width: 150px;
-    height: auto;
-    margin-bottom: 15px;
-  }
+.overlay-img {
+  width: 9.375rem;
+  height: auto;
+  margin-bottom: 0.9375rem;
+}
 
+.carousel-overlay nav button {
+  background-color: var(--primary);
+  border: none;
+  padding: 0.625rem 1.25rem;
+  text-align: center;
+  font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5625rem);
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.carousel-overlay nav button:hover {
+  background-color: var(--primary-dark);
+}
+
+.logo-img {
+  width: 9.375rem;
+  height: auto;
+  margin-bottom: 0.9375rem;
+}
+
+h1 {
+  color: var(--text-on-dark);
+  font-size: clamp(3rem, 5vw + 2rem, 5rem);
+  margin-bottom: 0.625rem;
+  font-weight: bold;
+}
+
+p {
+  color: var(--text-on-dark);
+  font-size: clamp(1.875rem, 3vw + 1rem, 2.5rem);
+  margin-bottom: 1.875rem;
+}
+
+@media (max-width: 770px) {
   .carousel-overlay nav button {
-    background-color: var(--primary);
-    border: none;
-    padding: 10px 20px;
-    text-align: center;
-    font-size: 25px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  .carousel-overlay nav button:hover {
-    background-color: var(--primary-dark);
+    font-size: clamp(1rem, 2vw + 0.5rem, 1.125rem);
+    padding: 0.5rem 1rem;
   }
 
   .logo-img {
-    width: 150px;
-    height: auto;
-    margin-bottom: 15px;
+    width: 6.25rem;
   }
 
   h1 {
-    color: var(--text-on-dark);
-    font-size: 80px;
-    margin-bottom: 10px;
-    font-weight: bold;
+    font-size: clamp(2rem, 4vw + 1rem, 2.5rem);
   }
 
   p {
-    color: var(--text-on-dark);
-    font-size: 40px;
-    margin-bottom: 30px;
+    font-size: clamp(1rem, 2vw + 0.5rem, 1.25rem);
   }
-
-  @media (max-width: 768px) {
-    .carousel-overlay nav button {
-      font-size: 20px;
-    }
-
-    .logo-img {
-      width: 100px;
-    }
-
-    h1 {
-      font-size: 40px;
-    }
-
-    p {
-      font-size: 20px;
-    }
-
-    .carousel-overlay nav button {
-      font-size: 18px;
-      padding: 8px 16px;
-    }
-  }
+}
 </style>
+

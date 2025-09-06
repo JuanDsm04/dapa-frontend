@@ -112,6 +112,7 @@ const handleBackToList = () => {
   text-align: center;
   padding: 2rem;
   color: #666;
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
 }
 
 header {
@@ -125,7 +126,7 @@ header {
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: clamp(1.3rem, 2.5vw, 1.5rem);
   display: none;
   z-index: 1;
   padding: 0rem;
@@ -142,7 +143,7 @@ header {
 .form-btn {
   padding: 0.6rem;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.2rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,10 +160,11 @@ header {
 
 header h2 {
   font-weight: 600;
+  font-size: clamp(1.3rem, 2.5vw, 1.5rem);
 }
 
 .steps-info {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1.6vw, 0.9rem);
   color: #444;
   margin-top: 0.5rem;
   line-height: 1.4;
