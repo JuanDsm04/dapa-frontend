@@ -108,7 +108,7 @@ header {
 }
 
 section {
-    background-color: #D9D9D9;
+    background-color: var(--neutral-gray-200);
     text-align: center;
     padding: 1.875rem 0 6.25rem 0;
 }
@@ -129,7 +129,7 @@ section div {
 }
 
 section article {
-    background-color: #fff;
+    background-color: var(--neutral-white);
     padding: 1.875rem 1.875rem 5rem 1.875rem;
     border-radius: 8px;
     align-items: center;
@@ -151,7 +151,7 @@ section article p {
 }
 
 section span {
-    color: var(--text-on-light);
+    color: var(--neutral-black);
     margin-bottom: 1.25rem;
 }
 

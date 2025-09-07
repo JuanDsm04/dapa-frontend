@@ -103,14 +103,14 @@ label {
 input {
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  border: 1px solid var(--border-input);
+  border: 1px solid var(--border-base);
   font-size: 1rem;
   outline: none;
   transition: all 0.2s;
 }
 
 input:focus {
-  border-color: var(--add-btn);
+  border-color: var(--principal-primary-300);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
@@ -119,7 +119,7 @@ button {
   border: none;
   padding: 15px 35px;
   border-radius: 10px;
-  background-color: var(--add-btn);
+  background-color: var(--principal-primary);
   color: var(--white);
   font-size: 1rem;
   font-weight: 500;
@@ -129,7 +129,7 @@ button {
 }
 
 form > button:hover {
-  background-color: var(--add-btn-hover);
+  background-color: var(--principal-primary-hover);
 }
 
 form > button:active {
@@ -140,7 +140,7 @@ form > button:active {
 .toggle-visibility-btn {
   display: flex;
   gap: 10px;
-  color: var(--button-secondary);
+  color: var(--neutral-gray-500);
   align-items: center;
   margin-right: 10px;
   background-color: transparent;
@@ -167,7 +167,7 @@ form > button:active {
 
 /* Links */
 a {
-  color: var(--text-on-light);
+  color: var(--principal-primary-900);
   align-self: center;
   text-decoration: none;
 }

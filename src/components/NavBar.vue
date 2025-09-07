@@ -33,7 +33,6 @@ const sections: Section[] = [
   { id: 'users', icon: 'people', description: 'Usuarios', auth: ['admin']},
   { id: 'vehicles', icon: 'local_shipping', description: 'Vehículos', auth: ['admin'] },
   { id: 'reports', icon: 'monitoring', description: 'Reportes', auth: ['admin'] },
-  { id: 'reviews', icon: 'reviews', description: 'Reseñas', auth: ['admin'] },
   { id: 'forms', icon: 'description', description: 'Formularios', auth: ['admin']}
 ]
 
@@ -107,8 +106,7 @@ function closeMenu() {
   flex-direction: column;
   margin: 0;
   padding: 0;
-
-  background-color: var(--sidebar-bg);
+  background-color: var(--neutral-white);
   position: fixed;
   height: 100dvh; /* altura completa de la ventana */
   overflow-y: auto;
@@ -138,31 +136,31 @@ li a {
 }
 
 li a.active {
-  background-color: var(--sidebar-active-bg);
+  background-color: var(--principal-primary-600);
 }
 
 li a:hover:not(.active) {
-  background-color: var(--sidebar-hover-bg);
+  background-color: var(--neutral-gray-100);
 }
 
 /* Iconos y badges */
 li span {
-  color: var(--sidebar-icon-color);
+  color: var(--principal-primary-900);
   margin: 1.25rem 0; /* 20px */
 }
 li span.active {
-  color: var(--sidebar-active-icon-color);
+  color: var(--neutral-white);
 }
 
 /* Texto asociado al icono */
 li p {
   display: none;
-  color: var(--sidebar-text-color);
+  color: var(--principal-primary-900);
   margin: 0 auto;
   padding-bottom: 0.625rem; /* 10px */
 }
 li p.active {
-  color: var(--sidebar-active-text-color);
+  color: var(--neutral-white);
 }
 
 /* Botón de menú para mobile */
@@ -174,12 +172,12 @@ li p.active {
   font-size: 1.75rem; /* 28px */
   background: none;
   border: none;
-  color: var(--black);
+  color: var(--principal-primary-900);
   transition: color 0.3s ease;
   z-index: 1001;
 }
 .menu-toggle.open {
-  color: var(--white);
+  color: var(--neutral-white);
 }
 
 /* Overlay cuando la barra está abierta en móvil */
@@ -197,8 +195,8 @@ li p.active {
   position: absolute;
   top: 0.625rem; /* 10px */
   right: 1.25rem; /* 20px */
-  background-color: red;
-  color: white;
+  background-color: var(--principal-error);
+  color: var(--neutral-white);
   border-radius: 50%;
   width: 0.625rem; /* 10px */
   height: 0.625rem; /* 10px */

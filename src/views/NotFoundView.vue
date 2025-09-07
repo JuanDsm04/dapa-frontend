@@ -68,7 +68,7 @@ div img {
 }
 
 button {
-    background-color: #3949ab;
+    background-color: var(--principal-primary);
     color: white;
     padding: 0.75rem 1.5rem;
     font-size: 1rem;
@@ -79,7 +79,7 @@ button {
 }
 
 button:hover {
-    background-color: #303f9f;
+    background-color: var(--principal-primary-hover);
 }
 
 .button-1 {

@@ -270,8 +270,8 @@ main section {
 
 .add-btn {
   padding: 0.75rem 1.5rem;
-  background-color: var(--add-btn);
-  color: var(--text-on-add-btn);
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
   border: none;
   border-radius: 6px;
   font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
@@ -280,7 +280,7 @@ main section {
 }
 
 .add-btn:hover:not(:disabled) {
-  background-color: var(--add-btn-hover);
+  background-color: var(--principal-primary-hover);
 }
 
 .add-btn:disabled {
@@ -294,7 +294,7 @@ main section {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--neutral-gray-200);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -304,8 +304,8 @@ main section {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid var(--border);
-  border-top: 4px solid var(--add-btn);
+  border: 4px solid var(--border-base);
+  border-top: 4px solid var(--principal-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -325,7 +325,7 @@ main section {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--shadow-dark);
   z-index: 1001;
   display: flex;
   justify-content: center;
@@ -333,13 +333,13 @@ main section {
 }
 
 article {
-  background: var(--modal-bg);
+  background: var(--neutral-white);
   border-radius: 10px;
   max-width: 600px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px var(--shadow-dark);
   display: flex;
   flex-direction: column;
 }
@@ -349,7 +349,7 @@ article header {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-input);
+  border-bottom: 1px solid var(--border-base);
 }
 
 article header h3 {
@@ -365,12 +365,12 @@ article section {
 .close-btn {
   background: none;
   border: none;
-  color: var(--close-btn);
+  color: var(--neutral-gray-400);
   cursor: pointer;
 }
 
 .close-btn:hover {
-  color: var(--close-btn-hover);
+  color: var(--neutral-gray-600);
 }
 
 @media (max-width: 770px) {

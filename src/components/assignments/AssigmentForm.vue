@@ -42,8 +42,8 @@ const getOrderDetails = async (orderId: number | undefined) => {
     selectedVehicle.value = data.vehicleId ? String(data.vehicleId) : ''
 
   } catch (error) {
-    console.error("Error obteniendo detalles de la orden:", error)
-    toast.error("Error al cargar detalles de la orden")
+    console.error("Error obteniendo observaciones de la orden:", error)
+    toast.error("Error al cargar observaciones de la orden")
   } finally {
     loading.value = false
   }
@@ -214,7 +214,7 @@ onMounted(() => {
 <style scoped>
 .assignment-form {
   padding: 2rem;
-  background-color: white;
+  background-color: var(--neutral-white);
   border-radius: 10px;
   max-width: 100%;
 }
@@ -237,7 +237,7 @@ header {
 }
 
 .back-btn:hover {
-  color: #2f67f6;
+  color: var(--principal-primary-hover);
 }
 
 .mobile-only {
@@ -263,22 +263,22 @@ header h2 {
   align-items: center;
   justify-content: center;
   height: 55px;
-  color: #235dda;
-  border: 1px solid #235dda;
+  color: var(--principal-primary);
+  border: 1px solid var(--principal-primary);
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--neutral-white);
 }
 
 .form-btn:hover {
-  background-color: #f9f9fc;
+  background-color: var(--neutral-gray-100);
 }
 
 .assign-btn {
   display: flex;
   align-items: center;
   justify-content: center; 
-  background-color: #2563eb;
-  color: white;
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
   border: none;
   padding: 0.75rem 1.5rem;
   font-size: clamp(0.95rem, 2vw, 1rem);
@@ -289,11 +289,11 @@ header h2 {
 }
 
 .assign-btn:hover:not(:disabled) {
-  background-color: #235dda;
+  background-color: var(--principal-primary-hover);
 }
 
 .assign-btn:disabled {
-  background-color: #ccc;
+  background-color: var(--neutral-gray-200);
   cursor: not-allowed;
 }
 
@@ -305,7 +305,7 @@ header h2 {
 .loading-state {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--neutral-gray-500);
   font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
@@ -342,7 +342,7 @@ select,
 textarea {
   padding: 0.75rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--neutral-gray-300);
   font-size: clamp(0.95rem, 1.8vw, 1rem);
   resize: none;
 }

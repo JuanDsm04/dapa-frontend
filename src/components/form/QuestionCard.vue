@@ -136,26 +136,25 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 <style scoped>
 .question-card {
   position: relative;
-  background: var(--white);
+  background: var(--neutral-white);
   border-radius: 16px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  border: 0.0625rem solid var(--border-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
 }
 
 .question-card:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   transform: translateY(-2px);
 }
 
 .question-card.card-inactive {
-  opacity: 0.7;
-  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+  opacity: 0.6;
+  background: var(--neutral-gray-100);
 }
 
 .status-indicator.inactive {
-  background: linear-gradient(90deg, #ccc 0%, #999 100%);
+  background: var(--neutral-gray-300);
 }
 
 .card-body {
@@ -172,18 +171,17 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   width: 40px;
   height: 40px;
   cursor: grab;
-  color: var(--terciary);
+  color: var(--neutral-gray-400);
   flex-shrink: 0;
   border-radius: 12px;
-  background: rgba(var(--terciary), 0.08);
+  background: rgba(var(--neutral-gray-400), 0.08);
   transition: all 0.2s ease;
   border: 2px dashed transparent;
 }
 
 .drag-handle:hover {
-  color: var(--primary-dark);
-  background: rgba(var(--primary), 0.15);
-  border-color: var(--primary);
+  color: var(--principal-primary-600);
+  background: rgba(var(--principal-primary-600), 0.15);
   transform: scale(1.05);
 }
 
@@ -220,7 +218,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 
 .question-title {
   margin: 0;
-  color: var(--text-on-light);
+  color: var(--neutral-gray-900);
   font-size: clamp(1.1rem, 2vw, 1.35rem);
   font-weight: 600;
   line-height: 1.3;
@@ -229,13 +227,13 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 }
 
 .question-description {
-  color: var(--terciary-dark);
-  border: 1px solid #e9ecef;
+  color: var(--neutral-gray-500);
+  border: 1px solid var(--border-light);
   font-size: clamp(0.9rem, 1.8vw, 1rem);
   line-height: 1.6;
   font-style: italic;
   padding: 0.75rem 1rem;
-  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+  background-color: var(--neutral-gray-50);
   border-radius: 12px;
 }
 
@@ -243,9 +241,8 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   padding: 0.5rem 1rem;
   border-radius: 25px;
   font-size: clamp(0.75rem, 1.5vw, 0.85rem);
-  font-weight: 600;
-  background-color: var(--add-btn);
-  color: var(--text-on-add-btn);
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
   white-space: nowrap;
 }
 
@@ -253,26 +250,25 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: clamp(0.7rem, 1.2vw, 0.8rem);
-  font-weight: 600;
   white-space: nowrap;
   transition: all 0.2s ease;
 }
 
 .status-active {
-  color: var(--text-on-add-btn);
-  background: var(--secondary-dark);
+  color: var(--neutral-white);
+  background: var(--principal-secondary-400);
 }
 
 .status-inactive {
   color: var(--terciary-dark);
-  background: #e4e2e2;
+  background: var(--neutral-gray-300);
 }
 
 .options-section {
-  background: linear-gradient(135deg, #fafbfc 0%, #f8f9fa 100%);
+  background: var(--neutral-gray-50);
   border-radius: 12px;
   padding: 1.25rem;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--border-light);
 }
 
 .options-header {
@@ -290,7 +286,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   margin: 0;
   font-size: clamp(0.9rem, 1.8vw, 1rem);
   font-weight: 600;
-  color: var(--terciary-dark);
+  color: var(--neutral-gray-800);
 }
 
 .options-grid {
@@ -304,22 +300,22 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: var(--white);
-  border: 1px solid #e0e4e7;
+  background: var(--neutral-white);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   font-size: clamp(0.8rem, 1.6vw, 0.9rem);
-  color: var(--text-on-light);
+  color: var(--neutral-gray-800);
   font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .option-chip:hover {
-  border-color: var(--primary);
-  background: rgba(var(--primary), 0.02);
+  border-color: var(--neutral-gray-400);
+  background: var(--neutral-gray-50);
 }
 
 .option-bullet {
-  color: var(--primary);
+  color: var(--principal-tertiary);
   font-weight: bold;
   font-size: clamp(1.05rem, 2vw, 1.2rem);
 }
@@ -329,8 +325,8 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
-  background: rgba(var(--on-delete-btn), 0.05);
-  border: 1px solid rgba(var(--on-delete-btn), 0.15);
+  background: var(--principal-error-25);
+  border: 1px solid var(--principal-error-600);
   border-radius: 8px;
 }
 
@@ -340,7 +336,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 
 .warning-text {
   margin: 0;
-  color: var(--on-delete-btn);
+  color: var(--principal-error-600);
   font-size: clamp(0.85rem, 1.8vw, 0.95rem);
   font-weight: 500;
 }
@@ -381,53 +377,49 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   white-space: nowrap;
 }
 
-/* Mantengo px en hover, media queries y tamaños específicos */
 .btn-edit {
-  background: var(--white);
-  color: var(--on-edit-btn);
-  border: 2px solid var(--on-edit-btn);
+  background: var(--neutral-white);
+  color: var(--principal-secondary-500);
+  border: 2px solid var(--principal-secondary-500);
 }
 
 .btn-edit:hover {
-  background: var(--on-edit-btn);
-  color: var(--text-on-dark);
-  transform: translateY(-1px);
+  background: var(--principal-secondary-500);
+  color: var(--neutral-white);
 }
 
 .btn-delete {
-  background: var(--white);
-  color: var(--on-delete-btn);
-  border: 2px solid var(--on-delete-btn);
+  background: var(--neutral-white);
+  color: var(--principal-error-600);
+  border: 2px solid var(--principal-error-600);
 }
 
 .btn-delete:hover {
-  background: var(--on-delete-btn);
-  color: var(--text-on-dark);
-  transform: translateY(-1px);
+  background: var(--principal-error-600);
+  color: var(--neutral-white);
 }
 
 .btn-toggle {
-  border: 2px solid var(--terciary-dark);
-  background: #f8f9fa;
-  color: var(--terciary-dark);
-  border-color: #dee2e6;
+  border: 2px solid var(--principal-tertiary-600);
+  background: var(--neutral-white);
+  color: var(--principal-tertiary-600);
+  border-color: var(--principal-tertiary-600);
 }
 
 .btn-toggle.btn-toggle-active {
-  background: var(--white);
-  color: var(--primary-dark);
-  border-color: var(--primary-dark);
+  background: var(--neutral-white);
+  color: var(--principal-tertiary-600);
+  border-color: var(--principal-tertiary-600);
 }
 
 .btn-toggle:hover {
-  background: #e9ecef;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(var(--terciary), 0.15);
+  background: var(--principal-tertiary-600);
+  color: var(--neutral-white);
 }
 
 .btn-toggle.btn-toggle-active:hover {
-  background: var(--primary-dark);
-  color: var(--text-on-dark);
+  background: var(--principal-tertiary-600);
+  color: var(--neutral-white);
 }
 
 /* Responsive Design */

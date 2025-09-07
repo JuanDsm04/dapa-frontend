@@ -221,7 +221,7 @@ const resetForm = () => {
 
 <style scoped>
 .form-viewer-container {
-    background: white;
+    background: var(--neutral-white);
     width: 100%;
     max-width: 800px;
     display: flex;
@@ -237,9 +237,9 @@ const resetForm = () => {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: #f0f9ff;
-    border: 1px solid #0ea5e9;
-    color: #0369a1;
+    background: var(--neutral-gray-100);
+    border: 1px solid var(--principal-primary-100);
+    color: var(--principal-primary-400);
     padding: 0.75rem 1rem;
     border-radius: 8px;
     margin-bottom: 1.5rem;
@@ -255,7 +255,7 @@ const resetForm = () => {
 .empty-state {
     text-align: center;
     padding: 4rem 1rem;
-    color: #6c757d;
+    color: var(--principal-primary-500);
 }
 
 .empty-icon {
@@ -281,21 +281,21 @@ const resetForm = () => {
 }
 
 .alert-error {
-    background: #fef2f2;
-    border: 1px solid #fca5a5;
-    color: #dc2626;
+    background: var(--neutral-gray-100);
+    border: 1px solid var(--principal-primary-100);
+    color: var(--principal-primary-500);
 }
 
 .alert-success {
-    background: #f0fdf4;
-    border: 1px solid #86efac;
-    color: #16a34a;
+    background: var(--neutral-gray-100);
+    border: 1px solid var(--principal-secondary-100);
+    color: var(--principal-secondary-500);
 }
 
 .empty-state h3 {
     margin: 0 0 0.5rem 0;
     font-size: clamp(1.1rem, 2vw, 1.25rem);
-    color: #374151;
+    color: var(--neutral-gray-600);
 }
 
 .empty-state p {
@@ -312,7 +312,7 @@ const resetForm = () => {
     width: 100%;
     margin-top: 2rem;
     padding-top: 2rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--neutral-gray-50);
     display: flex;
     gap: 1rem;
     justify-content: center;
@@ -320,15 +320,14 @@ const resetForm = () => {
 }
 
 .btn-submit {
-    background: var(--add-btn, #3b82f6);
-    color: white;
+    background: var(--principal-primary);
+    color: var(--neutral-white);
     border: none;
     padding: 0.875rem 2rem;
     border-radius: 8px;
     font-size: clamp(0.9rem, 1.8vw, 1rem);
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s ease;
     position: relative;
     min-width: 180px;
     display: flex;
@@ -338,8 +337,7 @@ const resetForm = () => {
 }
 
 .btn-submit:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    background: var(--principal-primary-hover);
 }
 
 .btn-submit:disabled {
@@ -353,9 +351,9 @@ const resetForm = () => {
 }
 
 .btn-reset {
-    background: white;
-    color: #6b7280;
-    border: 2px solid #e5e7eb;
+    background: var(--neutral-white);
+    color: var(--principal-primary);
+    border: 2px solid var(--principal-primary);
     padding: 0.875rem 2rem;
     border-radius: 8px;
     font-size: clamp(0.9rem, 1.8vw, 1rem);
@@ -365,9 +363,7 @@ const resetForm = () => {
 }
 
 .btn-reset:hover:not(:disabled) {
-    border-color: var(--on-delete-btn, #ef4444);
-    color: var(--on-delete-btn, #ef4444);
-    background: #fef2f2;
+    background: var(--principal-primary-25);
 }
 
 .btn-reset:disabled {

@@ -5,19 +5,19 @@
 <template>
     <main>
         <header>
-        <h1>Pedidos</h1>
+        <h1>Servicios</h1>
         </header>
         <article>
             <section>
-                <h2>Pedidos por completar</h2>
+                <h2>Servicios por completar</h2>
                 <div class="info-card">
-                    <p>Inicia tu próximo pedido asignado para darle seguimiento.</p>
+                    <p>Inicia tu próximo servicio asignado para darle seguimiento.</p>
                 </div>
             </section>
             <section>
-                <h2>Otros pedidos asignados</h2>
+                <h2>Otros servicios asignados</h2>
                 <div class="info-card">
-                    <p>Por el momento no tienes pedidos asignados.</p>
+                    <p>Por el momento no tienes servicios asignados.</p>
                 </div>
             </section>
         </article>
@@ -50,7 +50,7 @@ h2 {
 }
 
 article {
-  background-color: white;
+  background-color: var(--neutral-white);
   width: 100%;
   padding: 1.5625rem; /* 25px → rem */
   border-radius: 10px;
@@ -64,11 +64,11 @@ article section:nth-of-type(2) {
 .info-card {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   padding: 1rem;
   margin: 0.5rem 0; /* 8px → rem */
-  background-color: white;
+  background-color: var(--neutral-white);
   max-width: 100%;
   height: 12.5rem; /* 200px → rem */
 }

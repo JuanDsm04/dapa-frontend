@@ -49,7 +49,7 @@ const getCurrentStep = computed<number>(() => {
 <style scoped>
 .steps-info {
   font-size: clamp(0.8rem, 1.6vw, 0.9rem);
-  color: #444;
+  color: var(--neutral-gray-600);
   margin-top: 0.5rem;
   line-height: 1.4;
 }
@@ -65,31 +65,31 @@ const getCurrentStep = computed<number>(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: #ccc;
+  color: var(--neutral-gray-400);
   min-width: 40px;
 }
 
 .step.active {
-  color: #2f67f6;
+  color: var(--principal-primary);
 }
 
 .step .icon {
-  background-color: #ccc;
+  background-color: var(--neutral-gray-300);
   border-radius: 50%;
   padding: 0.8rem;
-  color: white;
+  color: var(--neutral-white);
   font-size: clamp(1.3rem, 2.5vw, 1.5rem);
   margin-bottom: 0.5rem;
   transition: background-color 0.3s ease;
 }
 
 .step.active .icon {
-  background-color: #2f67f6;
+  background-color: var(--principal-primary);
 }
 
 .line {
   height: 4px;
-  background-color: #ccc;
+  background-color: var(--neutral-gray-300);
   flex: 1;
   margin: -25px 8px 0 8px;
   border-radius: 2px;
@@ -97,6 +97,6 @@ const getCurrentStep = computed<number>(() => {
 }
 
 .line.active {
-  background-color: #2f67f6;
+  background-color: var(--principal-primary);
 }
 </style>

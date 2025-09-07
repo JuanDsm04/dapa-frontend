@@ -122,14 +122,14 @@ const handleForgotButton = async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--gradient-black);
   z-index: 1;
 }
 
 .form-container {
   position: relative;
   z-index: 2;
-  background: white;
+  background: var(--neutral-white);
   border-radius: 12px;
   padding: 2rem; /* 32px → rem */
   width: 100%;
@@ -137,7 +137,6 @@ const handleForgotButton = async () => {
   display: flex;
   flex-direction: column;
   min-height: 31.25rem; /* 500px → rem */
-  box-shadow: 0 0.625rem 1.5625rem rgba(0, 0, 0, 0.15); /* 10px 25px → rem */
 }
 
 .back-button-container {
@@ -149,7 +148,7 @@ const handleForgotButton = async () => {
   display: flex;
   align-items: center;
   gap: 0.5rem; /* 8px → rem */
-  color: #2563eb;
+  color: var(--principal-primary);
   text-decoration: none;
   font-size: 0.875rem; /* 14px → rem */
   font-weight: 500;
@@ -157,7 +156,7 @@ const handleForgotButton = async () => {
 }
 
 .back-button:hover {
-  color: #235dda;
+  color: var(--principal-primary-hover);
 }
 
 .content {
@@ -183,14 +182,14 @@ const handleForgotButton = async () => {
 .title {
   font-size: 1.25rem; /* 20px → rem */
   font-weight: 600;
-  color: #1F2937;
+  color: var(--neutral-gray-900);
   margin-bottom: 0.75rem; /* 12px → rem */
   line-height: 1.3;
 }
 
 .subtitle {
   font-size: 0.875rem; /* 14px → rem */
-  color: #6B7280;
+  color: var(--neutral-gray-600);
   margin-bottom: 1.5rem; /* 24px → rem */
   line-height: 1.4;
 }
@@ -204,7 +203,7 @@ const handleForgotButton = async () => {
 
 .error {
   font-size: 0.75rem; /* 12px → rem */
-  color: red;
+  color: var(--principal-error);
   margin-top: 0.25rem; /* 4px → rem */
   text-align: left;
 }
@@ -212,7 +211,7 @@ const handleForgotButton = async () => {
 .email-input {
   width: 100%;
   padding: 0.75rem 1rem; /* 12px 16px → rem */
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--border-base);
   border-radius: 8px;
   font-size: 0.875rem; /* 14px → rem */
   transition: all 0.2s;
@@ -220,8 +219,7 @@ const handleForgotButton = async () => {
 }
 
 .email-input:focus {
-  border-color: #3B82F6;
-  box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1); /* 3px → rem */
+  border-color: var(--principal-primary-200);
 }
 
 .email-input::placeholder {
@@ -235,8 +233,8 @@ const handleForgotButton = async () => {
 }
 
 .action-button {
-  background: #2563eb;
-  color: white;
+  background: var(--principal-primary);
+  color: var(--neutral-white);
   border: none;
   border-radius: 8px;
   padding: 0.75rem 1.5rem; /* 12px 24px → rem */
@@ -250,7 +248,7 @@ const handleForgotButton = async () => {
 }
 
 .action-button:hover {
-  background: #235dda;
+  background: var(--principal-primary-hover);
 }
 
 .action-button:active {
@@ -263,7 +261,7 @@ const handleForgotButton = async () => {
 
 .bottom-text p {
   font-size: 0.75rem; /* 12px → rem */
-  color: #6B7280;
+  color: var(--neutral-gray-600);
   margin: 0;
 }
 

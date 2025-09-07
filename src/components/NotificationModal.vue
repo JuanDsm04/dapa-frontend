@@ -77,7 +77,7 @@ const emit = defineEmits<{
 /* Mensaje */
 .modal-message {
   font-size: 0.9rem;
-  color: #555;
+  color: var(--neutral-gray-600);
   margin-bottom: 1.875rem; /* 30px */
 }
 
@@ -98,7 +98,7 @@ const emit = defineEmits<{
   border: none;
   border-radius: 0.625rem; /* 10px */
   cursor: pointer;
-  color: white;
+  color: var(--neutral-white);
   font-weight: 500;
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
@@ -109,19 +109,19 @@ button span {
 
 /* Botón cancelar */
 .btn-cancel {
-  background-color: #ff5a70;
+  background-color: var(--principal-error-400);
 }
 .btn-cancel:hover {
-  background-color: #f0566a;
+  background-color: var(--principal-error-hover);
   transform: translateY(-1px);
 }
 
 /* Botón confirmar */
 .btn-confirm {
-  background-color: #53d86c;
+  background-color: var(--principal-secondary-300);
 }
 .btn-confirm:hover {
-  background-color: #53cd69;
+  background-color: var(--principal-secondary-400);
   transform: translateY(-1px);
 }
 

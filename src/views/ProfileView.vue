@@ -120,11 +120,15 @@ button {
   height: 3.125rem;
   border: 0;
   border-radius: 50px;
-  background-color: var(--on-delete-btn);
+  background-color: var(--principal-error);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+button:hover {
+  background-color: var(--principal-error-hover);
 }
 
 span {

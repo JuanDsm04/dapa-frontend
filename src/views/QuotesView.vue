@@ -111,7 +111,7 @@ h1 {
   display: grid;
   grid-template-columns: 0.75fr 1fr;
   height: calc(100vh - 9.375rem);
-  background-color: var(--white);
+  background-color: var(--neutral-white);
   border-radius: 10px;
 }
 

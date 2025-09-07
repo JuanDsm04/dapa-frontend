@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { getOrders } from '@/services/orderService'
@@ -23,6 +23,9 @@ const showFilters = ref(false)
 const loading = ref(false)
 const selectedOrderId = ref<number | string | null>(null)
 
+// Referencia al wrapper del filtro
+const filterWrapper = ref<HTMLElement | null>(null)
+
 // Manejar selección de orden
 const handleOrderClick = (order: Order) => {
   selectedOrderId.value = order.id
@@ -38,6 +41,13 @@ function toggleFilterOptions() {
 function setFilter(option: string) {
   filter.value = option
   showFilters.value = false
+}
+
+// Función para cerrar filtros al hacer clic fuera
+const handleClickOutside = (event: Event) => {
+  if (filterWrapper.value && !filterWrapper.value.contains(event.target as Node)) {
+    showFilters.value = false
+  }
 }
 
 const filteredOrders = computed(() => {
@@ -82,6 +92,12 @@ const getOrdersData = async () => {
 // Montaje del componente
 onMounted(() => {
   getOrdersData()
+  document.addEventListener('click', handleClickOutside)
+})
+
+// Desmontaje del componente
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -89,7 +105,7 @@ onMounted(() => {
   <section class="order-list">
     <header>
       <h2 class="text-subtitle">{{ title }}</h2>
-      <div class="filter-wrapper">
+      <div class="filter-wrapper" ref="filterWrapper">
         <button class="filter-btn" @click="toggleFilterOptions">
           <span class="material-symbols-outlined">tune</span>
         </button>
@@ -150,23 +166,23 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--neutral-white);
   font-size: clamp(0.9rem, 2vw, 1rem);
   cursor: pointer;
 }
 
 .filter-btn:hover {
-  background-color: #f5f5f5;
+  background-color: var(--neutral-gray-50);
 }
 
 .filter-options {
   position: absolute;
   top: 120%;
   right: 0;
-  background-color: white;
-  border: 1px solid #ddd;
+  background-color: var(--neutral-white);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   display: flex;
@@ -185,7 +201,7 @@ h2 {
 }
 
 .filter-options button:hover {
-  background-color: #f0f0f0;
+  background-color: var(--neutral-gray-100);
 }
 
 .card-list {

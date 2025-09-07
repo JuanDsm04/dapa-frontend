@@ -108,20 +108,20 @@ const currentOrderData = computed(() => localOrderData.value)
           <p>{{ formatPrice(currentOrderData.totalAmount) }}</p>
         </div>
         <div class="info-item">
-          <label>Tipo de carga</label>
+          <label>Tipo de servicio</label>
           <p><strong>{{ getCargoTypeInSpanish(currentOrderData.type) }}</strong></p>
         </div>
         <div class="info-item">
-          <label>Origen</label>
+          <label>De aquí</label>
           <p><strong>{{ currentOrderData.origin || 'No especificado' }}</strong></p>
         </div>
         <div class="info-item">
-          <label>Destino</label>
+          <label>Para allá</label>
           <p><strong>{{ currentOrderData.destination || 'No especificado' }}</strong></p>
         </div>
         <div class="info-item full-width">
-          <label>Detalles</label>
-          <p><strong>{{ currentOrderData.details || 'Sin detalles adicionales' }}</strong></p>
+          <label>Observaciones</label>
+          <p><strong>{{ currentOrderData.details || 'Sin observaciones adicionales' }}</strong></p>
         </div>
       </template>
     </div>
@@ -154,7 +154,7 @@ const currentOrderData = computed(() => localOrderData.value)
 }
 
 .info-box {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-base);
   border-radius: 10px;
   padding: 1rem;
   display: grid;
@@ -166,14 +166,14 @@ const currentOrderData = computed(() => localOrderData.value)
 .no-data {
   grid-column: span 2;
   text-align: center;
-  color: #666;
+  color: var(--neutral-gray-600);
   padding: 2rem;
   font-size: clamp(0.9rem, 1.8vw, 1rem);
 }
 
 .info-item label {
   font-size: clamp(0.8rem, 1.6vw, 0.9rem);
-  color: #666;
+  color: var(--neutral-gray-600);
 }
 
 .info-item p {
@@ -196,7 +196,7 @@ const currentOrderData = computed(() => localOrderData.value)
 }
 
 .info-action:hover {
-  color: #2f67f6;
+  color: var(--principal-primary-hover);
 }
 
 .modal-overlay {
@@ -213,7 +213,7 @@ const currentOrderData = computed(() => localOrderData.value)
 }
 
 article {
-  background: var(--modal-bg);
+  background: var(--neutral-white);
   border-radius: 10px;
   max-width: 600px;
   width: 100%;
@@ -229,7 +229,7 @@ article header {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-input);
+  border-bottom: 1px solid var(--border-light);
 }
 
 article header h3 {

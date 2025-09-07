@@ -392,12 +392,12 @@ const hasErrors = computed(() => {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #555;
+  color: var(--neutral-gray-800);
   font-size: clamp(0.85rem, 1.5vw, 1rem);
 }
 
 .required {
-  color: #e74c3c;
+  color: var(--principal-error);
   margin-left: 0.25rem;
 }
 
@@ -413,9 +413,9 @@ const hasErrors = computed(() => {
 }
 
 .alert-error {
-  background: #fef2f2;
-  border: 1px solid #fca5a5;
-  color: #dc2626;
+  background: var(--neutral-gray-50);
+  border: 1px solid var(--principal-error-25);
+  color: var(--principal-error);
 }
 
 .error-message {
@@ -423,7 +423,7 @@ const hasErrors = computed(() => {
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
-  color: #dc2626;
+  color: var(--principal-error);
   font-size: clamp(0.75rem, 1.2vw, 0.875rem);
   font-weight: 500;
 }
@@ -437,12 +437,12 @@ const hasErrors = computed(() => {
   margin-top: 0.25rem;
   margin-left: 0.25rem;
   font-size: clamp(0.7rem, 1.2vw, 0.8rem);
-  color: #6b7280;
+  color: var(--neutral-gray-500);
 }
 
 .option-help {
   font-size: clamp(0.65rem, 1.2vw, 0.75rem);
-  color: #9ca3af;
+  color: var(--neutral-gray-400);
   margin-top: 0.25rem;
   margin-left: 0.25rem;
 }
@@ -461,7 +461,7 @@ const hasErrors = computed(() => {
 
 .checkbox-text {
   font-weight: 500;
-  color: #333;
+  color: var(--neutral-gray-600);
   font-size: clamp(0.85rem, 1.5vw, 1rem);
 }
 
@@ -483,7 +483,7 @@ const hasErrors = computed(() => {
   position: relative;
   width: 50px;
   height: 28px;
-  background: #cbd5e1;
+  background: var(--neutral-gray-100);
   border-radius: 14px;
   transition: all 0.3s ease;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -497,14 +497,14 @@ const hasErrors = computed(() => {
   left: 2px;
   width: 24px;
   height: 24px;
-  background: white;
+  background: var(--neutral-white);
   border-radius: 50%;
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-switch input:checked + .toggle-slider {
-  background: #22c55e;
+  background: var(--principal-secondary);
 }
 
 .toggle-switch input:checked + .toggle-slider::before {
@@ -522,7 +522,7 @@ const hasErrors = computed(() => {
 
 .toggle-text {
   font-weight: 500;
-  color: #374151;
+  color: var(--neutral-gray-600);
   font-size: clamp(0.85rem, 1.5vw, 0.95rem);
   transition: color 0.2s ease;
 }
@@ -539,7 +539,7 @@ const hasErrors = computed(() => {
 .form-select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   font-size: clamp(0.85rem, 1.5vw, 0.95rem);
   transition: border-color 0.2s ease;
@@ -549,39 +549,38 @@ const hasErrors = computed(() => {
 .form-input:focus,
 .form-select:focus {
   outline: none;
-  border-color: var(--add-btn, #2196f3);
-  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+  border-color: var(--principal-primary-200);
 }
 
 .form-input.error,
 .form-select.error {
-  border-color: #ef4444;
+  border-color: var(--principal-error);
 }
 
 .form-input.error:focus,
 .form-select.error:focus {
-  border-color: #dc2626;
+  border-color: var(--principal-error);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 
 .form-input:disabled,
 .form-select:disabled {
-  background-color: #f5f5f5;
+  background-color: var(--neutral-gray-100);
   cursor: not-allowed;
   opacity: 0.7;
 }
 
 .options-container {
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   padding: 1rem;
-  background-color: #fafafa;
+  background-color: var(--neutral-gray-50);
   transition: border-color 0.2s ease;
 }
 
 .options-container.error {
-  border-color: #ef4444;
-  background-color: #fef2f2;
+  border-color: var(--principal-error);
+  background-color: var(--neutral-gray-100);
 }
 
 .option-row {
@@ -603,8 +602,8 @@ const hasErrors = computed(() => {
 .btn-delete-option {
   margin-top: 0.35rem;
   padding: 0.5rem;
-  background-color: #f44336;
-  color: white;
+  background-color: var(--principal-error);
+  color: var(--neutral-white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -619,18 +618,18 @@ const hasErrors = computed(() => {
 }
 
 .btn-delete-option:hover:not(:disabled) {
-  background-color: #d32f2f;
+  background-color: var(--principal-error-600);
 }
 
 .btn-delete-option:disabled {
-  background-color: #ccc;
+  background-color: var(--neutral-gray-300);
   cursor: not-allowed;
 }
 
 .btn-add-option {
   padding: 0.5rem 1rem;
-  background-color: #4caf50;
-  color: white;
+  background-color: var(--principal-secondary);
+  color: var(--neutral-white);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -642,25 +641,25 @@ const hasErrors = computed(() => {
 }
 
 .btn-add-option:hover:not(:disabled) {
-  background-color: #388e3c;
+  background-color: var(--principal-secondary-hover);
 }
 
 .btn-add-option:disabled {
-  background-color: #ccc;
+  background-color: var(--neutral-gray-300);
   cursor: not-allowed;
 }
 
 .form-actions {
   padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-light);
   display: flex;
   justify-content: flex-end;
 }
 
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background-color: var(--add-btn, #2196f3);
-  color: white;
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -675,20 +674,20 @@ const hasErrors = computed(() => {
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--add-btn-hover, #1976d2);
+  background-color: var(--principal-primary-hover);
 }
 
 .btn-primary:disabled {
-  background-color: #ccc;
+  background-color: var(--neutral-gray-300);
   cursor: not-allowed;
 }
 
 .btn-primary.has-errors:not(:disabled) {
-  background-color: #ef4444;
+  background-color: var(--principal-error);
 }
 
 .btn-primary.has-errors:hover:not(:disabled) {
-  background-color: #dc2626;
+  background-color: var(--principal-error-600);
 }
 
 .spinner {

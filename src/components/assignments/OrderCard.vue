@@ -22,7 +22,7 @@ const orderTypeMap = {
   corporate: 'Corporativo'
 }
 
-// Función para obtener el tipo de pedido en español
+// Función para obtener el tipo de servicio en español
 const getOrderTypeInSpanish = (type: any) => {
   return orderTypeMap[type] || '----';
 }
@@ -47,10 +47,10 @@ const formatDate = (value: string | Date): string => {
     style="cursor: pointer;"
   >
 
-    <!-- Información del pedido -->
+    <!-- Información del servicio -->
     <div class="info">
       <div class="field">
-        <label>Número de pedido</label>
+        <label>Número de servicio</label>
         <p>#{{ order.id }}</p>
       </div>
       <div class="field">
@@ -64,7 +64,7 @@ const formatDate = (value: string | Date): string => {
     </div>
 
     <div class="image-container">
-      <img src="../../assets/images/truck.png" alt="Pedido" />
+      <img src="../../assets/images/truck.png" alt="Servicio" />
     </div>
 
     <!-- Overlay según el estado -->
@@ -88,24 +88,23 @@ const formatDate = (value: string | Date): string => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #ccc;
+  border: 1px solid var(--neutral-gray-300);
   border-radius: 10px;
   padding: 1rem;
   margin: 0.5rem 0;
-  background-color: white;
+  background-color: var(--neutral-white);
   max-width: 100%;
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .order-card:hover {
-  background-color: rgb(245, 245, 245);
+  background-color: var(--neutral-gray-50);
 }
 
 .order-card.selected {
-  border-color: #2563eb;
-  background-color: #f0f4ff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+  border-color: var(--principal-primary);
+  background-color: var(--principal-primary-25);
 }
 
 .info {
@@ -118,13 +117,13 @@ const formatDate = (value: string | Date): string => {
 
 label {
   font-size: clamp(0.85rem, 1.5vw, 0.9rem);
-  color: #666;
+  color: var(--neutral-gray-600);
 }
 
 p {
   margin: 0;
   font-size: clamp(0.95rem, 1.5vw, 1rem);
-  color: #000;
+  color: var(--neutral-black);
 }
 
 .image-container {
@@ -144,15 +143,15 @@ p {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(50, 50, 50, 0.6);
+  background-color: var(--shadow-darker);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .view-btn {
-  background-color: #00b05b;
-  color: white;
+  background-color: var(--status-success);
+  color: var(--neutral-white);
   padding: 0.7rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -162,7 +161,7 @@ p {
 
 .lock-icon .material-symbols-outlined {
   font-size: clamp(2.5rem, 5vw, 3rem);
-  color: white;
+  color: var(--neutral-white);
 }
 
 @media (max-width: 1500px) {

@@ -23,7 +23,7 @@ const handleBackToList = () => {
 <template>
   <main>
     <header>
-      <h1 class="text-title">Control de pedidos y asignaciones</h1>
+      <h1 class="text-title">Control de servicios y asignaciones</h1>
     </header>
 
     <!-- Switch para cambiar entre pestañas -->
@@ -33,7 +33,7 @@ const handleBackToList = () => {
       <div class="toggle-button" @click="activeTab = 'right'">En progreso</div>
     </div>
 
-    <!-- Pedidos pendientes -->
+    <!-- Servicios pendientes -->
     <section class="pending-orders" v-if="activeTab === 'left'">
         <!-- Lista de órdenes - se oculta en móvil cuando hay una orden seleccionada -->
         <div class="list" :class="{ 'mobile-hidden': showDetailView }">
@@ -58,7 +58,7 @@ const handleBackToList = () => {
         </div>
     </section>
 
-    <!-- Pedidos en progreso -->
+    <!-- Servicios en progreso -->
     <section class="pending-orders" v-else>
         <!-- Lista de órdenes - se oculta en móvil cuando hay una orden seleccionada -->
         <div class="list" :class="{ 'mobile-hidden': showDetailView }">
@@ -106,7 +106,7 @@ h1 {
 
 .toggle-wrapper {
   display: flex;
-  background-color: #EAEEF4;
+  background-color: var(--neutral-gray-200);
   border-radius: 10px;
   position: relative;
   width: 18.75rem; /* 300px → rem */
@@ -115,6 +115,7 @@ h1 {
   font-family: sans-serif;
   font-weight: bold;
   margin-bottom: 2rem;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
 .toggle-indicator {
@@ -123,9 +124,10 @@ h1 {
   left: 0.375rem; /* 6px → rem */
   width: calc(50% - 0.375rem);
   height: calc(100% - 0.75rem); /* 12px → rem */
-  background-color: white;
+  background-color: var(--neutral-white);
   border-radius: 10px;
   transition: all 0.3s ease;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
 .toggle-button {
@@ -150,8 +152,9 @@ h1 {
   display: grid;
   grid-template-columns: 0.75fr 1fr;
   height: calc(100vh - 15.625rem); /* 250px → rem */
-  background-color: var(--white);
+  background-color: var(--neutral-white);
   border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
 .pending-orders .list {

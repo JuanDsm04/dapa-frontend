@@ -60,7 +60,7 @@ const computedOptions = computed(() => ({
 .chart-container {
   width: fit-content;
   padding: 2rem;
-  background-color: #ffff;
+  background-color: #ffffzz;
   border-radius: 1rem;
 }
 </style>

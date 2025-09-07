@@ -115,9 +115,9 @@ onMounted(() => {
         <p v-if="errors.price" class="error">{{ errors.price }}</p>
       </div>
 
-      <!-- Tipo de carga -->
+      <!-- Tipo de servicio -->
       <div class="field">
-        <label for="cargoType">Tipo de carga</label>
+        <label for="cargoType">Tipo de servicio</label>
         <select id="cargoType" v-model="cargoType">
           <option value="personal">Personal</option>
           <option value="empresarial">Empresarial</option>
@@ -128,21 +128,21 @@ onMounted(() => {
 
     <!-- Origen -->
     <div class="field">
-      <label for="origin">Origen</label>
+      <label for="origin">De aquí</label>
       <input type="text" id="origin" v-model="origin" />
       <p v-if="errors.origin" class="error">{{ errors.origin }}</p>
     </div>
 
     <!-- Destino -->
     <div class="field">
-      <label for="destination">Destino</label>
+      <label for="destination">Para allá</label>
       <input type="text" id="destination" v-model="destination" />
       <p v-if="errors.destination" class="error">{{ errors.destination }}</p>
     </div>
 
     <!-- Detalles -->
     <div class="field">
-      <label for="details">Detalles</label>
+      <label for="details">Observaciones</label>
       <textarea id="details" v-model="details"></textarea>
       <p v-if="errors.details" class="error">{{ errors.details }}</p>
     </div>
@@ -220,7 +220,7 @@ select,
 textarea {
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  border: 1px solid var(--border-input, #ccc);
+  border: 1px solid var(--border-base, #ccc);
   font-size: clamp(0.95rem, 2vw, 1rem);
   width: 100%;
 }
@@ -233,7 +233,7 @@ textarea {
 
 .error {
   font-size: clamp(0.8rem, 2vw, 0.85rem);
-  color: red;
+  color: var(--principal-error);
   margin-top: 0.25rem;
 }
 
@@ -242,8 +242,8 @@ textarea {
   border: 0;
   padding: 15px 35px;
   border-radius: 10px;
-  background-color: var(--add-btn, #2563eb);
-  color: var(--white, #fff);
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
   font-size: clamp(0.95rem, 2vw, 1rem);
   font-weight: 500;
   margin: 0 auto;
@@ -251,7 +251,7 @@ textarea {
 }
 
 .edit-button:hover {
-  background-color: var(--add-btn-hover, #1e4ed8);
+  background-color: var(--principal-primary-hover);
 }
 
 /* Contenedor de botones de no edición */
@@ -268,24 +268,24 @@ textarea {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  color: white;
+  color: var(--neutral-white);
   font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .action-container button:first-child {
-  background-color: #ff5a70;
+  background-color: var(--principal-error-400);
 }
 
 .action-container button:first-child:hover {
-  background-color: #f0566a;
+  background-color: var(--principal-error-500);
 }
 
 .action-container button:last-child {
-  background-color: #53d86c;
+  background-color: var(--principal-secondary-300);
 }
 
 .action-container button:last-child:hover {
-  background-color: #53cd69;
+  background-color: var(--principal-secondary-400);
 }
 
 .action-container button span {

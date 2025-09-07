@@ -207,8 +207,9 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.data-table thead) {
-  background-color: var(--table-header);
-  color: var(--text-on-light);
+  background-color: var(--neutral-white);
+  color: var(--neutral-black);
+  font-weight: 800 !important;
 }
 
 :deep(.data-table thead th) {
@@ -231,11 +232,11 @@ watch(() => dt.value, (newDt) => {
   text-align: center;
   font-weight: 300;
   letter-spacing: 0.03125rem;
-  background-color: var(--table-row);
+  background-color: var(--neutral-white);
 }
 
 :deep(.data-table tbody tr) {
-  border-bottom: 0.1875rem solid var(--border); /* 3px → rem */
+  border-bottom: 0.1875rem solid var(--neutral-gray-50); /* 3px → rem */
   transition: all 0.2s ease;
 }
 
@@ -253,7 +254,7 @@ watch(() => dt.value, (newDt) => {
 
 :deep(.action-buttons button) {
   border: none;
-  color: var(--white);
+  color: var(--neutral-white);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -268,27 +269,27 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.btn-edit) {
-  background-color: var(--edit-btn);
+  background-color: var(--principal-secondary-100);
 }
 
 :deep(.btn-edit .icon) {
-  color: var(--on-edit-btn);
+  color: var(--principal-secondary);
 }
 
 :deep(.btn-delete) {
-  background-color: var(--delete-btn);
+  background-color: var(--principal-error-100);
 }
 
 :deep(.btn-delete .icon) {
-  color: var(--on-delete-btn);
+  color: var(--principal-error);
 }
 
 :deep(.btn-edit:hover) {
-  background-color: var(--edit-btn-hover);
+  background-color: var(--principal-secondary-50);
 }
 
 :deep(.btn-delete:hover) {
-  background-color: var(--delete-btn-hover);
+  background-color: var(--principal-error-50);
 }
 
 /* Personalización de estilos DataTables */
@@ -304,14 +305,14 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.dataTables_filter input) {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-base);
   border-radius: 5px;
   padding: 0.3125rem 0.625rem; /* 5px 10px → rem */
   margin-left: 0.625rem; /* 10px → rem */
 }
 
 :deep(.paginate_button) {
-  border: 0.0625rem solid var(--border) !important; /* 1px → rem */
+  border: 0.0625rem solid var(--border-base) !important; /* 1px → rem */
   border-radius: 5px !important;
   margin: 0 0.125rem !important; /* 2px → rem */
   padding: 0.3125rem 0.625rem !important; /* 5px 10px → rem */
@@ -319,18 +320,18 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.paginate_button:hover) {
-  background: var(--table-header) !important;
-  color: var(--text-on-light) !important;
+  background: var(--principal-error) !important;
+  color: var(--neutral-black) !important;
 }
 
 :deep(.paginate_button.current) {
-  background: var(--table-header) !important;
-  color: var(--text-on-light) !important;
+  background: var(--neutral-white) !important;
+  color: var(--neutral-black) !important;
 }
 
 /* Estilos adicionales para mejor integración */
 :deep(.dataTables_wrapper .dataTables_length select) {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-base);
   border-radius: 5px;
   padding: 0.125rem 0.3125rem; /* 2px 5px → rem */
 }
@@ -338,11 +339,11 @@ watch(() => dt.value, (newDt) => {
 :deep(.dataTables_wrapper .dataTables_filter label),
 :deep(.dataTables_wrapper .dataTables_length label) {
   font-weight: 600;
-  color: var(--text-on-light);
+  color: var(--neutral-black);
 }
 
 :deep(.dataTables_wrapper .dataTables_info) {
-  color: var(--text-on-light);
+  color: var(--neutral-black);
   font-weight: 500;
 }
 
@@ -352,7 +353,7 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(tr.parent td) {
-  background: var(--bg-general);
+  background: var(--principal-primary-50);
 }
 
 :deep(table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before) {
@@ -360,4 +361,5 @@ watch(() => dt.value, (newDt) => {
   transform: translateY(-15%);
   left: 0.3125rem; /* 5px → rem */
 }
+
 </style>

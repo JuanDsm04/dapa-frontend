@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// VISTA QUE VERÁN LOS USUARIOS PARA DARLE SEGUIMIENTO A SUS PEDIDOS
+// VISTA QUE VERÁN LOS USUARIOS PARA DARLE SEGUIMIENTO A SUS SERVICIOS
 import OrderSteps from '@/components/assignments/OrderSteps.vue';
 </script>
 
@@ -19,7 +19,7 @@ import OrderSteps from '@/components/assignments/OrderSteps.vue';
       <p class="steps-info">
         1 - En camino a recoger la carga<br />
         2 - Carga recogida<br />
-        3 - Envío completado<br />
+        3 - Servicio completado<br />
       </p>
       <OrderSteps />
       <div class="info-box">
@@ -45,7 +45,7 @@ main {
 }
 
 header {
-  background-color: white;
+  background-color: (--neutral-white);
   padding: 2rem 3rem;
   display: flex;
   justify-content: space-between;
@@ -74,12 +74,12 @@ header img {
 }
 
 .info {
-  background-color: white;
+  background-color: var(--neutral-white);
   padding: 2rem 3rem;
 }
 
 .info-box {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-light);
   border-radius: 10px;
   padding: 1rem;
   display: grid;

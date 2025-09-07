@@ -69,7 +69,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--gradient-black);
   z-index: 1;
 }
 
@@ -95,7 +95,7 @@ onMounted(() => {
 }
 
 .carousel-overlay nav button {
-  background-color: var(--primary);
+  background-color: var(--principal-tertiary);
   border: none;
   padding: 0.625rem 1.25rem;
   text-align: center;
@@ -105,7 +105,7 @@ onMounted(() => {
 }
 
 .carousel-overlay nav button:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--principal-tertiary-hover);
 }
 
 .logo-img {
@@ -115,14 +115,14 @@ onMounted(() => {
 }
 
 h1 {
-  color: var(--text-on-dark);
+  color: var(--neutral-white);
   font-size: clamp(3rem, 5vw + 2rem, 5rem);
   margin-bottom: 0.625rem;
   font-weight: bold;
 }
 
 p {
-  color: var(--text-on-dark);
+  color: var(--neutral-white);
   font-size: clamp(1.875rem, 3vw + 1rem, 2.5rem);
   margin-bottom: 1.875rem;
 }

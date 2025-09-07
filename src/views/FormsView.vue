@@ -289,28 +289,28 @@ const toggleQuestion = async (index: number) => {
 }
 
 .header {
-  background: white;
+  background: var(--neutral-white);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
-  box-shadow: 0 0.25rem 1.25rem rgba(0, 0, 0, 0.1);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   flex-wrap: wrap;
   gap: 1.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
 
 .header-content h1 {
   margin: 0 0 0.5rem 0;
-  color: #333;
+  color: var(--neutral-gray-900);
   font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   font-weight: 700;
 }
 
 .subtitle {
   margin: 0 0 1.5rem 0;
-  color: #666;
+  color: var(--neutral-gray-600);
   font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
 }
 
@@ -328,13 +328,13 @@ const toggleQuestion = async (index: number) => {
 .stat-number {
   font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
   font-weight: 700;
-  color: var(--add-btn);
+  color: var(--principal-primary-800);
   line-height: 1;
 }
 
 .stat-label {
   font-size: clamp(0.75rem, 0.4vw + 0.5rem, 0.85rem);
-  color: #666;
+  color: var(--neutral-gray-600);
   text-transform: uppercase;
   letter-spacing: 0.05rem;
 }
@@ -346,12 +346,11 @@ const toggleQuestion = async (index: number) => {
 }
 
 .btn-primary {
-  background: var(--add-btn);
-  color: white;
+  background: var(--principal-primary);
+  color: var(--neutral-white);
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  font-weight: 600;
   font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
@@ -368,9 +367,9 @@ const toggleQuestion = async (index: number) => {
 }
 
 .btn-secondary {
-  background: white;
-  color: #666;
-  border: 0.125rem solid #e0e0e0;
+  background: var(--neutral-white);
+  color: var(--neutral-gray-600);
+  border: 0.125rem solid var(--border-light);
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
@@ -380,9 +379,9 @@ const toggleQuestion = async (index: number) => {
 }
 
 .btn-secondary:hover:not(:disabled) {
-  border-color: var(--on-delete-btn);
-  color: var(--on-delete-btn);
-  background: #fafafa;
+  border-color: var(--principal-error);
+  color: var(--principal-error);
+  background: var(--principal-error-25);
 }
 
 .btn-secondary:disabled {
@@ -405,7 +404,7 @@ const toggleQuestion = async (index: number) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--neutral-gray-50);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -415,8 +414,8 @@ const toggleQuestion = async (index: number) => {
 .spinner {
   width: 2.5rem; /* 40px → rem */
   height: 2.5rem;
-  border: 0.25rem solid var(--border);
-  border-top: 0.25rem solid var(--add-btn);
+  border: 0.25rem solid var(--border-light);
+  border-top: 0.25rem solid var(--principal-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -429,8 +428,8 @@ const toggleQuestion = async (index: number) => {
 .column {
   width: 100%;
   max-width: 50rem; /* 800px → rem */
-  padding: 1rem;
-  background-color: #fff;
+  padding: 2rem;
+  background-color: var(--neutral-white);
   border-radius: 8px;
   margin: 1rem 0;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
@@ -442,7 +441,7 @@ const toggleQuestion = async (index: number) => {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 0.125rem solid #e9ecef;
+  border-bottom: 0.125rem solid var(--border-light);
 }
 
 .preview {
@@ -452,10 +451,10 @@ const toggleQuestion = async (index: number) => {
   align-items: center;
   width: 100%;
   max-width: 50rem;
-  background-color: #fff;
+  background-color: var(--neutral-white);
   border-radius: 8px;
   margin: 1rem 0;
-  padding: 1rem;
+  padding: 2rem;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
 }
 
@@ -466,19 +465,19 @@ const toggleQuestion = async (index: number) => {
   align-items: center;
   padding-bottom: 1rem;
   margin-bottom: 1.5rem;
-  border-bottom: 0.125rem solid #e9ecef;
+  border-bottom: 0.125rem solid var(--border-light);
 }
 
 .title {
   font-weight: 600;
   margin: 0;
-  color: #333;
+  color: var(--neutral-gray-900);
   font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
 }
 
 .count {
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--neutral-gray-600);
+  color: var(--neutral-white);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: clamp(0.75rem, 0.4vw + 0.5rem, 0.85rem);
@@ -501,7 +500,7 @@ const toggleQuestion = async (index: number) => {
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
-  color: #6c757d;
+  color: var(--neutral-gray-500);
 }
 
 .empty-state p {
@@ -516,7 +515,7 @@ const toggleQuestion = async (index: number) => {
 /* Toggle Styles */
 .toggle-wrapper {
   display: flex;
-  background-color: #EAEEF4;
+  background-color: var(--neutral-gray-200);
   border-radius: 10px;
   position: relative;
   width: 18.75rem; /* 300px → rem */
@@ -525,6 +524,7 @@ const toggleQuestion = async (index: number) => {
   font-family: sans-serif;
   font-weight: bold;
   margin-bottom: 0.375rem; /* 6px → rem */
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
 .toggle-indicator {
@@ -533,10 +533,11 @@ const toggleQuestion = async (index: number) => {
   left: 0.375rem;
   width: calc(50% - 0.375rem);
   height: calc(100% - 0.75rem);
-  background-color: white;
+  background-color: var(--neutral-white);
   border-radius: 10px;
   transition: all 0.3s ease;
   z-index: 1;
+  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
 .toggle-button {
@@ -566,7 +567,7 @@ const toggleQuestion = async (index: number) => {
 }
 
 article {
-  background: var(--modal-bg, white);
+  background: var(--neutral-white);
   border-radius: 10px;
   max-width: 37.5rem; /* 600px → rem */
   width: 100%;
@@ -582,7 +583,7 @@ article header {
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-input, #e0e0e0);
+  border-bottom: 1px solid var(--border-light);
 }
 
 article header h3 {
@@ -597,7 +598,7 @@ article section { padding: 1.5rem; }
   background: none;
   border: none;
   font-size: clamp(1.25rem, 2vw + 0.5rem, 1.5rem);
-  color: var(--close-btn, #666);
+  color: var(--neutral-gray-500);
   cursor: pointer;
   padding: 0.5rem;
   display: flex;
@@ -608,14 +609,13 @@ article section { padding: 1.5rem; }
 }
 
 .close-btn:hover {
-  color: var(--close-btn-hover, #333);
-  background-color: rgba(0,0,0,0.1);
+  color: var(--close-btn-hover, var(--neutral-gray-700));
 }
 
 /* Drag & Drop Styles (sortablejs) */
-:deep(.sortable-ghost) { opacity: 0.4; background: #c1e5f5; transform: scale(1.01); border: 2px dashed #177fd4; }
-:deep(.sortable-chosen) { opacity: 0.8; background: #e3f2fd; }
-:deep(.sortable-drag) { opacity: 0.9; background: white; box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.25); transform: rotate(1deg); border: 2px solid #177fd4; z-index: 1000; }
+:deep(.sortable-ghost) { opacity: 0.4; background: var(--principal-primary-50); transform: scale(1.01); border: 2px dashed var(--principal-primary-500); }
+:deep(.sortable-chosen) { opacity: 0.8; background: var(--principal-primary-50); }
+:deep(.sortable-drag) { opacity: 0.9; background: var(--neutral-primary-100); box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.25); transform: rotate(1deg); border: 2px solid var(--principal-primary-100); z-index: 1000; }
 
 /* Responsive Design */
 @media (max-width: 64rem) { /* 1024px → rem */

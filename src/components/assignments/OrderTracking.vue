@@ -77,7 +77,7 @@ const handleBackToList = () => {
           <p class="steps-info">
             1 - En camino a recoger la carga<br />
             2 - Carga recogida<br />
-            3 - Envío completado
+            3 - Servicio completado
           </p>
         </div>
 
@@ -104,14 +104,14 @@ const handleBackToList = () => {
 <style scoped>
 .tracking-container {
   padding: 2rem;
-  background-color: #fff;
+  background-color: var(--neutral-white);
   border-radius: 10px;
 }
 
 .no-selection, .loading-state {
   text-align: center;
   padding: 2rem;
-  color: #666;
+  color: var(--neutral-gray-600);
   font-size: clamp(0.9rem, 1.8vw, 1rem);
 }
 
@@ -133,7 +133,7 @@ header {
 }
 
 .back-btn:hover {
-  color: #235dda;
+  color: var(--principal-primary-hover);
 }
 
 .mobile-only {
@@ -148,14 +148,14 @@ header {
   align-items: center;
   justify-content: center;
   height: 55px;
-  color: #235dda;
-  border: 1px solid #235dda;
+  color: var(--principal-primary);
+  border: 1px solid var(--principal-primary);
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--neutral-white);
 }
 
 .form-btn:hover {
-  background-color: #f9f9fc;
+  background-color: var(--neutral-gray-100);
 }
 
 header h2 {
@@ -165,7 +165,7 @@ header h2 {
 
 .steps-info {
   font-size: clamp(0.8rem, 1.6vw, 0.9rem);
-  color: #444;
+  color: var(--neutral-gray-600);
   margin-top: 0.5rem;
   line-height: 1.4;
 }
@@ -173,7 +173,7 @@ header h2 {
 @media (max-width: 770px) {
   .tracking-container {
     padding: 1.5rem;
-    background-color: #fff;
+    background-color: var(--neutral-white);
   }
 
   .mobile-only {

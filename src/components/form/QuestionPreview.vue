@@ -195,25 +195,10 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
 .preview-question {
   margin-bottom: 2rem;
   padding: 1.5rem;
-  border: 0.0625rem solid #e1e5e9; /* 1px -> rem */
+  border: 0.0625rem solid var(--border-base);
   border-radius: 12px;
-  background: white;
+  background: var(--neutral-white);
   transition: all 0.2s ease;
-}
-
-.preview-question:hover {
-  border-color: #c3d9ff;
-  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.05); /* 2px 8px -> rem */
-}
-
-.preview-question.has-error {
-  border-color: #ef4444;
-  background: #fefefe;
-}
-
-.preview-question.has-error:hover {
-  border-color: #dc2626;
-  box-shadow: 0 0.125rem 0.5rem rgba(239, 68, 68, 0.15);
 }
 
 .question-label {
@@ -221,16 +206,12 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
   margin-bottom: 1rem;
   font-size: clamp(1rem, 2vw, 1.1rem);
   font-weight: 600;
-  color: #333;
+  color: var(--neutral-gray-800);
   line-height: 1.4;
 }
 
-.has-error .question-label {
-  color: #dc2626;
-}
-
 .required-indicator {
-  color: #e74c3c;
+  color: var(--principal-error);
   margin-left: 0.25rem;
 }
 
@@ -242,7 +223,7 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
 .text-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 0.125rem solid #e1e5e9; /* 2px -> rem */
+  border: 0.125rem solid var(--border-base); /* 2px -> rem */
   border-radius: 8px;
   font-size: clamp(0.9rem, 2vw, 1rem);
   transition: all 0.2s ease;
@@ -255,17 +236,11 @@ textarea.text-input {
 
 .text-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.1875rem rgba(102, 126, 234, 0.1); /* 3px -> rem */
+  border-color: var(--principal-primary-200);
 }
 
-.text-input.error {
-  border-color: #ef4444;
-}
-
-.text-input.error:focus {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 0.1875rem rgba(239, 68, 68, 0.1);
+.text-input:hover {
+  background-color: var(--neutral-gray-50);
 }
 
 .icon {
@@ -277,10 +252,10 @@ textarea.text-input {
 .select-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 0.125rem solid #e1e5e9;
+  border: 0.125rem solid var(--border-base);
   border-radius: 8px;
   font-size: clamp(0.9rem, 2vw, 1rem);
-  background: white;
+  background: var(--neutral-white);
   cursor: pointer;
   transition: all 0.2s ease;
   box-sizing: border-box;
@@ -288,17 +263,11 @@ textarea.text-input {
 
 .select-input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.1875rem rgba(102, 126, 234, 0.1);
+  border-color: var(--principal-primary-200);
 }
 
-.select-input.error {
-  border-color: #ef4444;
-}
-
-.select-input.error:focus {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 0.1875rem rgba(239, 68, 68, 0.1);
+.select-input:hover {
+  background-color: var(--neutral-gray-50);
 }
 
 /* Estilos para checkboxes */
@@ -313,12 +282,6 @@ textarea.text-input {
   transition: all 0.2s ease;
 }
 
-.checkbox-group.error,
-.radio-group.error {
-  border-color: #ef4444;
-  background: #fef2f2;
-}
-
 .checkbox-item,
 .radio-item {
   display: flex;
@@ -330,14 +293,14 @@ textarea.text-input {
 .radio-input {
   width: 1.125rem; /* 18px -> rem */
   height: 1.125rem;
-  accent-color: #667eea;
+  accent-color: var(--principal-primary);
   cursor: pointer;
 }
 
 .checkbox-label,
 .radio-label {
   font-size: clamp(0.9rem, 2vw, 1rem);
-  color: #555;
+  color: var(--neutral-gray-600);
   cursor: pointer;
   line-height: 1.4;
   user-select: none;
@@ -345,7 +308,7 @@ textarea.text-input {
 
 .checkbox-label:hover,
 .radio-label:hover {
-  color: #333;
+  color: var(--neutral-gray-800);
 }
 
 /* Mensaje de error */
@@ -355,10 +318,10 @@ textarea.text-input {
   gap: 0.5rem;
   margin-top: 0.75rem;
   padding: 0.75rem;
-  background: #fef2f2;
-  border: 0.0625rem solid #fca5a5;
+  background: var(--principal-error-25);
+  border: 0.0625rem solid var(--principal-error-200);
   border-radius: 6px;
-  color: #dc2626;
+  color: var(--principal-error-700);
   font-size: clamp(0.75rem, 2vw, 0.875rem);
   font-weight: 500;
 }

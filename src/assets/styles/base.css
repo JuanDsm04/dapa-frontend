@@ -1,69 +1,206 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 :root {
-  /* Base colors */
-  --white: #ffffff;
-  --black: #000000;
-
-  /* Color scheme */
-  --primary: #FFB601;
-  --primary-dark: #c48c00;
-
-  --edit-btn: #d2fdd4;
-  --edit-btn-hover: #bafbbe;
-  --on-edit-btn: #349137;
-
-  --delete-btn: #FCDBDB;
-  --delete-btn-hover: #f6cbcb;
-  --on-delete-btn: #CC2D44;
-
-  --add-btn: #3F74BD;
-  --add-btn-hover: #3c6caf;
-
-  --secondary: #42B983;
-  --secondary-dark: #369F6B;
-
-  --terciary: #999999;
-  --terciary-dark: #666666;
-
-  /* Text colors*/
-  --text-on-dark: var(--white);
-  --text-on-light: var(--black);
-  --text-on-add-btn: var(--white);
-
-  /* Form */
-  --border-input: #CCC;
-  --button-secondary: #808080;
-
-  /* Modal */
-  --modal-bg: var(--white);
-  --close-btn: #666;
-  --close-btn-hover: #333;
-
-  /* Navbar */
-  --sidebar-bg: #ffffff;
-  --sidebar-active-bg: #3F74BD;
-  --sidebar-hover-bg: #f4f4f4;
-  --sidebar-text-color: #2d4d7a;
-  --sidebar-active-text-color: var(--white);
-  --sidebar-icon-color: #2d4d7a;
-  --sidebar-active-icon-color: var(--white);
-  --sidebar-icon-size: 24px;
-
-  /* Row */
-  --row-hover: #dadada;
-
-  /* Table */
-  --border: #F6F6F6;
-  --table-header: var(--white);
-  --table-footer: var(--white);
-  --table-row: var(--white);
-
   /* Font and typography */
   --font-base: 'Poppins';
 
+  /* ========== COLORES PRINCIPALES ========== */
+  
   /* Views */
-  --bg-general: #F5F7FB;
+  --bg-general: rgb(249, 249, 249);
+  
+  /* Principal Primary (Azul) - Variaciones */
+  --principal-primary-900: rgb(23, 56, 109);
+  --principal-primary-800: rgb(33, 76, 129);
+  --principal-primary-700: rgb(43, 86, 149);
+  --principal-primary-600: rgb(53, 101, 169);
+  --principal-primary: rgb(63, 116, 189);
+  --principal-primary-500: rgb(63, 116, 189);
+  --principal-primary-400: rgb(83, 136, 209);
+  --principal-primary-300: rgb(103, 146, 209);
+  --principal-primary-200: rgb(143, 176, 229);
+  --principal-primary-100: rgb(179, 205, 244);
+  --principal-primary-50: rgb(219, 232, 251);
+  --principal-primary-25: rgb(240, 248, 255);
+
+  /* Principal Secondary (Verde) - Variaciones */
+  --principal-secondary-900: rgb(22, 65, 25);
+  --principal-secondary-800: rgb(32, 85, 35);
+  --principal-secondary-700: rgb(37, 105, 40);
+  --principal-secondary-600: rgb(44, 125, 47);
+  --principal-secondary: rgb(52, 145, 55);
+  --principal-secondary-500: rgb(52, 145, 55);
+  --principal-secondary-400: rgb(72, 165, 75);
+  --principal-secondary-300: rgb(92, 185, 95);
+  --principal-secondary-200: rgb(132, 205, 135);
+  --principal-secondary-100: rgb(178, 225, 179);
+  --principal-secondary-50: rgb(218, 242, 219);
+
+  /* Principal Tertiary (Amarillo) - Variaciones */
+  --principal-tertiary-900: rgb(141, 116, 7);
+  --principal-tertiary-800: rgb(171, 141, 9);
+  --principal-tertiary-700: rgb(191, 156, 11);
+  --principal-tertiary-600: rgb(216, 176, 13);
+  --principal-tertiary: rgb(241, 196, 15);
+  --principal-tertiary-500: rgb(241, 196, 15);
+  --principal-tertiary-400: rgb(243, 206, 45);
+  --principal-tertiary-300: rgb(245, 216, 75);
+  --principal-tertiary-200: rgb(248, 227, 135);
+  --principal-tertiary-100: rgb(250, 238, 175);
+  --principal-tertiary-50: rgb(253, 248, 215);
+
+  /* Principal Error (Rojo) - Variaciones */
+  --principal-error-900: rgb(124, 28, 44);
+  --principal-error-800: rgb(144, 32, 51);
+  --principal-error-700: rgb(164, 37, 56);
+  --principal-error-600: rgb(184, 41, 62);
+  --principal-error: rgb(204, 45, 68);
+  --principal-error-500: rgb(204, 45, 68);
+  --principal-error-400: rgb(214, 75, 94);
+  --principal-error-300: rgb(224, 95, 114);
+  --principal-error-200: rgb(234, 135, 149);
+  --principal-error-100: rgb(244, 175, 185);
+  --principal-error-50: rgb(252, 215, 220);
+  --principal-error-25: rgb(255, 228, 230);
+
+  /* ========== COLORES DE HOVER ========== */
+  
+  --principal-primary-hover: rgb(62, 106, 172);
+  --principal-secondary-hover: rgb(37, 105, 40);
+  --principal-tertiary-hover: rgb(219, 178, 15);
+  --principal-error-hover: rgb(164, 37, 56);
+
+  /* ========== COLORES DE CONTRASTE (Para texto sobre botones) ========== */
+  
+  --contrast-primary-text: rgb(255, 255, 255);
+  --contrast-secondary-text: rgb(255, 255, 255);
+  --contrast-tertiary-text: rgb(141, 116, 7);
+  --contrast-error-text: rgb(255, 255, 255);
+
+  /* Textos de contraste para versiones claras */
+  --contrast-primary-light-text: rgb(23, 56, 109);
+  --contrast-secondary-light-text: rgb(22, 65, 25);
+  --contrast-tertiary-light-text: rgb(141, 116, 7);
+  --contrast-error-light-text: rgb(124, 28, 44);
+
+  /* ========== COLORES NEUTRALES ========== */
+  
+  /* Grises */
+  --neutral-black: rgb(17, 24, 39);
+  --neutral-gray-900: rgb(17, 24, 39);
+  --neutral-gray-800: rgb(31, 41, 55);
+  --neutral-gray-700: rgb(55, 65, 81);
+  --neutral-gray-600: rgb(75, 85, 99);
+  --neutral-gray-500: rgb(107, 114, 128);
+  --neutral-gray-400: rgb(156, 163, 175);
+  --neutral-gray-300: rgb(209, 213, 219);
+  --neutral-gray-200: rgb(229, 231, 235);
+  --neutral-gray-100: rgb(243, 244, 246);
+  --neutral-gray-50: rgb(249, 250, 251);
+  --neutral-white: rgb(255, 255, 255);
+
+  /* ========== COLORES DE ESTADO ========== */
+  
+  /* Success (Verde alternativo) */
+  --status-success: rgb(34, 197, 94);
+  --status-success-dark: rgb(21, 128, 61);
+  --status-success-light: rgb(187, 247, 208);
+  --status-success-hover: rgb(21, 128, 61);
+
+  /* Warning (Naranja) */
+  --status-warning: rgb(249, 115, 22);
+  --status-warning-dark: rgb(194, 65, 12);
+  --status-warning-light: rgb(254, 215, 170);
+  --status-warning-hover: rgb(194, 65, 12);
+
+  /* Info (Azul claro) */
+  --status-info: rgb(59, 130, 246);
+  --status-info-dark: rgb(37, 99, 235);
+  --status-info-light: rgb(191, 219, 254);
+  --status-info-hover: rgb(37, 99, 235);
+
+  /* ========== COLORES DE SUPERFICIE ========== */
+  
+  /* Fondos y superficies */
+  --surface-primary: rgb(255, 255, 255);
+  --surface-secondary: rgb(248, 250, 252);
+  --surface-tertiary: rgb(241, 245, 249);
+  --surface-dark: rgb(30, 41, 59);
+  --surface-darker: rgb(15, 23, 42);
+
+  /* Bordes */
+  --border-light: rgb(226, 232, 240);
+  --border-medium: rgb(203, 213, 225);
+  --border-dark: rgb(148, 163, 184);
+  --border-base: rgb(204, 204, 204);
+
+  /* Sombras */
+  --shadow-light: rgba(0, 0, 0, 0.05);
+  --shadow-medium: rgba(0, 0, 0, 0.1);
+  --shadow-dark: rgba(0, 0, 0, 0.25);
+  --shadow-darker: rgba(0, 0, 0, 0.5);
+
+  /* ========== COLORES COMPLEMENTARIOS ========== */
+  
+  /* Púrpura (Complementario del amarillo) */
+  --complementary-purple: rgb(147, 51, 234);
+  --complementary-purple-dark: rgb(109, 40, 217);
+  --complementary-purple-light: rgb(196, 181, 253);
+
+  /* Rosa (Variación del rojo) */
+  --complementary-pink: rgb(236, 72, 153);
+  --complementary-pink-dark: rgb(190, 24, 93);
+  --complementary-pink-light: rgb(252, 165, 165);
+
+  /* Cyan (Complementario del rojo) */
+  --complementary-cyan: rgb(6, 182, 212);
+  --complementary-cyan-dark: rgb(8, 145, 178);
+  --complementary-cyan-light: rgb(165, 243, 252);
+
+  /* ========== COLORES CON TRANSPARENCIA ========== */
+  
+  /* Principales con opacidad */
+  --principal-primary-alpha-90: rgba(63, 116, 189, 0.9);
+  --principal-primary-alpha-80: rgba(63, 116, 189, 0.8);
+  --principal-primary-alpha-60: rgba(63, 116, 189, 0.6);
+  --principal-primary-alpha-40: rgba(63, 116, 189, 0.4);
+  --principal-primary-alpha-20: rgba(63, 116, 189, 0.2);
+  --principal-primary-alpha-10: rgba(63, 116, 189, 0.1);
+  --principal-primary-alpha-05: rgba(63, 116, 189, 0.05);
+
+  --principal-secondary-alpha-90: rgba(52, 145, 55, 0.9);
+  --principal-secondary-alpha-80: rgba(52, 145, 55, 0.8);
+  --principal-secondary-alpha-60: rgba(52, 145, 55, 0.6);
+  --principal-secondary-alpha-40: rgba(52, 145, 55, 0.4);
+  --principal-secondary-alpha-20: rgba(52, 145, 55, 0.2);
+  --principal-secondary-alpha-10: rgba(52, 145, 55, 0.1);
+  --principal-secondary-alpha-05: rgba(52, 145, 55, 0.05);
+
+  --principal-tertiary-alpha-90: rgba(241, 196, 15, 0.9);
+  --principal-tertiary-alpha-80: rgba(241, 196, 15, 0.8);
+  --principal-tertiary-alpha-60: rgba(241, 196, 15, 0.6);
+  --principal-tertiary-alpha-40: rgba(241, 196, 15, 0.4);
+  --principal-tertiary-alpha-20: rgba(241, 196, 15, 0.2);
+  --principal-tertiary-alpha-10: rgba(241, 196, 15, 0.1);
+  --principal-tertiary-alpha-05: rgba(241, 196, 15, 0.05);
+
+  --principal-error-alpha-90: rgba(204, 45, 68, 0.9);
+  --principal-error-alpha-80: rgba(204, 45, 68, 0.8);
+  --principal-error-alpha-60: rgba(204, 45, 68, 0.6);
+  --principal-error-alpha-40: rgba(204, 45, 68, 0.4);
+  --principal-error-alpha-20: rgba(204, 45, 68, 0.2);
+  --principal-error-alpha-10: rgba(204, 45, 68, 0.1);
+  --principal-error-alpha-05: rgba(204, 45, 68, 0.05);
+
+  /* ========== GRADIENTES ========== */
+  
+  --gradient-primary: linear-gradient(135deg, var(--principal-primary) 0%, var(--principal-primary-300) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--principal-secondary) 0%, var(--principal-secondary-300) 100%);
+  --gradient-tertiary: linear-gradient(135deg, var(--principal-tertiary) 0%, var(--principal-tertiary-300) 100%);
+  --gradient-primary-secondary: linear-gradient(135deg, var(--principal-primary) 0%, var(--principal-secondary) 100%);
+  --gradient-primary-tertiary: linear-gradient(135deg, var(--principal-primary) 0%, var(--principal-tertiary) 100%);
+  --gradient-secondary-tertiary: linear-gradient(135deg, var(--principal-secondary) 0%, var(--principal-tertiary) 100%);
+  --gradient-black: rgba(0, 0, 0, 0.5);
 }
 
 *,

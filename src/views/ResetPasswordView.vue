@@ -162,14 +162,14 @@ const handleResetButton = async (): Promise<void> => {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background-color: rgba(0, 0, 0, 0.5);
+	background-color: var(--gradient-black);
 	z-index: 1;
 }
 
 .form-container {
 	position: relative;
 	z-index: 2;
-	background: white;
+	background: var(--neutral-white);
 	border-radius: 0.75rem; 
 	padding: 2rem;
 	width: 100%;
@@ -177,12 +177,11 @@ const handleResetButton = async (): Promise<void> => {
 	display: flex;
 	flex-direction: column;
 	min-height: 31.25rem; 
-	box-shadow: 0 0.625rem 1.5625rem rgba(0, 0, 0, 0.15);
 }
 
 .error {
 	font-size: clamp(0.6875rem, 0.8vw, 0.75rem);
-	color: red;
+	color: var(--principal-error);
 	margin-top: 0.25rem;
 	text-align: left;
 }
@@ -210,14 +209,14 @@ const handleResetButton = async (): Promise<void> => {
 .title {
 	font-size: clamp(1.125rem, 2vw, 1.375rem);
 	font-weight: 600;
-	color: #1F2937;
+	color: var(--neutral-gray-900);
 	margin-bottom: 0.75rem;
 	line-height: 1.3;
 }
 
 .subtitle {
 	font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
-	color: #6B7280;
+	color: var(--neutral-gray-600);
 	margin-bottom: 1.5rem;
 	line-height: 1.4;
 }
@@ -233,7 +232,7 @@ const handleResetButton = async (): Promise<void> => {
 .email-input {
 	width: 100%;
 	padding: 0.75rem 1rem;
-	border: 1px solid #D1D5DB;
+	border: 1px solid var(--border-base);
 	border-radius: 0.5rem;
 	font-size: clamp(0.8125rem, 1.2vw, 0.9375rem);
 	transition: all 0.2s;
@@ -241,8 +240,7 @@ const handleResetButton = async (): Promise<void> => {
 }
 
 .email-input:focus {
-	border-color: #3B82F6;
-	box-shadow: 0 0 0 0.1875rem rgba(59, 130, 246, 0.1);
+	border-color: var(--principal-primary-200);
 }
 
 .action-button-container {
@@ -252,8 +250,8 @@ const handleResetButton = async (): Promise<void> => {
 }
 
 .action-button {
-	background: #2563eb;
-	color: white;
+	background: var(--principal-primary);
+	color: var(--neutral-white);
 	border: none;
 	border-radius: 0.5rem;
 	padding: 0.75rem 1.5rem;
@@ -267,7 +265,7 @@ const handleResetButton = async (): Promise<void> => {
 }
 
 .action-button:hover {
-	background: #235dda;
+	background: var(--principal-primary-hover);
 }
 
 .action-button:active {
@@ -290,7 +288,7 @@ const handleResetButton = async (): Promise<void> => {
 	cursor: pointer;
 	display: flex;
 	align-items: center;
-	color: #6B7280;
+	color: var(--neutral-gray-600);
 }
 
 .icon-wrapper {

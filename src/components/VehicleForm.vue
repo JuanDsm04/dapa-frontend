@@ -136,7 +136,7 @@ label {
 
 .error {
     font-size: 0.625rem; /* 10px → rem */
-    color: red;
+    color: var(--principal-error);
     margin-left: 0.3125rem; /* 5px → rem */
 }
 
@@ -144,7 +144,7 @@ input,
 select {
     padding: 0.75rem 1rem;
     border-radius: 10px;
-    border: 1px solid var(--border-input);
+    border: 1px solid var(--border-base);
     font-size: 1rem;
 }
 
@@ -152,16 +152,15 @@ button {
     border: 0;
     padding: 0.9375rem 2.1875rem; /* 15px 35px → rem */
     border-radius: 10px;
-    background-color: var(--add-btn);
-    color: var(--white);
+    background-color: var(--principal-primary);
+    color: var(--neutral-white);
     font-size: 1rem;
-    font-weight: 500;
     margin: 0 auto;
     cursor: pointer;
 }
 
 form>button:hover {
-    background-color: var(--add-btn-hover);
+    background-color: var(--principal-primary-hover);
 }
 
 @media screen and (max-width: 770px) {
