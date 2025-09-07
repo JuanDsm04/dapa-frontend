@@ -82,10 +82,6 @@ const answersCount = computed(() => {
         <p>{{ formattedDate }}</p>
       </div>
       <div class="field">
-        <label>Estado</label>
-        <p class="status-text" :class="statusClass">{{ statusText }}</p>
-      </div>
-      <div class="field">
         <label>Respuestas</label>
         <p>{{ answersCount }} respuesta{{ answersCount !== 1 ? 's' : '' }}</p>
       </div>
@@ -103,11 +99,11 @@ const answersCount = computed(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 0.0625rem solid #ccc; /* 1px -> rem */
+  border: 1px solid var(--neutral-gray-300);
   border-radius: 10px;
   padding: 1rem;
   margin: 0.5rem 0;
-  background-color: white;
+  background-color: var(--neutral-white);
   max-width: 100%;
   overflow: hidden;
   cursor: pointer;
@@ -115,25 +111,12 @@ const answersCount = computed(() => {
 }
 
 .quote-card:hover {
-  background-color: rgb(245, 245, 245);
+  background-color: var(--neutral-gray-50);
 }
 
 .quote-card.selected {
-  border-color: #2563eb;
-  background-color: #f0f4ff;
-  box-shadow: 0 0.125rem 0.5rem rgba(37, 99, 235, 0.2); /* 2px 8px -> rem */
-}
-
-.status-pending {
-  background-color: #f59e0b;
-}
-
-.status-approved {
-  background-color: #10b981;
-}
-
-.status-cancelled {
-  background-color: #ef4444;
+  border-color: var(--principal-primary);
+  background-color: var(--principal-primary-25);
 }
 
 .info {
@@ -151,7 +134,7 @@ const answersCount = computed(() => {
 
 label {
   font-size: clamp(0.75rem, 1.5vw, 0.9rem); /* responsive */
-  color: #666;
+  color: var(--neutral-gray-600);
   display: block;
   margin-bottom: 0.2rem;
 }
@@ -159,23 +142,8 @@ label {
 p {
   margin: 0;
   font-size: clamp(0.875rem, 1.8vw, 1rem); /* responsive */
-  color: #000;
+  color: var(--neutral-gray-900);
   font-weight: 500;
-}
-
-.status-text {
-  font-weight: 600;
-  display: inline-block;
-  height: 1.5625rem; /* 25px -> rem */
-  border-radius: 12px;
-  padding: 0 1rem;
-  text-align: center;
-}
-
-.status-text.status-pending,
-.status-text.status-approved,
-.status-text.status-cancelled {
-  color: #fff;
 }
 
 .image-container {

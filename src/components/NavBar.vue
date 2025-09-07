@@ -167,12 +167,12 @@ li p.active {
 .menu-toggle {
   display: none;
   position: fixed;
-  top: 2.2rem;
+  top: 2rem;
   left: 1rem;
   font-size: 1.75rem; /* 28px */
   background: none;
   border: none;
-  color: var(--principal-primary-900);
+  color: var(--neutral-gray-900);
   transition: color 0.3s ease;
   z-index: 1001;
 }

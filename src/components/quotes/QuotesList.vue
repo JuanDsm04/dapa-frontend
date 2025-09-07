@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import QuoteCard from './QuoteCard.vue'
 import { type Submission } from '@/types/form'
 
@@ -11,6 +11,9 @@ const props = defineProps<{
 
 const filter = ref<string | undefined>(undefined)
 const showFilters = ref(false)
+
+// Referencia al wrapper del filtro
+const filterWrapper = ref<HTMLElement | null>(null)
 
 const emit = defineEmits(['quote-selected'])
 
@@ -27,6 +30,13 @@ function setFilter(option?: string) {
   showFilters.value = false
 }
 
+// Función para cerrar filtros al hacer clic fuera
+const handleClickOutside = (event: Event) => {
+  if (filterWrapper.value && !filterWrapper.value.contains(event.target as Node)) {
+    showFilters.value = false
+  }
+}
+
 const filteredSubmissions = computed(() => {
   switch (filter.value) {
     case 'recent':
@@ -41,20 +51,31 @@ const filteredSubmissions = computed(() => {
       return props.submissions
   }
 })
+
+// Montaje del componente
+onMounted(() => {
+  // Agregar event listener para clics fuera
+  document.addEventListener('click', handleClickOutside)
+})
+
+// Desmontaje del componente
+onUnmounted(() => {
+  // Remover event listener al desmontar
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
 
 <template>
   <section class="quotes-list">
     <header>
       <h2>{{ title }}</h2>
-      <div class="filter-wrapper">
+      <div class="filter-wrapper" ref="filterWrapper">
         <button class="filter-btn" @click="toggleFilterOptions">
           <span class="material-symbols-outlined">tune</span>
         </button>
         <div v-if="showFilters" class="filter-options">
           <button @click="setFilter('recent')">Más recientes</button>
           <button @click="setFilter('oldest')">Más antiguos</button>
-          <button @click="setFilter(undefined)">Todos</button>
         </div>
       </div>
     </header>
@@ -100,23 +121,23 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  border: 0.0625rem solid #ccc; /* 1px -> 0.0625rem */
+  border: 0.0625rem solid var(--border-light); /* 1px -> 0.0625rem */
   border-radius: 10px;
-  background-color: white;
+  background-color: var(--neutral-white);
   font-size: clamp(0.875rem, 1.5vw, 1rem);
   cursor: pointer;
 }
 
 .filter-btn:hover {
-  background-color: #f5f5f5;
+  background-color: var(--neutral-gray-50);
 }
 
 .filter-options {
   position: absolute;
   top: 120%;
   right: 0;
-  background-color: white;
-  border: 0.0625rem solid #ddd;
+  background-color: var(--neutral-white);
+  border: 0.0625rem solid var(--border-light);
   border-radius: 8px;
   box-shadow: 0 0.125rem 0.375rem rgba(0,0,0,0.1); /* 2px 6px -> rem */
   display: flex;
@@ -135,7 +156,7 @@ h2 {
 }
 
 .filter-options button:hover {
-  background-color: #f0f0f0;
+  background-color: var(--neutral-gray-50);
 }
 
 .card-list {

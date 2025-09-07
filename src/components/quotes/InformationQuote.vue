@@ -163,7 +163,7 @@ const statusClass = computed(() => {
     flex-direction: column;
     padding: 2rem;
     border-radius: 10px;
-    background-color: white;
+    background-color: var(--neutral-white);
     height: 100%;
     max-height: 100%;
 }
@@ -186,7 +186,7 @@ header {
 }
 
 .back-btn:hover {
-  color: #2f67f6;
+  color: var(--principal-primary-hover);
 }
 
 .mobile-only {
@@ -214,11 +214,11 @@ header h2 {
 
 .submission-id {
     font-weight: 600;
-    color: #374151;
+    color: var(--neutral-gray-900);
 }
 
 .submission-date {
-    color: #6b7280;
+    color: var(--neutral-gray-600);
 }
 
 .submission-status {
@@ -229,8 +229,8 @@ header h2 {
 }
 
 .status-pending {
-    color: #fef3c7;
-    background-color: #f59e0b;
+    color: var(--principal-tertiary-900);
+    background-color: var(--principal-tertiary-300);
 }
 
 .no-selection {
@@ -242,7 +242,7 @@ header h2 {
 
 .no-selection-content {
     text-align: center;
-    color: #6b7280;
+    color: var(--neutral-gray-600);
 }
 
 .no-selection-content .material-symbols-outlined {
@@ -252,7 +252,7 @@ header h2 {
 }
 
 .answer-container {
-    border: 0.0625rem solid #ccc; /* 1px -> rem */
+    border: 0.0625rem solid var(--border-light); /* 1px -> rem */
     border-radius: 10px;
     padding: 1rem;
     margin-bottom: 1rem;
@@ -279,30 +279,33 @@ header h2 {
   border: none;
   border-radius: 10px;
   cursor: pointer;
-  color: white;
+  color: var(--neutral-white);
 }
 
 .reject-btn {
-  background-color: #ff5a70;
+  background-color: var(--principal-error-400);
+  margin-bottom: 2rem;
 }
 
 .reject-btn:hover {
-  background-color: #f0566a;
+  background-color: var(--principal-error-500);
 }
 
 .accept-btn {
-  background-color: #53d86c;
+  background-color: var(--principal-secondary-300);
+  
+  margin-bottom: 2rem;
 }
 
 .accept-btn:hover {
-  background-color: #53cd69;
+  background-color: var(--principal-secondary-400);
 }
 
 .status-info {
     display: flex;
     justify-content: center;
 }
-
+/* 
 .status-message {
     display: flex;
     align-items: center;
@@ -321,7 +324,7 @@ header h2 {
 .status-message.status-cancelled {
     background-color: #fee2e2;
     color: #991b1b;
-}
+} */
 
 button span {
     margin-right: 0.5rem;
@@ -339,11 +342,6 @@ button span {
     
     .submission-info {
         align-items: flex-start;
-    }
-    
-    .action-container {
-        flex-direction: column;
-        gap: 1rem;
     }
 
     .mobile-only {

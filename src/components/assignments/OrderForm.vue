@@ -154,11 +154,11 @@ onMounted(() => {
     <div v-if="!isEdit" class="action-container">
       <button type="button" @click="emit('volver')">
         <span class="material-symbols-outlined">arrow_back</span>
-        Volver
+        Cancelar
       </button>
       <button type="submit">
         <span class="material-symbols-outlined">check</span>
-        Aceptar
+        Confirmar
       </button>
     </div>
 
@@ -269,7 +269,6 @@ textarea {
   border-radius: 10px;
   cursor: pointer;
   color: var(--neutral-white);
-  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .action-container button:first-child {
