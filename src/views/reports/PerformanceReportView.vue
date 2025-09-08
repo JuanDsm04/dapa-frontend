@@ -1,8 +1,11 @@
 <script setup>
+import { ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline';
+import { ChartBarIcon } from '@heroicons/vue/24/outline';
 import LineChart from '@/components/charts/LineChart.vue';
 import CircularChart from '@/components/charts/CircularChart.vue';
 import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
+import KpiCard from '@/components/charts/KpiCard.vue';
 import { ref } from 'vue';
 const activeTab = ref('left')
 const selectedMonth = ref<String>('Diciembre 2024')
@@ -54,6 +57,9 @@ const financialPieData = ref({
       <div class="toggle-button" @click="activeTab = 'left'">Cotizaciones</div>
       <div class="toggle-button" @click="activeTab = 'right'">Empleados</div>
     </div>
+
+    <KpiCard title="Cotizaciones completadas" :icon="ClipboardDocumentCheckIcon" value=57 last-month=71 goal=80 />
+    <KpiCard title="Utilidad" :icon="ChartBarIcon" value=5342 last-month=4971 goal=5000 />
 
     <section class="quotes" v-if="activeTab == 'left'">
       <div class="charts-wrapper">
@@ -108,6 +114,7 @@ h1 {
   font-family: sans-serif;
   font-weight: bold;
   margin-bottom: 2rem;
+  margin-top: 2rem;
 }
 
 .toggle-indicator {
@@ -142,6 +149,7 @@ h1 {
 .charts-wrapper {
   display: flex;
   gap: 2rem;
+  margin-top: 2rem;
   flex-wrap: wrap;
 }
 </style>
