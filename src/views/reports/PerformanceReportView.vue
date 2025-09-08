@@ -6,6 +6,7 @@ import CircularChart from '@/components/charts/CircularChart.vue';
 import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
 import KpiCard from '@/components/charts/KpiCard.vue';
+import DriversTable from '@/components/Table.vue'
 import { ref } from 'vue';
 const activeTab = ref('left')
 const selectedMonth = ref<String>('Diciembre 2024')
@@ -73,6 +74,19 @@ const financialPieData = ref({
         <PieChart :labels="financialPieData.labels" :series="financialPieData.series" :title="financialPieData.title"/>
       </div>
     </section>
+    <div class="table-wrapper">
+      <DriversTable 
+        :items="[]"
+        :columns="[
+          { label: 'Conductor', field: 'driver' },
+          { label: 'Viajes completados', field: 'completedOrders' },
+          { label: 'Entregas semanales', field: 'avgWeeklyOrders' },
+          { label: 'Calificación', field: 'score' },
+        ]"
+        @edit="() => {}"
+        @delete="() => {}"
+      />
+    </div>
   </main>
 </template>
 
