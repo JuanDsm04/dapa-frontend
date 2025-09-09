@@ -25,17 +25,19 @@ const goalComparasion =  Math.abs(props.goal - props.value) / props.goal * 100
       <div class="metric">
         <span>Mes pasado: {{props.lastMonth}}</span>
         <div>
-          <span :class="lastMonthComparasion > 0 ? 'trend-up' : 'trend-down'">{{lastMonthComparasion}} | {{lastMonthPercent.toFixed(2)}}%</span>
-          <span v-if="(props.value - props.goal) > 0"> ▲</span>
-          <span v-else> ▼</span>
+          <span :class="lastMonthComparasion > 0 ? 'trend-up' : lastMonthComparasion < 0 ? 'trend-down' : 'trend-neutral'">{{lastMonthComparasion}} | {{lastMonthPercent.toFixed(2)}}%</span>
+          <span v-if="lastMonthComparasion > 0"> ▲</span>
+          <span v-else-if="lastMonthComparasion < 0"> ▼</span>
+          <span v-else> ||</span>
         </div>
       </div>
       <div class="metric">
         <span>Objetivo: {{props.goal}}</span>
         <div>
-          <span :class="(props.value - props.goal) < 0 ? 'trend-down' : 'trend-up'">{{goalComparasion.toFixed(2)}}%</span>
+          <span :class="(props.value - props.goal) > 0 ? 'trend-up' : (props.value - props.goal) < 0 ? 'trend-down' : 'trend-neutral'">{{goalComparasion.toFixed(2)}}%</span>
           <span v-if="(props.value - props.goal) > 0"> ▲</span>
-          <span v-else> ▼</span>
+          <span v-else-if="(props.value - props.goal) < 0"> ▼</span>
+          <span v-else> ||</span>
         </div>
       </div>
     </div>
@@ -80,6 +82,10 @@ header {
 
 .trend-up {
   color: darkgreen;
+}
+
+.trend-neutral {
+  color: black;
 }
 
 .metrics {
