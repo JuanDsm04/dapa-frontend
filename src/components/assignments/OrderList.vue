@@ -77,7 +77,7 @@ const filteredOrders = computed(() => {
 
 // Obtener órdenes desde el servicio
 const getOrdersData = async () => {
-  loading.value = true
+  loading.value = true;
   try {
     const data = await getOrders()
     orders.value = data
@@ -85,7 +85,7 @@ const getOrdersData = async () => {
     console.error("Error obteniendo órdenes:", error)
     toast.error("Error al cargar órdenes")
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -133,7 +133,12 @@ onUnmounted(() => {
         :isSelected="selectedOrderId === order.id"
         @click="handleOrderClick(order)"
       />
-      <p v-if="!loading && filteredOrders.length === 0">No hay órdenes disponibles</p>
+      <section v-if="filteredOrders.length === 0" class="no-selection">
+        <div class="no-selection-content">
+            <span class="material-symbols-outlined md-icon">description</span>
+            <p>No hay ordenes disponibles</p>
+        </div>
+      </section>
     </div>
   </section>
 </template>
@@ -142,6 +147,7 @@ onUnmounted(() => {
 .order-list {
   padding: 1.5rem;
   height: 100%;
+  position: relative;
 }
 
 header {
@@ -209,6 +215,55 @@ h2 {
   flex-direction: column;
   gap: 1rem;
   padding-bottom: 20px;
+}
+
+.no-selection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-selection-content {
+    text-align: center;
+    color: var(--neutral-gray-600);
+}
+
+.no-selection-content .material-symbols-outlined {
+    font-size: clamp(2.5rem, 6vw, 3rem);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--neutral-gray-50);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.25rem solid var(--border-light);
+  border-top: 0.25rem solid var(--principal-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 770px) {

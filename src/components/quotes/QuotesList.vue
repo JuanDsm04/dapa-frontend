@@ -88,7 +88,12 @@ onUnmounted(() => {
         :isSelected="props.selectedSubmissionId === submission.id"
         @quote-selected="handleQuoteSelected"
       />
-      <p v-if="filteredSubmissions.length === 0">No hay formularios disponibles</p>
+      <section v-if="filteredSubmissions.length === 0" class="no-selection">
+        <div class="no-selection-content">
+            <span class="material-symbols-outlined md-icon">description</span>
+            <p>No hay formularios disponibles</p>
+        </div>
+      </section>
     </div>
   </section>
 </template>
@@ -162,7 +167,27 @@ h2 {
 .card-list {
   display: flex;
   flex-direction: column;
+  position: relative;
   gap: 1rem;
+  min-height: 100%;
   padding-bottom: 1.25rem; /* 20px -> 1.25rem */
+}
+
+.no-selection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-selection-content {
+    text-align: center;
+    color: var(--neutral-gray-600);
+}
+
+.no-selection-content .material-symbols-outlined {
+    font-size: clamp(2.5rem, 6vw, 3rem);
+    margin-bottom: 1rem;
+    opacity: 0.5;
 }
 </style>

@@ -146,10 +146,13 @@ onMounted(() => {
         </button>
       </div>
     </header>
-
-    <div v-if="!props.selectedOrder" class="no-selection">
-      <p>Selecciona una orden para ver los detalles y realizar la asignación</p>
-    </div>
+    
+    <section v-if="!props.selectedOrder" class="no-selection">
+        <div class="no-selection-content">
+            <span class="material-symbols-outlined md-icon">description</span>
+            <p>Selecciona una orden para ver los detalles y realizar la asignación</p>
+        </div>
+      </section>
 
     <div v-else-if="loading" class="loading-state">
       <p>Cargando detalles de la orden...</p>
@@ -301,7 +304,24 @@ header h2 {
   margin-right: 5px;
 }
 
-.no-selection,
+.no-selection {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-selection-content {
+    text-align: center;
+    color: var(--neutral-gray-600);
+}
+
+.no-selection-content .material-symbols-outlined {
+    font-size: clamp(2.5rem, 6vw, 3rem);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
 .loading-state {
   text-align: center;
   padding: 2rem;

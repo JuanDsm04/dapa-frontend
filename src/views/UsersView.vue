@@ -92,6 +92,7 @@ const handleDeleteUser = (user: User) => {
 
 // Obtener usuarios
 const loadUsers = async () => {
+  loading.value = true;
   try {
     const data: User[] = await fetchUsers();
     users.value = data;
@@ -112,11 +113,14 @@ const loadUsers = async () => {
   } catch (error) {
     console.error("Error obteniendo usuarios:", error);
     toast.error("Error al obtener los usuarios");
+  }finally{
+    loading.value = false;
   }
 };
 
 // Crear o actualizar usuarios
 const handleCreationOrUpdate = async (payload: Partial<User>) => {
+  loading.value = true;
   try {
     if (payload.id) {
       await updateUser(payload.id, payload);
@@ -136,6 +140,8 @@ const handleCreationOrUpdate = async (payload: Partial<User>) => {
     } else {
       toast.error('Error: No se pudo guardar el usuario');
     }
+  }finally{
+    loading.value = false;
   }
 };
 
@@ -294,7 +300,7 @@ main section {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--neutral-gray-200);
+  background-color: var(--neutral-gray-50);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -302,10 +308,10 @@ main section {
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid var(--border-base);
-  border-top: 4px solid var(--principal-primary);
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.25rem solid var(--border-light);
+  border-top: 0.25rem solid var(--principal-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }

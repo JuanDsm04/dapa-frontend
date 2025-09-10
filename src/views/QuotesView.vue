@@ -9,7 +9,7 @@ import 'vue3-toastify/dist/index.css'
 
 const submissions = ref<Submission[]>([])
 const selectedSubmission = ref<Submission | undefined>(undefined)
-const isLoading = ref(false)
+const loading = ref(false)
 const showDetailView = ref(false)
 const selectedSubmissionId = ref<string | number | null>(null)
 
@@ -19,19 +19,22 @@ onMounted(async()=>{
 
 // Obtener cotizaciones
 const loadSubmissions = async() => {
+  loading.value = true;
   try{
     submissions.value = await getSubmissions()
   }catch(err){
     const error = err as Error
     console.error('Error cargando formularios:', error)
     toast.error(`Error al cargar formularios: ${error.message}`)
+  }finally{
+    loading.value = false;
   }
 }
 
 // Manejar selección de cotización
 const handleQuoteSelected = async (submission: Submission) => {
+  loading.value = true;
   try {
-    isLoading.value = true
     selectedSubmissionId.value = submission.id
     selectedSubmission.value = await getSubmissionById(submission.id)
     showDetailView.value = true
@@ -39,7 +42,7 @@ const handleQuoteSelected = async (submission: Submission) => {
     console.error('Error loading submission details:', error)
     toast.error('Error cargando los detalles del formulario')
   } finally {
-    isLoading.value = false
+    loading.value = false
   }
 }
 
@@ -66,6 +69,9 @@ const pendingSubmissions = computed(() => {
     <section class="pending-orders">
         <!-- Lista de órdenes -->
         <div class="list" :class="{ 'mobile-hidden': showDetailView }">
+            <div v-if="loading" class="loading-overlay">
+              <div class="spinner"></div>
+            </div>
             <QuotesList 
               title="Pendientes" 
               :submissions="pendingSubmissions" 
@@ -122,6 +128,41 @@ h1 {
 .pending-orders .details {
   display: block;
   overflow-y: auto;
+}
+
+.list{
+  position: relative;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--neutral-gray-50);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.25rem solid var(--border-light);
+  border-top: 0.25rem solid var(--principal-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 770px) {

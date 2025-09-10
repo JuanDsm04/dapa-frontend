@@ -57,9 +57,12 @@ const handleBackToList = () => {
 
 <template>
   <section class="tracking-container">
-    <div v-if="!props.selectedOrder" class="no-selection">
-      <p>Selecciona una orden para ver el estado y detalles</p>
-    </div>
+    <section v-if="!props.selectedOrder" class="no-selection">
+        <div class="no-selection-content">
+            <span class="material-symbols-outlined md-icon">description</span>
+            <p>Selecciona una orden para ver estado y detalles</p>
+        </div>
+      </section>
 
     <div v-else-if="loading" class="loading-state">
       <p>Cargando detalles de la orden...</p>
@@ -106,13 +109,35 @@ const handleBackToList = () => {
   padding: 2rem;
   background-color: var(--neutral-white);
   border-radius: 10px;
+  height: 100%;
+  position: relative;
 }
 
-.no-selection, .loading-state {
+.loading-state {
   text-align: center;
   padding: 2rem;
   color: var(--neutral-gray-600);
   font-size: clamp(0.9rem, 1.8vw, 1rem);
+}
+
+.no-selection {
+    position: absolute;
+    top: 8rem;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.no-selection-content {
+    text-align: center;
+    color: var(--neutral-gray-600);
+}
+
+.no-selection-content .material-symbols-outlined {
+    font-size: clamp(2.5rem, 6vw, 3rem);
+    margin-bottom: 1rem;
+    opacity: 0.5;
 }
 
 header {

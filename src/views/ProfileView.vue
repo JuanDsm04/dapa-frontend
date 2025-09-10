@@ -9,9 +9,11 @@ import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
 const user = ref<User | undefined>(undefined);
+const loading = ref(false);
 
 // Obtener datos del usuario actual
 const getCurrentUserData = async () => {
+  loading.value = true;
   const id = getUserID()
   if (!id) {
     console.warn("No se encontró el ID del usuario.")
@@ -23,6 +25,8 @@ const getCurrentUserData = async () => {
   } catch (error) {
     console.error("Error obteniendo al usuario loggeado:", error)
     toast.error("No se pudo cargar la información del perfil.")
+  }finally{
+    loading.value = false;
   }
 }
 
@@ -41,6 +45,7 @@ const handleEditProfile = async (payload: Partial<User>) => {
     return;
   }
 
+  loading.value = true;
   try {
     await updateUser(Number(id), payload);
     toast.success("Perfil actualizado exitosamente.");
@@ -50,6 +55,8 @@ const handleEditProfile = async (payload: Partial<User>) => {
   } catch (error) {
     console.error("Error al editar perfil:", error);
     toast.error("Hubo un error al actualizar el perfil.");
+  }finally{
+    loading.value = false;
   }
 };
 
@@ -70,6 +77,9 @@ onMounted(() => {
           </span>
         </button>
       </header>
+      <div v-if="loading" class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
       <div class="content">
         <UserForm :initialData="user" :updating="user != null" @submit="handleEditProfile"/>
       </div>
@@ -134,6 +144,37 @@ button:hover {
 span {
   color: var(--white);
   font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--neutral-gray-50);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.25rem solid var(--border-light);
+  border-top: 0.25rem solid var(--principal-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 770px) {
