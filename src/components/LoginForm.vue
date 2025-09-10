@@ -35,14 +35,21 @@ const handleLogin = async () => {
 </script>
 
 <template>
-  <main>
-
+  <main class="login-form-container">
     <form @submit.prevent="handleLogin">
+      <!-- Campo de email -->
       <div class="field">
-        <label for="Email">Email</label>
-        <input type="text" id="Email" name="Email" v-model="email">
+        <label for="Email" class="email-row">Email</label>
+        <input 
+          type="text" 
+          id="Email" 
+          name="Email" 
+          v-model="email" 
+          placeholder="Ingresa tu correo"
+        />
       </div>
 
+      <!-- Campo de contraseña -->
       <div class="field">
         <div class="pass-row">
           <label for="Password">Contraseña</label>
@@ -58,21 +65,33 @@ const handleLogin = async () => {
             <span class="toggle-label">{{ showPassword ? 'Ocultar' : 'Ver' }}</span>
           </button>
         </div>
-        <input :type="showPassword ? 'text' : 'password'" id="Password" name="Password" v-model="password" />
+        <input 
+          :type="showPassword ? 'text' : 'password'" 
+          id="Password" 
+          name="Password" 
+          v-model="password" 
+          placeholder="Ingresa tu contraseña"
+        />
       </div>
 
+      <!-- Botón de submit -->
       <button type="submit" class="submit-btn">Iniciar sesión</button>
+
+      <!-- Link de recuperación -->
       <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
     </form>
-
   </main>
 </template>
 
 <style scoped>
-/* Contenedor principal */
-main {
-  width: 500px; /* ancho fijo del formulario */
-  margin: 0 auto; /* centrado horizontal */
+/* Contenedor principal del formulario */
+.login-form-container {
+  width: 100%;
+  max-width: 25rem; /* igual que el reset-password */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Formularios y campos */
@@ -84,29 +103,26 @@ form,
 }
 
 form {
-  gap: 1.75rem; /* espacio entre campos */
+  gap: 1.5rem; /* espacio entre campos */
 }
 
 /* Etiquetas */
 label {
-  margin-bottom: 0.1rem;
-}
-
-/* Fila de contraseña con elementos alineados */
-.pass-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  font-size: clamp(0.8125rem, 1.2vw, 0.9375rem);
+  color: var(--neutral-gray-700);
+  margin-bottom: 0.25rem;
+  font-weight: 500;
 }
 
 /* Inputs */
 input {
+  width: 100%;
   padding: 0.75rem 1rem;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   border: 1px solid var(--border-base);
-  font-size: 1rem;
+  font-size: clamp(0.8125rem, 1.2vw, 0.9375rem);
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.2s ease-in-out;
 }
 
 input:focus {
@@ -114,26 +130,11 @@ input:focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Botones */
-button {
-  border: none;
-  padding: 15px 35px;
-  border-radius: 10px;
-  background-color: var(--principal-primary);
-  color: var(--white);
-  font-size: 1rem;
-  font-weight: 500;
-  margin: 0 auto;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
-}
-
-form > button:hover {
-  background-color: var(--principal-primary-hover);
-}
-
-form > button:active {
-  transform: translateY(1px);
+/* Fila de contraseña */
+.email-row,.pass-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* Toggle de visibilidad de contraseña */
@@ -142,10 +143,11 @@ form > button:active {
   gap: 10px;
   color: var(--neutral-gray-500);
   align-items: center;
-  margin-right: 10px;
   background-color: transparent;
   padding: 0;
   cursor: pointer;
+  border: none;
+  font-size: clamp(0.75rem, 1.1vw, 0.875rem);
 }
 
 .icon-wrapper {
@@ -156,13 +158,28 @@ form > button:active {
 }
 
 .toggle-label {
-  font-weight: lighter;
-  font-size: 0.9rem;
+  font-weight: 400;
 }
 
 /* Botón de submit */
 .submit-btn {
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: clamp(0.8125rem, 1.2vw, 0.9375rem);
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.submit-btn:hover {
+  background-color: var(--principal-primary-hover);
+}
+
+.submit-btn:active {
+  transform: translateY(1px);
 }
 
 /* Links */
@@ -170,9 +187,23 @@ a {
   color: var(--principal-primary-900);
   align-self: center;
   text-decoration: none;
+  margin-top: 0.5rem;
+  font-size: clamp(0.75rem, 1.1vw, 0.875rem);
 }
 
 a:hover {
   text-decoration: underline;
+}
+
+/* Responsividad */
+@media (max-width: 770px) {
+  .login-form-container {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+
+  form {
+    gap: 1.25rem;
+  }
 }
 </style>

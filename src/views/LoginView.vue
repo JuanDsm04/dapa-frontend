@@ -3,11 +3,20 @@ import LoginForm from '@/components/LoginForm.vue';
 </script>
 
 <template>
-  <main>
-    <img src="@/assets/images/demo-image.jpg" alt="Demo image of a company's truck" />
-    <section>
-      <div class="content-wrapper">
-        <img src="@/assets/images/logo_1.png" alt="Company logo" class="logo" />
+  <main class="main-container">
+    <section class="form-container">
+      <!-- Contenido principal -->
+      <div class="content">
+        <!-- Logo -->
+        <div class="logo-container">
+          <img src="@/assets/images/logo_1.png" alt="Company logo" class="logo" />
+        </div>
+
+        <!-- Título y subtítulo -->
+        <h1 class="title">Iniciar sesión</h1>
+        <p class="subtitle">Ingresa tus credenciales para acceder a tu cuenta.</p>
+
+        <!-- Formulario de login -->
         <LoginForm />
       </div>
     </section>
@@ -15,54 +24,98 @@ import LoginForm from '@/components/LoginForm.vue';
 </template>
 
 <style scoped>
-main {
+/* Contenedor principal */
+.main-container {
+  min-height: 100vh;
+  background-image: url('@/assets/images/demo-image.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
   display: flex;
-  max-height: 100dvh;
-  width: 100%;
-}
-
-main > img {
-  height: 100dvh;
-  width: 45%;
-  object-fit: cover;
-}
-
-section {
-  display: flex;
-  justify-content: center;
   align-items: center;
-  width: 55%;
-  max-height: 100dvh;
-  margin: 0;
-  padding: 0;
+  justify-content: center;
+  padding: 1.25rem;
 }
 
-.content-wrapper {
-  width: 85%;
+/* Capa oscura sobre el fondo */
+.main-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--gradient-black);
+  z-index: 1;
+}
+
+/* Contenedor del formulario */
+.form-container {
+  position: relative;
+  z-index: 2;
+  background: var(--neutral-white);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 35rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 31.25rem;
+}
+
+/* Contenido principal dentro del formulario */
+.content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.25rem 0;
+  text-align: center;
 }
 
+/* Contenedor del logo */
+.logo-container {
+  margin-bottom: 1.5rem;
+}
+
+/* Imagen del logo */
 .logo {
-  width: auto;
-  height: clamp(6.25rem, 8vw, 9.375rem);
-  margin-bottom: 3.125rem;
+  width: 8rem;
+  height: auto;
+  object-fit: contain;
 }
 
+/* Título */
+.title {
+  font-size: clamp(1.125rem, 2vw, 1.375rem);
+  font-weight: 600;
+  color: var(--neutral-gray-900);
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+/* Subtítulo */
+.subtitle {
+  font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+  color: var(--neutral-gray-600);
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+/* Responsividad */
 @media (max-width: 770px) {
-  main > img {
-    display: none;
+  .form-container {
+    padding: 1.5rem;
+    margin: 0.625rem;
   }
 
-  section {
-    width: 100%;
+  .title {
+    font-size: clamp(1rem, 4vw, 1.125rem);
   }
 
-  .logo {
-    margin: 6.25rem 0 1.875rem 0;
+  .subtitle {
+    font-size: clamp(0.75rem, 3vw, 0.875rem);
   }
 }
 </style>
