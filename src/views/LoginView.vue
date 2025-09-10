@@ -57,7 +57,7 @@ import LoginForm from '@/components/LoginForm.vue';
   background: var(--neutral-white);
   border-radius: 0.75rem;
   padding: 2rem;
-  width: 100%;
+  /* width: 100%; */
   max-width: 35rem;
   display: flex;
   flex-direction: column;

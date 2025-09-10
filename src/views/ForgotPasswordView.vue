@@ -226,6 +226,11 @@ const handleForgotButton = async () => {
   color: #9CA3AF;
 }
 
+input:focus {
+  border-color: var(--principal-primary-300);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
 .action-button-container {
   display: flex;
   justify-content: flex-end;

@@ -166,8 +166,8 @@ li p.active {
 /* Botón de menú para mobile */
 .menu-toggle {
   display: none;
-  position: fixed;
-  top: 2rem;
+  position: absolute;
+  top: 1.8rem;
   left: 1rem;
   font-size: 1.75rem; /* 28px */
   background: none;
