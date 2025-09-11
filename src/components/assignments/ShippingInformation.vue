@@ -1,20 +1,30 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import { updateOrder } from '@/services/orderService'
+import { getUsers } from '@/services/userService'
+import { getVehicles } from '@/services/vehicleService'
 import OrderForm from './OrderForm.vue'
 import type { Order, UpdateOrderPayload } from '@/types/order'
+import type { User } from '@/types/user'
+import type { Vehicle } from '@/types/vehicle'
 
 const props = defineProps<{
   editable?: boolean
   orderData?: Partial<Order>
+  mode?: 'assignment' | 'tracking'
 }>()
 
 // Emit para comunicar cambios al componente padre
 const emit = defineEmits(['orderUpdated'])
 const showModal = ref(false)
 const localOrderData = ref<Partial<Order> | null>(null)
+
+// Estados para conductores y vehículos
+const users = ref<User[]>([])
+const vehicles = ref<Vehicle[]>([])
+const loadingUserData = ref(false)
 
 // Watch para actualizar localOrderData cuando cambie orderData
 watch(() => props.orderData, (newOrderData) => {
@@ -25,6 +35,44 @@ watch(() => props.orderData, (newOrderData) => {
   }
 }, { immediate: true, deep: true })
 
+// Cargar usuarios y vehículos
+const loadUsersAndVehicles = async () => {
+  if (props.mode === 'assignment') return // No cargar en modo asignación
+
+  loadingUserData.value = true
+  try {
+    const [usersData, vehiclesData] = await Promise.all([
+      getUsers(),
+      getVehicles()
+    ])
+    users.value = usersData
+    vehicles.value = vehiclesData
+  } catch (error) {
+    console.error('Error cargando usuarios y vehículos:', error)
+  } finally {
+    loadingUserData.value = false
+  }
+}
+
+// Computed para obtener información del conductor
+const driverInfo = computed(() => {
+  if (!currentOrderData.value?.userId || !users.value.length) {
+    return 'No especificado'
+  }
+  
+  const driver = users.value.find(user => user.id === currentOrderData.value?.userId)
+  return driver ? `${driver.name} ${driver.lastName}` : 'No encontrado'
+})
+
+// Computed para obtener información del vehículo
+const vehicleInfo = computed(() => {
+  if (!currentOrderData.value?.vehicleId || !vehicles.value.length) {
+    return 'No especificado'
+  }
+  
+  const vehicle = vehicles.value.find(v => v.id === currentOrderData.value?.vehicleId)
+  return vehicle ? `${vehicle.brand} - ${vehicle.licensePlate}` : 'No encontrado'
+})
 
 // Modals
 const openModal = () => {
@@ -88,6 +136,16 @@ const formatPrice = (amount: any) => {
 
 // Obtener los datos de la orden por ID
 const currentOrderData = computed(() => localOrderData.value)
+
+// Determinar si debe mostrar información de conductor y vehículo
+const showDriverAndVehicleInfo = computed(() => props.mode === 'tracking')
+
+// Cargar datos al montar el componente
+onMounted(() => {
+  if (props.mode === 'tracking') {
+    loadUsersAndVehicles()
+  }
+})
 </script>
 
 <template>
@@ -103,6 +161,21 @@ const currentOrderData = computed(() => localOrderData.value)
       </div>
 
       <template v-else>
+        <!-- Información de conductor y vehículo - Solo en modo tracking -->
+        <template v-if="showDriverAndVehicleInfo">
+          <div class="info-item">
+            <label>Conductor</label>
+            <p v-if="loadingUserData">Cargando...</p>
+            <p v-else>{{ driverInfo }}</p>
+          </div>
+          <div class="info-item">
+            <label>Vehículo</label>
+            <p v-if="loadingUserData">Cargando...</p>
+            <p v-else><strong>{{ vehicleInfo }}</strong></p>
+          </div>
+        </template>
+
+        <!-- Información común para ambos modos -->
         <div class="info-item">
           <label>Precio</label>
           <p>{{ formatPrice(currentOrderData.totalAmount) }}</p>

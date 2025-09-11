@@ -148,11 +148,11 @@ onMounted(() => {
     </header>
     
     <section v-if="!props.selectedOrder" class="no-selection">
-        <div class="no-selection-content">
-            <span class="material-symbols-outlined md-icon">description</span>
-            <p>Selecciona una orden para ver los detalles y realizar la asignación</p>
-        </div>
-      </section>
+      <div class="no-selection-content">
+          <span class="material-symbols-outlined md-icon">description</span>
+          <p>Selecciona una orden para ver los detalles y realizar la asignación</p>
+      </div>
+    </section>
 
     <div v-else-if="loading" class="loading-state">
       <p>Cargando detalles de la orden...</p>
@@ -192,12 +192,14 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Información de envío - ACTUALIZADO: Agregado el listener -->
+      <!-- Información de envío -->
       <ShippingInformation 
         :orderData="orderDetails" 
         :editable="true" 
+        mode="assignment"
         @orderUpdated="handleOrderUpdated"
       />
+      <br/>
     </div>
 
     <!-- Confirmar asignación -->
@@ -220,6 +222,7 @@ onMounted(() => {
   background-color: var(--neutral-white);
   border-radius: 10px;
   max-width: 100%;
+  height: 100%;
 }
 
 header {
@@ -305,21 +308,22 @@ header h2 {
 }
 
 .no-selection {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 70%;
 }
 
 .no-selection-content {
-    text-align: center;
-    color: var(--neutral-gray-600);
+  text-align: center;
+  color: var(--neutral-gray-600);
 }
 
 .no-selection-content .material-symbols-outlined {
-    font-size: clamp(2.5rem, 6vw, 3rem);
-    margin-bottom: 1rem;
-    opacity: 0.5;
+  font-size: clamp(2.5rem, 6vw, 3rem);
+  margin-bottom: 1rem;
+  opacity: 0.5;
 }
 
 .loading-state {

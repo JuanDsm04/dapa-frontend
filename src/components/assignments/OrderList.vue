@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { toast } from 'vue3-toastify'
-import 'vue3-toastify/dist/index.css'
-import { getOrders } from '@/services/orderService'
 import OrderCard from './OrderCard.vue'
 import type { Order, orderFilter } from '@/types/order'
 
 const props = defineProps<{
   title?: string
-  defaultStatuses: string[]
+  orders: Order[]
   availableFilters: orderFilter[]
+  selectedOrderId?: string | number | null
 }>()
 
 const emit = defineEmits<{
@@ -17,10 +15,8 @@ const emit = defineEmits<{
 }>()
 
 // Estados internos
-const orders = ref<Order[]>([])
 const filter = ref<string | null>(null)
 const showFilters = ref(false)
-const loading = ref(false)
 const selectedOrderId = ref<number | string | null>(null)
 
 // Referencia al wrapper del filtro
@@ -51,15 +47,13 @@ const handleClickOutside = (event: Event) => {
 }
 
 const filteredOrders = computed(() => {
-  const sorted = orders.value.filter(order =>
-    props.defaultStatuses.includes(order.status)
-  )
+  let sorted = [...props.orders]
 
   switch (filter.value) {
     case 'recent':
-      return [...sorted].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      return sorted.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     case 'oldest':
-      return [...sorted].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      return sorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     case 'pending':
       return sorted.filter(order => order.status === 'pending')
     case 'assigned':
@@ -75,23 +69,8 @@ const filteredOrders = computed(() => {
   }
 })
 
-// Obtener órdenes desde el servicio
-const getOrdersData = async () => {
-  loading.value = true;
-  try {
-    const data = await getOrders()
-    orders.value = data
-  } catch (error) {
-    console.error("Error obteniendo órdenes:", error)
-    toast.error("Error al cargar órdenes")
-  } finally {
-    loading.value = false;
-  }
-}
-
 // Montaje del componente
 onMounted(() => {
-  getOrdersData()
   document.addEventListener('click', handleClickOutside)
 })
 
@@ -121,11 +100,7 @@ onUnmounted(() => {
       </div>
     </header>
 
-    <div v-if="loading" class="loading-overlay">
-      <div class="spinner"></div>
-    </div>
-
-    <div v-else class="card-list">
+    <div class="card-list">
       <OrderCard
         v-for="order in filteredOrders"
         :key="order.id"
@@ -233,37 +208,6 @@ h2 {
     font-size: clamp(2.5rem, 6vw, 3rem);
     margin-bottom: 1rem;
     opacity: 0.5;
-}
-
-.loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--neutral-gray-50);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
-}
-
-.spinner {
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 0.25rem solid var(--border-light);
-  border-top: 0.25rem solid var(--principal-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 770px) {

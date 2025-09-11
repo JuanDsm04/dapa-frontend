@@ -1,13 +1,46 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import OrderList from '@/components/assignments/OrderList.vue';
 import AssigmentForm from '@/components/assignments/AssigmentForm.vue';
 import OrderTracking from '@/components/assignments/OrderTracking.vue';
+import { getOrders } from '@/services/orderService';
 import type { Order } from '@/types/order';
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const activeTab = ref<'left' | 'right'>('left')
 const selectedOrder = ref<Order | null>(null)
 const showDetailView = ref(false)
+const orders = ref<Order[]>([])
+const loading = ref(false)
+
+// Computed para órdenes pendientes
+const pendingOrders = computed(() => {
+  return orders.value.filter(order => 
+    ['pending', 'assigned'].includes(order.status)
+  )
+})
+
+// Computed para órdenes en progreso
+const inProgressOrders = computed(() => {
+  return orders.value.filter(order => 
+    ['pickup', 'collected', 'delivered'].includes(order.status)
+  )
+})
+
+// Cargar todas las órdenes
+const loadOrders = async () => {
+  loading.value = true;
+  try {
+    orders.value = await getOrders()
+  } catch (err) {
+    const error = err as Error
+    console.error('Error cargando órdenes:', error)
+    toast.error(`Error al cargar órdenes: ${error.message}`)
+  } finally {
+    loading.value = false;
+  }
+}
 
 const handleOrderSelected = (order: Order) => {
   selectedOrder.value = order
@@ -18,6 +51,17 @@ const handleBackToList = () => {
   showDetailView.value = false
   selectedOrder.value = null
 }
+
+// Watch para detectar cambio de pestañas y limpiar selección
+watch(activeTab, () => {
+  showDetailView.value = false
+  selectedOrder.value = null
+})
+
+// Cargar órdenes al montar
+onMounted(async () => {
+  await loadOrders()
+})
 </script>
 
 <template>
@@ -33,13 +77,18 @@ const handleBackToList = () => {
       <div class="toggle-button" @click="activeTab = 'right'">En progreso</div>
     </div>
 
+    <!-- Loading global -->
+    <div v-if="loading" class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+
     <!-- Servicios pendientes -->
-    <section class="pending-orders" v-if="activeTab === 'left'">
+    <section class="orders-section" v-else-if="activeTab === 'left'">
         <!-- Lista de órdenes - se oculta en móvil cuando hay una orden seleccionada -->
         <div class="list" :class="{ 'mobile-hidden': showDetailView }">
             <OrderList
               title="Pendientes"
-              :defaultStatuses="['pending', 'assigned']"
+              :orders="pendingOrders"
               :availableFilters="[
                 { value: 'recent', label: 'Fecha más reciente' },
                 { value: 'oldest', label: 'Fecha más antigua' },
@@ -59,12 +108,12 @@ const handleBackToList = () => {
     </section>
 
     <!-- Servicios en progreso -->
-    <section class="pending-orders" v-else>
+    <section class="orders-section" v-else>
         <!-- Lista de órdenes - se oculta en móvil cuando hay una orden seleccionada -->
         <div class="list" :class="{ 'mobile-hidden': showDetailView }">
             <OrderList
               title="En progreso"
-              :defaultStatuses="['pickup', 'collected', 'delivered']"
+              :orders="inProgressOrders"
               :availableFilters="[
                 { value: 'pickup', label: 'En camino a recoger' },
                 { value: 'collected', label: 'Carga recogida' },
@@ -90,6 +139,7 @@ main {
   padding: 2rem;
   background-color: var(--bg-general);
   min-height: 100vh;
+  position: relative;
 }
 
 main header {
@@ -147,7 +197,7 @@ h1 {
   left: 50%;
 }
 
-.pending-orders {
+.orders-section {
   width: 100%;
   display: grid;
   grid-template-columns: 0.75fr 1fr;
@@ -157,21 +207,52 @@ h1 {
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
-.pending-orders .list {
+.orders-section .list {
   overflow-y: auto;
 }
 
-.pending-orders .details {
+.orders-section .details {
   display: block;
   overflow-y: auto;
 }
 
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-general);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0.25rem solid var(--border-light);
+  border-top: 0.25rem solid var(--principal-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 @media (max-width: 770px) {
-  .pending-orders {
+  .orders-section {
     grid-template-columns: 1fr;
   }
 
-  .pending-orders .details {
+  .orders-section .details {
     display: none;
   }
 
@@ -205,15 +286,15 @@ h1 {
   }
 
   /* Responsive behavior para móvil */
-  .pending-orders .list.mobile-hidden {
+  .orders-section .list.mobile-hidden {
     display: none;
   }
 
-  .pending-orders .details.mobile-shown {
+  .orders-section .details.mobile-shown {
     display: block;
   }
 
-  .pending-orders .details {
+  .orders-section .details {
     display: none;
   }
 }

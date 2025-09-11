@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -121,29 +121,21 @@ const answersCount = computed(() => {
 
 .info {
   flex: 1;
-  padding-left: 0.5rem;
 }
 
 .field {
   margin-bottom: 0.5rem;
 }
 
-.field:last-child {
-  margin-bottom: 0;
-}
-
 label {
-  font-size: clamp(0.75rem, 1.5vw, 0.9rem); /* responsive */
+  font-size: clamp(0.85rem, 1.5vw, 0.9rem);
   color: var(--neutral-gray-600);
-  display: block;
-  margin-bottom: 0.2rem;
 }
 
 p {
   margin: 0;
-  font-size: clamp(0.875rem, 1.8vw, 1rem); /* responsive */
-  color: var(--neutral-gray-900);
-  font-weight: 500;
+  font-size: clamp(0.95rem, 1.5vw, 1rem);
+  color: var(--neutral-black);
 }
 
 .image-container {
@@ -155,7 +147,6 @@ p {
 .image-container img {
   width: 6.25rem; /* 100px -> rem */
   object-fit: contain;
-  opacity: 0.8;
 }
 
 @media (max-width: 1500px) {

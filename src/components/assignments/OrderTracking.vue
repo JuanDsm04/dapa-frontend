@@ -58,11 +58,11 @@ const handleBackToList = () => {
 <template>
   <section class="tracking-container">
     <section v-if="!props.selectedOrder" class="no-selection">
-        <div class="no-selection-content">
-            <span class="material-symbols-outlined md-icon">description</span>
-            <p>Selecciona una orden para ver estado y detalles</p>
-        </div>
-      </section>
+      <div class="no-selection-content">
+          <span class="material-symbols-outlined md-icon">description</span>
+          <p>Selecciona una orden para ver estado y detalles</p>
+      </div>
+    </section>
 
     <div v-else-if="loading" class="loading-state">
       <p>Cargando detalles de la orden...</p>
@@ -98,8 +98,10 @@ const handleBackToList = () => {
       <ShippingInformation 
         :orderData="orderDetails" 
         :editable="false" 
+        mode="tracking"
         @orderUpdated="handleOrderUpdated"
       />
+      <br/>
     </div>
   </section>
 </template>
@@ -111,6 +113,7 @@ const handleBackToList = () => {
   border-radius: 10px;
   height: 100%;
   position: relative;
+  margin-bottom: 2rem;
 }
 
 .loading-state {
@@ -121,23 +124,22 @@ const handleBackToList = () => {
 }
 
 .no-selection {
-    position: absolute;
-    top: 8rem;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .no-selection-content {
-    text-align: center;
-    color: var(--neutral-gray-600);
+  text-align: center;
+  color: var(--neutral-gray-600);
 }
 
 .no-selection-content .material-symbols-outlined {
-    font-size: clamp(2.5rem, 6vw, 3rem);
-    margin-bottom: 1rem;
-    opacity: 0.5;
+  font-size: clamp(2.5rem, 6vw, 3rem);
+  margin-bottom: 1rem;
+  opacity: 0.5;
 }
 
 header {

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   order: {
     type: Object,
     required: true,
@@ -27,17 +29,19 @@ const getOrderTypeInSpanish = (type: any) => {
   return orderTypeMap[type] || '----';
 }
 
-// Función para formatear la fecha
-const formatDate = (value: string | Date): string => {
-  const date = new Date(value)
-  date.setDate(date.getDate() + 1)
-
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = date.getFullYear()
-
-  return `${day}/${month}/${year}`
-}
+// Formatear fecha para mostrar
+const formattedDate = computed(() => {
+  if (!props.order.date) return '----'
+  
+  const date = new Date(props.order.date)
+  return date.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+})
 </script>
 
 <template>
@@ -58,8 +62,8 @@ const formatDate = (value: string | Date): string => {
         <p>{{ getOrderTypeInSpanish(order.type) }}</p>
       </div>
       <div class="field">
-        <label>Fecha</label>
-        <p>{{ formatDate(order.date) || '----' }}</p>
+        <label>Fecha de cotización</label>
+        <p>{{ formattedDate }}</p>
       </div>
     </div>
 
@@ -133,7 +137,7 @@ p {
 }
 
 .image-container img {
-  width: 200px;
+  width: 12rem;
   object-fit: contain;
 }
 
@@ -167,6 +171,24 @@ p {
 @media (max-width: 1500px) {
   .image-container {
     display: none;
+  }
+}
+
+@media (max-width: 770px) {
+  .order-card {
+    padding: 0.8rem;
+  }
+
+  .field {
+    margin-bottom: 0.4rem;
+  }
+
+  label {
+    font-size: clamp(0.7rem, 2vw, 0.8rem);
+  }
+  
+  p {
+    font-size: clamp(0.75rem, 2vw, 0.9rem);
   }
 }
 </style>
