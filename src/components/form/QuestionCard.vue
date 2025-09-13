@@ -138,7 +138,6 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   position: relative;
   background: var(--neutral-white);
   border-radius: 16px;
-  margin-bottom: 1.5rem;
   border: 0.0625rem solid var(--border-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -239,7 +238,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 
 .type-badge {
   padding: 0.5rem 1rem;
-  border-radius: 25px;
+  border-radius: 20px;
   font-size: clamp(0.75rem, 1.5vw, 0.85rem);
   background-color: var(--principal-primary);
   color: var(--neutral-white);
@@ -429,15 +428,18 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     padding: 1.25rem;
     gap: 1rem;
   }
+  .card-content{
+    width: 80%;
+    align-self: center;
+  }
 
   .drag-handle {
-    align-self: center;
+    align-self: flex-start;
     width: 36px;
     height: 36px;
   }
 
   .question-title-container {
-    flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
   }
@@ -447,7 +449,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     min-width: unset;
   }
 
-  .type-badge {
+  .status-badge, .type-badge {
     align-self: flex-start;
   }
 
@@ -484,6 +486,12 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     padding: 1rem;
   }
 
+  .card-content{
+    width: 100%;
+  }
+  .question-title-container {
+    flex-direction: column;
+  }
   .question-title {
     font-size: 1.1rem;
   }

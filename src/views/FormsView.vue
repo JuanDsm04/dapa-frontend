@@ -489,6 +489,9 @@ const toggleQuestion = async (index: number) => {
 }
 
 .draggable-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
   min-height: 6.25rem; /* 100px → rem */
 }
 
@@ -613,12 +616,29 @@ article section { padding: 1.5rem; }
 }
 
 /* Drag & Drop Styles (sortablejs) */
-:deep(.sortable-ghost) { opacity: 0.4; background: var(--principal-primary-50); transform: scale(1.01); border: 2px dashed var(--principal-primary-500); }
-:deep(.sortable-chosen) { opacity: 0.8; background: var(--principal-primary-50); }
-:deep(.sortable-drag) { opacity: 0.9; background: var(--neutral-primary-100); box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.25); transform: rotate(1deg); border: 2px solid var(--principal-primary-100); z-index: 1000; }
+:deep(.sortable-ghost) { 
+  opacity: 0.4; 
+  background: var(--principal-primary-50); 
+  transform: scale(1.05);
+  border-radius: 16px;
+  padding: 0.25rem;
+  border: 2px dashed var(--principal-primary-500); 
+}
+:deep(.sortable-chosen) {
+  border-radius: 16px;
+  opacity: 0.8; 
+  background: var(--principal-primary-50); 
+}
+:deep(.sortable-drag) { 
+  opacity: 0.9; 
+  background: var(--neutral-gray-100); 
+  box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.25); 
+  transform: rotate(1deg); border: 2px solid var(--principal-primary-100); 
+  z-index: 1000; 
+}
 
 /* Responsive Design */
-@media (max-width: 64rem) { /* 1024px → rem */
+@media (max-width: 1024px) { /* 1024px → rem */
   .form-builder { padding: 1rem; }
   .header { flex-direction: column; align-items: stretch; text-align: center; }
   .header-content { margin-bottom: 1rem; }
@@ -627,7 +647,7 @@ article section { padding: 1.5rem; }
   .toggle-wrapper { width: 15.625rem; } /* 250px → rem */
 }
 
-@media (max-width: 48rem) { /* 768px → rem */
+@media (max-width: 770px) { /* 768px → rem */
   .header-content h1 { font-size: 1.5rem; }
   .stats { gap: 1rem; }
   .stat-number { font-size: 1.5rem; }
