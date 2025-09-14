@@ -305,7 +305,7 @@ const toggleQuestion = async (index: number) => {
   margin: 0 0 0.5rem 0;
   color: var(--neutral-gray-900);
   font-size: clamp(1.5rem, 2vw + 1rem, 2rem);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .subtitle {

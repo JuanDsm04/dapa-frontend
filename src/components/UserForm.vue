@@ -139,7 +139,7 @@ const onPhoneInput = (event: Event) => {
         </div>
 
 
-        <div class="field" v-if="role === 'driver'">
+        <div class="field" v-if="role === 'driver' && !isProfile">
             <label for="LicenseExpiration">Fecha de vencimiento de licencia</label>
             <input type="date" id="LicenseExpiration" v-model="licenseExpirationDate">
             <p v-if="errors.licenseExpirationDate" class="error">{{ errors.licenseExpirationDate }}</p>
