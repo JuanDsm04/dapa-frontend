@@ -10,6 +10,7 @@ import type { Vehicle } from '@/types/vehicle'
 import type { Order } from '@/types/order'
 import ShippingInformation from '../assignments/ShippingInformation.vue'
 import NotificationModal from '../NotificationModal.vue'
+import FormResponseModal from './FormResponseModal.vue'
 
 const props = defineProps<{
   selectedOrder: Order | null
@@ -24,10 +25,14 @@ const emit = defineEmits<{
 const selectedDriver = ref<string>('')
 const selectedVehicle = ref<string>('')
 const showModal = ref(false)
+const showFormResponsesModal = ref(false)
 const orderDetails = ref<Order | null>(null)
 const drivers = ref<User[]>([])
 const vehicles = ref<Vehicle[]>([])
 const loading = ref(false)
+
+// Referencia al modal de respuestas
+const formResponseModal = ref<InstanceType<typeof FormResponseModal> | null>(null)
 
 // Obtener detalles de la orden por ID usando el servicio
 const getOrderDetails = async (orderId: number | undefined) => {
@@ -69,6 +74,21 @@ const getVehiclesData = async () => {
     console.error("Error obteniendo vehículos:", error)
     toast.error("Error al cargar vehículos")
   }
+}
+
+// Función para mostrar las respuestas del formulario
+const showFormResponses = async () => {
+  if (orderDetails.value?.submissionId) {
+    showFormResponsesModal.value = true
+    await formResponseModal.value?.openModal(orderDetails.value.submissionId)
+  } else {
+    toast.error("Esta orden no tiene un formulario asociado")
+  }
+}
+
+// Función para cerrar el modal
+const closeFormResponsesModal = () => {
+  showFormResponsesModal.value = false
 }
 
 // Asignar orden a conductor y vehículo
@@ -133,7 +153,7 @@ onMounted(() => {
       </button>
       <h2>Asignación</h2>
       <div class="header-actions" v-if="orderDetails">
-        <button class="form-btn">
+        <button class="form-btn" @click="showFormResponses">
           <span class="material-symbols-outlined">attach_file</span>
         </button>
         <button 
@@ -201,6 +221,13 @@ onMounted(() => {
       />
       <br/>
     </div>
+
+    <!-- Modal de respuestas del formulario -->
+    <FormResponseModal
+      ref="formResponseModal"
+      :show="showFormResponsesModal"
+      @close="closeFormResponsesModal"
+    />
 
     <!-- Confirmar asignación -->
     <NotificationModal

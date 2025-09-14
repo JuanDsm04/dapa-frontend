@@ -5,6 +5,7 @@ import 'vue3-toastify/dist/index.css'
 import { getOrderById } from '@/services/orderService'
 import OrderSteps from './OrderSteps.vue'
 import ShippingInformation from './ShippingInformation.vue'
+import FormResponseModal from './FormResponseModal.vue'
 import type { Order } from '@/types/order'
 
 const props = defineProps<{
@@ -18,6 +19,10 @@ const emit = defineEmits<{
 // Estado de la orden
 const orderDetails = ref<Order | null>(null)
 const loading = ref(false)
+
+// Estado para el modal de respuestas
+const showFormResponsesModal = ref(false)
+const formResponseModal = ref<InstanceType<typeof FormResponseModal> | null>(null)
 
 // Obtener detalles de la orden por ID usando el servicio
 const getOrderDetails = async (orderId: number) => {
@@ -33,6 +38,21 @@ const getOrderDetails = async (orderId: number) => {
   } finally {
     loading.value = false
   }
+}
+
+// Función para mostrar las respuestas del formulario
+const showFormResponses = async () => {
+  if (orderDetails.value?.submissionId) {
+    showFormResponsesModal.value = true
+    await formResponseModal.value?.openModal(orderDetails.value.submissionId)
+  } else {
+    toast.error("Esta orden no tiene un formulario asociado")
+  }
+}
+
+// Función para cerrar el modal
+const closeFormResponsesModal = () => {
+  showFormResponsesModal.value = false
 }
 
 // Manejar la actualización de la orden desde ShippingInformation
@@ -85,7 +105,7 @@ const handleBackToList = () => {
         </div>
 
         <div class="header-button">
-           <button class="form-btn">
+           <button class="form-btn" @click="showFormResponses">
             <span class="material-symbols-outlined">attach_file</span>
           </button>
         </div>
@@ -103,6 +123,13 @@ const handleBackToList = () => {
       />
       <br/>
     </div>
+
+    <!-- Modal de respuestas del formulario -->
+    <FormResponseModal
+      ref="formResponseModal"
+      :show="showFormResponsesModal"
+      @close="closeFormResponsesModal"
+    />
   </section>
 </template>
 
