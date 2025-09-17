@@ -48,7 +48,7 @@ const driversPieData = ref({
 
 <template>
   <main>
-    <header class="header">
+    <header>
       <h1>Reporte de desempeño</h1>
     </header>
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
@@ -69,14 +69,14 @@ const driversPieData = ref({
       <KpiCard class="kpi" title="Eficiencia global de combustible (L/km)" :icon="BeakerIcon" value=2.5 last-month=2.5 goal=2.5 />
     </div>
 
-    <header>
+    <section class="stats-header">
       <h2>Resumen estadístico</h2>
       <select v-model="selectedMonth" class="month-select">
         <option v-for="(month, index) in linealData.categories" :key="index" :value="month">
           {{ month }}
         </option>
       </select>
-    </header>
+    </section>
     <section class="quotes" v-if="activeTab == 'left'">
       <div class="charts-wrapper">
         <LineChart :categories="linealData.categories" :series="linealData.series" :title="linealData.title"/>
@@ -108,11 +108,11 @@ const driversPieData = ref({
 main {
   width: 100%;
   padding: 2rem;
+  background-color: var(--bg-general, #fff);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  background-color: var(--bg-general, #fff);
-  min-height: 100vh;
 }
 
 main header {
@@ -138,7 +138,8 @@ h1, h2 {
   background-color: #EAEEF4;
   border-radius: 10px;
   position: relative;
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   height: 60px;
   padding: 6px;
   font-family: sans-serif;
@@ -174,11 +175,16 @@ h1, h2 {
   left: 50%;
 }
 
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+}
+
 .kpi-wrapper {
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .kpi {
@@ -189,5 +195,40 @@ h1, h2 {
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+  main {
+    width: 100%;
+    margin-left: 0;
+    padding: 2rem 1rem;
+  }
+  
+  main header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  h1 {
+    margin-top: 10px;
+    margin-left: 50px;
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+    align-self: center;
+  }
+
+  .kpi {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .charts-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

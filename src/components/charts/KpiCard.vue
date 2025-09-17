@@ -90,11 +90,12 @@ header {
 
 .metrics {
   display: flex;
-  gap: 6.5rem;
+  justify-content: space-between;
 }
 
 .metric {
   display: flex;
   flex-direction: column;
 }
+
 </style>
