@@ -53,3 +53,24 @@ export const updateSubmissionStatus = async (id: number, payload: any) => {
   )
   return response
 }
+
+export const acceptSubmission = async (id: number, payload: any ) => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/submissions/${id}/accept`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(payload),
+    })
+  )
+  return response
+}
+
+export const rejectSubmission = async (id: number) => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/submissions/${id}/reject`, {
+      method: 'PUT',
+      headers: getHeaders(),
+    })
+  )
+  return response
+}

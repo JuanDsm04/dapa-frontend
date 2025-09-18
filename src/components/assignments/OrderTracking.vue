@@ -135,12 +135,11 @@ const handleBackToList = () => {
 
 <style scoped>
 .tracking-container {
-  padding: 2rem;
+  padding: 0 2rem;
   background-color: var(--neutral-white);
   border-radius: 10px;
   height: 100%;
   position: relative;
-  margin-bottom: 2rem;
 }
 
 .loading-state {

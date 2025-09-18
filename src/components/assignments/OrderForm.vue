@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import type { Order, FrontendCargoType, BackendCargoType } from '@/types/order';
+import { ref, watch, onMounted } from 'vue';
 
 // Props
 const props = defineProps<{
   isEdit?: boolean
-  orderData?: object | null
+  orderData?: Order
 }>()
 
 // Emitir evento para volver al componente padre
 const emit = defineEmits(["volver", "submit"])
 
 const price = ref('')
-const cargoType = ref('personal')
+const cargoType = ref<FrontendCargoType>('personal')
 const origin = ref('')
 const destination = ref('')
 const details = ref('')
@@ -19,24 +20,34 @@ const details = ref('')
 const errors = ref<Record<string, string>>({})
 
 // Mapeo de tipos de carga del backend al frontend
-const cargoTypeBackendToFrontend = {
+const cargoTypeBackendToFrontend: Record<BackendCargoType, FrontendCargoType> = {
   business: 'negocio',
   personal: 'personal',
   corporate: 'empresarial'
 }
 
 // Mapeo de tipos de carga del frontend al backend
-const cargoTypeFrontendToBackend = {
+const cargoTypeFrontendToBackend: Record<FrontendCargoType, BackendCargoType> = {
   personal: 'personal',
   empresarial: 'corporate',
   negocio: 'business'
 }
 
-// Función para cargar los datos de la orden en el formulario
+// Tipo guard para BackendCargoType
+const isBackendCargoType = (v: any): v is BackendCargoType => {
+  return v === 'business' || v === 'personal' || v === 'corporate'
+}
+
+// Cargar datos si es edición
 const loadOrderData = () => {
   if (props.orderData && props.isEdit) {
     price.value = props.orderData.totalAmount ? props.orderData.totalAmount.toString() : ''
-    cargoType.value = cargoTypeBackendToFrontend[props.orderData.type] || 'personal'
+    // asegurar tipo antes de indexar el Record
+    if (isBackendCargoType(props.orderData.type)) {
+      cargoType.value = cargoTypeBackendToFrontend[props.orderData.type]
+    } else {
+      cargoType.value = 'personal'
+    }
     origin.value = props.orderData.origin || ''
     destination.value = props.orderData.destination || ''
     details.value = props.orderData.details || ''

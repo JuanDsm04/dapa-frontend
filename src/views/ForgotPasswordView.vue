@@ -8,7 +8,7 @@ const email = ref('')
 const emailSent = ref(false)
 const errors = ref<FieldErrors>({})
 
-// Validar el email
+// Validar que el email esté presente y en el formato correcto
 const validateEmail = () => {
 	errors.value.email = ''
 

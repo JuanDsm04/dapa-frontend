@@ -2,7 +2,11 @@
 import { ref, computed } from "vue";
 import OrderForm from "@/components/assignments/OrderForm.vue";
 import FormPreview from "../form/FormPreview.vue";
+import { acceptSubmission, rejectSubmission } from '@/services/submissionService';
 import { type Answer, type Submission } from '@/types/form';
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
+import type { Order } from "@/types/order";
 
 const props = defineProps<{
   submission: Submission | undefined
@@ -69,20 +73,30 @@ const statusClass = computed(() => {
   }
 });
 
-// Formatear respuesta según el tipo de pregunta
-// const formatAnswer = (answer: Answer) => {
-//   if (!answer.answer && (!answer.options || answer.options.length === 0)) {
-//     return 'Sin respuesta'
-//   }
+const handleReject = async () => {
+  if (!props.submission) return;
   
-//   // Si es una pregunta con opciones múltiples
-//   if (answer.options && answer.options.length > 0) {
-//     return answer.options.map(option => option.option).join(', ')
-//   }
-  
-//   // Si es una respuesta de texto
-//   return answer.answer || 'Sin respuesta'
-// };
+  try {
+    await rejectSubmission(props.submission.id);
+    toast.info('Cotización rechazada');
+  } catch (error) {
+    console.error('Error al rechazar la cotización:', error);
+    toast.error('Error al rechazar la cotización');}
+};
+
+const handleAccept = async (payload: Partial<Order>) => {
+  if (!props.submission) return;
+
+  try {
+    await acceptSubmission(props.submission.id, payload);
+    toast.success('Cotización aceptada');
+    showOrderForm.value = false;
+    emit('back-to-list');
+  } catch (error) {
+    console.error('Error al aceptar la cotización:', error);
+    toast.error('Error al aceptar la cotización');
+  }
+};
 </script>
 
 <template>
@@ -130,12 +144,12 @@ const statusClass = computed(() => {
 
         <!-- Formulario de información -->
         <section v-else-if="showOrderForm" class="order-form-container">
-            <OrderForm :isEdit="false" @volver="volver" />
+            <OrderForm :isEdit="false" @volver="volver" @submit="handleAccept"/>
         </section>
 
         <!-- Botones -->
         <section v-if="!showOrderForm && submission && submission.status === 'pending'" class="action-container">
-            <button class="reject-btn">
+            <button class="reject-btn" @click="handleReject">
                 <span class="material-symbols-outlined">close</span>
                 Rechazarla
             </button>
