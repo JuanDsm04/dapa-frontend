@@ -47,10 +47,25 @@ const handleQuoteSelected = async (submission: Submission) => {
 }
 
 // Manejar regreso a la lista
-const handleBackToList = () => {
+const handleBackToList = async (payload?: { id: number | string, status: string } | null) => {
   showDetailView.value = false
   selectedSubmission.value = undefined
   selectedSubmissionId.value = null
+
+  if (payload && payload.id != null) {
+    const idNum = typeof payload.id === 'string' ? parseInt(payload.id, 10) : payload.id
+    const idx = submissions.value.findIndex(s => s.id === idNum)
+    if (idx !== -1) {
+      submissions.value[idx] = {
+        ...submissions.value[idx],
+        status: payload.status as any
+      }
+    } else {
+      await loadSubmissions()
+    }
+  } else {
+    await loadSubmissions()
+  }
 }
 
 // Filtrar cotizaciones pendientes

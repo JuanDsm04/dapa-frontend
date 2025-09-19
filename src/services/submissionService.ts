@@ -14,23 +14,23 @@ export const createSubmission = async (payload: any) => {
 
 export const getSubmissions = async (): Promise<Submission[]> => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/submissions`, {
+    await fetch(`${API_URL}/api/form/submissions`, {
       method: 'GET',
       headers: getHeaders(),
     })
   )
-  return response as Submission[]
+  return response.data as Submission[]
 }
 
 export const getSubmissionById = async (id: number): Promise<Submission> => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/submissions/${id}`,{
+    await fetch(`${API_URL}/api/form/submissions/${id}`,{
       method: 'GET',
       headers: getHeaders(),
     })
   )
 
-  return response as Submission
+  return response.data as Submission
 }
 
 export const getSubmissionStats = async (): Promise<SubmissionStats> => {
@@ -56,7 +56,7 @@ export const updateSubmissionStatus = async (id: number, payload: any) => {
 
 export const acceptSubmission = async (id: number, payload: any ) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/submissions/${id}/accept`, {
+    await fetch(`${API_URL}/api/orders`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(payload),
@@ -67,9 +67,10 @@ export const acceptSubmission = async (id: number, payload: any ) => {
 
 export const rejectSubmission = async (id: number) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/submissions/${id}/reject`, {
-      method: 'PUT',
+    await fetch(`${API_URL}/api/form/submissions/${id}/status`, {
+      method: 'PATCH',
       headers: getHeaders(),
+      body: JSON.stringify({ status: 'cancelled' }),
     })
   )
   return response

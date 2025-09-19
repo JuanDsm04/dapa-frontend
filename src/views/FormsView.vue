@@ -11,7 +11,6 @@ import FormPreview from '@/components/form/FormPreview.vue'
 import { type QuestionType, type Question } from '@/types/form'
 import { 
   createQuestion, 
-  getActiveQuestions, 
   getQuestions, 
   updateQuestion, 
   deleteQuestion, 
@@ -20,84 +19,92 @@ import {
   reorderQuestions 
 } from '@/services/formService'
 
-const questions = ref<Question[]>([])
-const activeQuestions = ref<Question[]>([])
-const questionTypes = ref<QuestionType[]>([])
-const loading = ref(false)
-const activeTab = ref('left')
-const questionSelected = ref<Question | undefined>(undefined)
-const showModal = ref(false)
+/* Estados reactivos */
+const questions = ref<Question[]>([])            // Todas las preguntas
+const activeQuestions = ref<Question[]>([])      // Solo las activas
+const questionTypes = ref<QuestionType[]>([])    // Tipos de preguntas disponibles
+const loading = ref(false)                       // Estado de carga general
+const activeTab = ref<'left' | 'right'>('left')  // Pestaña activa (editor o preview)
+const questionSelected = ref<Question | undefined>(undefined) // Pregunta en edición
+const showModal = ref(false)                     // Estado modal de pregunta
 
+/* SortableJS */
 const sortableContainer = ref<HTMLElement | null>(null)
 let sortableInstance: Sortable | null = null
 
+/* Propiedades computadas */
 const activeQuestionsCount = computed(() => questions.value.filter(q => q.isActive).length)
 const totalQuestions = computed(() => questions.value.length)
 
+/* Ciclo de vida */
 onMounted(async () => {
   await loadQuestions()
   initSortable()
 })
 
 onUnmounted(() => {
-  if (sortableInstance) {
-    sortableInstance.destroy()
-    sortableInstance = null
-  }
+  sortableInstance?.destroy()
+  sortableInstance = null
 })
 
+/* Inicializar SortableJS */
 const initSortable = () => {
   if (!sortableContainer.value) return
+
   sortableInstance = Sortable.create(sortableContainer.value, {
     animation: 200,
     ghostClass: 'sortable-ghost',
     chosenClass: 'sortable-chosen',
     dragClass: 'sortable-drag',
     handle: '.drag-handle',
-    forceFallback: false,
     fallbackOnBody: true,
     swapThreshold: 0.65,
-    onEnd: async (evt: any) => {
 
-      const oldIndex = evt.oldIndex
-      const newIndex = evt.newIndex
+    // Cuando el drag termina -> actualizar orden
+    onEnd: async ({ oldIndex, newIndex }: any) => {
+      if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) return
 
-      if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) {
-        return
-      }
-      const sourceQuestion = questions.value[oldIndex]
-      const targetQuestion = questions.value[newIndex]
+      const source = questions.value[oldIndex]
+      const target = questions.value[newIndex]
+
       try {
-        await reorderQuestions(sourceQuestion.id, targetQuestion.id)
+        await reorderQuestions(source.id, target.id)
         await loadQuestions()
-      }catch (err){
+      } catch (err) {
         const error = err as Error
         console.error('Error al reordenar preguntas:', error)
         toast.error(`Error al reordenar preguntas: ${error.message}`)
+
+        // Restaurar orden en caso de error
         sortableInstance?.sort(questions.value.map((q) => q.id.toString()))
       }
-    },
-
+    }
   })
 }
 
+/* Watchers */
+// Reinicia SortableJS al volver al editor
 watch(activeTab, async (newTab) => {
   if (newTab === 'left') {
     await nextTick()
-    if (sortableInstance) {
-      sortableInstance.destroy()
-      sortableInstance = null
-    }
+    sortableInstance?.destroy()
+    sortableInstance = null
     initSortable()
   }
 })
 
+/* CRUD: Preguntas */
 const loadQuestions = async () => {
   loading.value = true
   try {
-    questions.value = await getQuestions()
-    activeQuestions.value = await getActiveQuestions()
-    questionTypes.value = await getQuestionTypes()
+    // Se cargan todas las entidades necesarias en paralelo
+    const [all, types] = await Promise.all([
+      getQuestions(),
+      getQuestionTypes()
+    ])
+    questions.value = all
+    activeQuestions.value = all.filter(q => q.isActive)
+    questionTypes.value = types
   } catch (err) {
     const error = err as Error
     console.error('Error cargando preguntas:', error)
@@ -113,13 +120,15 @@ const openModal = () => {
 }
 
 const editQuestion = (index: number) => {
-  if (questions.value[index]) {
-    questionSelected.value = {
-      ...questions.value[index],
-      options: questions.value[index].options ? [...questions.value[index].options] : undefined
-    }
-    showModal.value = true
+  const q = questions.value[index]
+  if (!q) return
+
+  // Copia profunda de la pregunta (para no mutar el estado original)
+  questionSelected.value = {
+    ...q,
+    options: q.options ? [...q.options] : undefined
   }
+  showModal.value = true
 }
 
 const closeModal = () => {
@@ -131,17 +140,17 @@ const handleAddOrEditQuestion = async (payload: Partial<Question>) => {
   loading.value = true
   try {
     if (payload.id) {
-      toast.info('Pregunta modificada exitosamente')
+      // Si ya existe → actualizar
       payload.options = payload.options?.map(opt => ({
         id: opt.id,
         option: opt.option,
         questionId: payload.id
       }))
-      console.log("data enviada: "+JSON.stringify(payload))
-      const response = await updateQuestion(payload.id, payload)
-      console.log("respuesta: "+JSON.stringify(response))
+      await updateQuestion(payload.id, payload)
+      toast.info('Pregunta modificada exitosamente')
     } else {
-      const response = await createQuestion(payload)
+      // Si no existe → crear
+      await createQuestion(payload)
       toast.success('Pregunta agregada correctamente')
     }
     await loadQuestions()
@@ -156,16 +165,14 @@ const handleAddOrEditQuestion = async (payload: Partial<Question>) => {
 }
 
 const handleDeleteQuestion = async (index: number) => {
-  if (!questions.value[index]) return
+  const q = questions.value[index]
+  if (!q) return
 
-  const question = questions.value[index]
-  if (!confirm(`¿Estás seguro de que deseas eliminar la pregunta: "${question.question}"?`)) {
-    return
-  }
+  if (!confirm(`¿Eliminar la pregunta: "${q.question}"?`)) return
 
   loading.value = true
   try {
-    await deleteQuestion(question.id!)
+    await deleteQuestion(q.id!)
     await loadQuestions()
     toast.warning('Pregunta eliminada')
   } catch (err) {
@@ -178,21 +185,19 @@ const handleDeleteQuestion = async (index: number) => {
 }
 
 const toggleQuestion = async (index: number) => {
-  if (!questions.value[index]) return
-
-  const question = questions.value[index]
+  const q = questions.value[index]
+  if (!q) return
 
   try {
-    await toggleActiveQuestion(question.id!)
+    await toggleActiveQuestion(q.id!)
     await loadQuestions()
-    toast.info(`Pregunta ${!question.isActive ? 'activada' : 'desactivada'}`)
+    toast.info(`Pregunta ${!q.isActive ? 'activada' : 'desactivada'}`)
   } catch (err) {
     const error = err as Error
     console.error('Error actualizando pregunta:', error)
     toast.error(`Error: ${error.message}`)
   }
 }
-
 </script>
 
 <template>

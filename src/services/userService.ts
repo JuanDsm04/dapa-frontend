@@ -8,7 +8,7 @@ export const getUsers = async (): Promise<User[]> => {
       headers: getHeaders()
     })
   )
-  return response
+  return response.data
 }
 
 export const getUserById = async (id: number): Promise<User> => {

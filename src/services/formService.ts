@@ -3,27 +3,17 @@ import { getHeaders, handleResponse, API_URL } from '@/utils/api'
 
 export const getQuestions = async (): Promise<Question[]> => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/questions`, { 
+    await fetch(`${API_URL}/api/form/questions`, { 
       headers: getHeaders() 
     })
   )
   
-  return response
-}
-
-export const getActiveQuestions = async (): Promise<Question[]> => {
-  const response = await handleResponse(
-    await fetch(`${API_URL}/api/questions-active`, { 
-      headers: getHeaders() 
-    })
-  )
-  
-  return response
+  return response.data
 }
 
 export const createQuestion = async (payload: any) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/questions`, {
+    await fetch(`${API_URL}/api/form/questions`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(payload)
@@ -35,7 +25,7 @@ export const createQuestion = async (payload: any) => {
 
 export const updateQuestion = async (id: number, payload: any) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/questions/${id}`, {
+    await fetch(`${API_URL}/api/form/questions/${id}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(payload)
@@ -47,7 +37,7 @@ export const updateQuestion = async (id: number, payload: any) => {
 
 export const deleteQuestion = async (id: number) => {
   return handleResponse(
-    await fetch(`${API_URL}/api/questions/${id}`, {
+    await fetch(`${API_URL}/api/form/questions/${id}`, {
       method: 'DELETE',
       headers: getHeaders()
     })
@@ -56,17 +46,17 @@ export const deleteQuestion = async (id: number) => {
 
 export const getQuestionTypes = async () => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/question-types`, { 
+    await fetch(`${API_URL}/api/form/question-types`, { 
       headers: getHeaders() 
     })
   )
   
-  return response || []
+  return response.data || []
 }
 
 export const createQuestionOption = async (questionId: number, option: string) => {
   return handleResponse(
-    await fetch(`${API_URL}/api/questions/${questionId}/options`, {
+    await fetch(`${API_URL}/api/form/questions/${questionId}/options`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ option })
@@ -76,7 +66,7 @@ export const createQuestionOption = async (questionId: number, option: string) =
 
 export const toggleActiveQuestion = async (questionId: number) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/questions/${questionId}/active`, {
+    await fetch(`${API_URL}/api/form/questions/${questionId}/active`, {
       method: 'PATCH',
       headers: getHeaders()
     })
@@ -87,7 +77,7 @@ export const toggleActiveQuestion = async (questionId: number) => {
 
 export const reorderQuestions = async (questionSourceId: number, questionTargetId: number) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/questions/reorder`, {
+    await fetch(`${API_URL}/api/form/questions/reorder`, {
       method: 'PATCH',
       headers: getHeaders(),
       body: JSON.stringify({ sourceId: questionSourceId, targetId: questionTargetId })

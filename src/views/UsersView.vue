@@ -16,6 +16,7 @@ import {
   updateUser, 
   deleteUser 
 } from '@/services/userService';
+import { getUserID } from '@/utils/auth';
 
 // Estado
 const showModal = ref(false);
@@ -24,7 +25,7 @@ const selectedUser = ref<User | undefined>();
 const loading = ref(false);
 
 const activeUsers = computed<User[]>(() => 
-  users.value.filter(user => user.isActive)
+  users.value.filter(user => user.isActive && user.id !== getUserID())
 );
 
 // Función para resaltar filas según fecha de licencia

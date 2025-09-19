@@ -79,6 +79,7 @@ const handleReject = async () => {
   try {
     await rejectSubmission(props.submission.id);
     toast.info('Cotización rechazada');
+    emit('back-to-list', { id: props.submission.id, status: 'cancelled' });
   } catch (error) {
     console.error('Error al rechazar la cotización:', error);
     toast.error('Error al rechazar la cotización');}
@@ -86,12 +87,15 @@ const handleReject = async () => {
 
 const handleAccept = async (payload: Partial<Order>) => {
   if (!props.submission) return;
-
+  const createOrderPayload: Partial<Order> = {
+    ...payload,
+    submissionId: props.submission.id
+  };
   try {
-    await acceptSubmission(props.submission.id, payload);
+    await acceptSubmission(props.submission.id, createOrderPayload);
     toast.success('Cotización aceptada');
     showOrderForm.value = false;
-    emit('back-to-list');
+    emit('back-to-list', { id: props.submission.id, status: 'approved' });
   } catch (error) {
     console.error('Error al aceptar la cotización:', error);
     toast.error('Error al aceptar la cotización');
@@ -319,7 +323,7 @@ header h2 {
     display: flex;
     justify-content: center;
 }
-/* 
+
 .status-message {
     display: flex;
     align-items: center;
@@ -338,7 +342,7 @@ header h2 {
 .status-message.status-cancelled {
     background-color: #fee2e2;
     color: #991b1b;
-} */
+}
 
 button span {
     margin-right: 0.5rem;
