@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import QuoteCard from './QuoteCard.vue'
 import { type Submission } from '@/types/form'
 
@@ -11,13 +11,18 @@ const props = defineProps<{
 
 const filter = ref<string | undefined>(undefined)
 const showFilters = ref(false)
+const selectedSubmissionId = ref<string | number | null>(null)
 
 // Referencia al wrapper del filtro
 const filterWrapper = ref<HTMLElement | null>(null)
 
-const emit = defineEmits(['quote-selected'])
+const emit = defineEmits<{
+  (e: 'quote-selected', submission: Submission): void
+  (e: 'quote-deselected'): void
+}>()
 
 const handleQuoteSelected = (submission: Submission) => {
+  selectedSubmissionId.value = submission.id
   emit('quote-selected', submission)
 }
 
@@ -25,9 +30,14 @@ function toggleFilterOptions() {
   showFilters.value = !showFilters.value
 }
 
+// Función modificada para deseleccionar al filtrar
 function setFilter(option?: string) {
   filter.value = option
   showFilters.value = false
+  
+  // Deseleccionar la cotización actual cuando se aplica un filtro
+  selectedSubmissionId.value = null
+  emit('quote-deselected')
 }
 
 // Función para cerrar filtros al hacer clic fuera
@@ -36,6 +46,20 @@ const handleClickOutside = (event: Event) => {
     showFilters.value = false
   }
 }
+
+// Computed para el texto del filtro activo
+const activeFilterText = computed(() => {
+  if (!filter.value) return ''
+  
+  switch (filter.value) {
+    case 'recent':
+      return 'Más recientes'
+    case 'oldest':
+      return 'Más antiguos'
+    default:
+      return ''
+  }
+})
 
 const filteredSubmissions = computed(() => {
   switch (filter.value) {
@@ -52,15 +76,24 @@ const filteredSubmissions = computed(() => {
   }
 })
 
+// Watch para verificar si la cotización seleccionada sigue en la lista filtrada
+watch([filteredSubmissions, selectedSubmissionId], ([newFilteredSubmissions, currentSelectedId]) => {
+  if (currentSelectedId && newFilteredSubmissions.length > 0) {
+    const isSelectedSubmissionInFiltered = newFilteredSubmissions.some(submission => submission.id === currentSelectedId)
+    if (!isSelectedSubmissionInFiltered) {
+      selectedSubmissionId.value = null
+      emit('quote-deselected')
+    }
+  }
+})
+
 // Montaje del componente
 onMounted(() => {
-  // Agregar event listener para clics fuera
   document.addEventListener('click', handleClickOutside)
 })
 
 // Desmontaje del componente
 onUnmounted(() => {
-  // Remover event listener al desmontar
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
@@ -70,12 +103,31 @@ onUnmounted(() => {
     <header>
       <h2>{{ title }}</h2>
       <div class="filter-wrapper" ref="filterWrapper">
-        <button class="filter-btn" @click="toggleFilterOptions">
+        <button class="filter-btn" :class="{ 'has-filter': filter }" @click="toggleFilterOptions">
           <span class="material-symbols-outlined">tune</span>
         </button>
         <div v-if="showFilters" class="filter-options">
-          <button @click="setFilter('recent')">Más recientes</button>
-          <button @click="setFilter('oldest')">Más antiguos</button>
+          <button 
+            :class="{ 'active': filter === 'recent' }" 
+            @click="setFilter('recent')"
+          >
+            Más recientes
+            <span v-if="filter === 'recent'" class="material-symbols-outlined">check</span>
+          </button>
+          <button 
+            :class="{ 'active': filter === 'oldest' }" 
+            @click="setFilter('oldest')"
+          >
+            Más antiguos
+            <span v-if="filter === 'oldest'" class="material-symbols-outlined">check</span>
+          </button>
+          <button
+            v-if="filter"
+            @click="setFilter(undefined)"
+            class="clear-filter"
+          >
+            Limpiar filtro
+          </button>
         </div>
       </div>
     </header>
@@ -85,7 +137,7 @@ onUnmounted(() => {
         v-for="submission in filteredSubmissions"
         :key="submission.id"
         :quote="submission"
-        :isSelected="props.selectedSubmissionId === submission.id"
+        :isSelected="selectedSubmissionId === submission.id"
         @quote-selected="handleQuoteSelected"
       />
       <section v-if="filteredSubmissions.length === 0" class="no-selection">
@@ -126,15 +178,26 @@ h2 {
   align-items: center;
   justify-content: center;
   padding: 0.5rem 1rem;
-  border: 0.0625rem solid var(--border-light); /* 1px -> 0.0625rem */
+  border: 0.0625rem solid var(--border-light);
   border-radius: 10px;
   background-color: var(--neutral-white);
   font-size: clamp(0.875rem, 1.5vw, 1rem);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .filter-btn:hover {
   background-color: var(--neutral-gray-50);
+}
+
+.filter-btn.has-filter {
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
+  border-color: var(--principal-primary);
+}
+
+.filter-btn.has-filter:hover {
+  background-color: var(--principal-primary-hover);
 }
 
 .filter-options {
@@ -144,11 +207,11 @@ h2 {
   background-color: var(--neutral-white);
   border: 0.0625rem solid var(--border-light);
   border-radius: 8px;
-  box-shadow: 0 0.125rem 0.375rem rgba(0,0,0,0.1); /* 2px 6px -> rem */
+  box-shadow: 0 0.125rem 0.375rem rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
   z-index: 10;
-  min-width: 12.5rem; /* 200px -> 12.5rem */
+  min-width: 12.5rem;
 }
 
 .filter-options button {
@@ -158,10 +221,25 @@ h2 {
   border: none;
   cursor: pointer;
   font-size: clamp(0.875rem, 1.5vw, 1rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .filter-options button:hover {
   background-color: var(--neutral-gray-50);
+}
+
+.filter-options button.active {
+  background-color: var(--principal-primary-50);
+  color: var(--principal-primary);
+  font-weight: 500;
+}
+
+.clear-filter {
+  border-top: 1px solid var(--border-light) !important;
+  color: var(--principal-primary) !important;
+  font-weight: 500 !important;
 }
 
 .card-list {
@@ -170,7 +248,7 @@ h2 {
   position: relative;
   gap: 1rem;
   min-height: 100%;
-  padding-bottom: 1.25rem; /* 20px -> 1.25rem */
+  padding-bottom: 1.25rem;
 }
 
 .no-selection {

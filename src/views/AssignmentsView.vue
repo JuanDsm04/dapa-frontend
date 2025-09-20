@@ -47,6 +47,11 @@ const handleOrderSelected = (order: Order) => {
   showDetailView.value = true
 }
 
+const handleOrderDeselected = () => {
+  selectedOrder.value = null
+  showDetailView.value = false
+}
+
 const handleBackToList = () => {
   showDetailView.value = false
   selectedOrder.value = null
@@ -96,6 +101,7 @@ onMounted(async () => {
                 { value: 'assigned', label: 'Asignado en espera' },
               ]"
               @order-selected="handleOrderSelected"
+              @order-deselected="handleOrderDeselected"
             />
         </div>
         <!-- Detalles - se muestra en móvil cuando hay una orden seleccionada -->
@@ -120,6 +126,7 @@ onMounted(async () => {
                 { value: 'delivered', label: 'Completado' }
               ]"
               @order-selected="handleOrderSelected"
+              @order-deselected="handleOrderDeselected"
             />
         </div>
         <!-- Detalles - se muestra en móvil cuando hay una orden seleccionada -->

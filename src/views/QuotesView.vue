@@ -45,6 +45,12 @@ const handleQuoteSelected = async (submission: Submission) => {
     loading.value = false
   }
 }
+// Manejar deselección de cotización
+const handleQuoteDeselected = () => {
+  selectedSubmission.value = undefined
+  selectedSubmissionId.value = null
+  showDetailView.value = false
+}
 
 // Manejar regreso a la lista
 const handleBackToList = async (payload?: { id: number | string, status: string } | null) => {
@@ -92,6 +98,7 @@ const pendingSubmissions = computed(() => {
               :submissions="pendingSubmissions" 
               :selectedSubmissionId="selectedSubmissionId"
               @quote-selected="handleQuoteSelected"
+              @quote-deselected="handleQuoteDeselected"
             />
         </div>
         <!-- Detalles -->

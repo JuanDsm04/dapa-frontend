@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import OrderCard from './OrderCard.vue'
 import type { Order, orderFilter } from '@/types/order'
 
@@ -12,6 +12,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'order-selected', order: Order): void
+  (e: 'order-deselected'): void
 }>()
 
 // Estados internos
@@ -37,6 +38,10 @@ function toggleFilterOptions() {
 function setFilter(option: string) {
   filter.value = option
   showFilters.value = false
+  
+  // Deseleccionar la orden actual cuando se aplica un filtro
+  selectedOrderId.value = null
+  emit('order-deselected')
 }
 
 // Función para cerrar filtros al hacer clic fuera
@@ -45,6 +50,14 @@ const handleClickOutside = (event: Event) => {
     showFilters.value = false
   }
 }
+
+// Texto del filtro activo para mostrar en el botón
+const activeFilterText = computed(() => {
+  if (!filter.value) return ''
+  
+  const filterOption = props.availableFilters.find(f => f.value === filter.value)
+  return filterOption ? filterOption.label : ''
+})
 
 const filteredOrders = computed(() => {
   let sorted = [...props.orders]
@@ -69,6 +82,17 @@ const filteredOrders = computed(() => {
   }
 })
 
+// Watch para verificar si la orden seleccionada sigue en la lista filtrada
+watch([filteredOrders, selectedOrderId], ([newFilteredOrders, currentSelectedId]) => {
+  if (currentSelectedId && newFilteredOrders.length > 0) {
+    const isSelectedOrderInFiltered = newFilteredOrders.some(order => order.id === currentSelectedId)
+    if (!isSelectedOrderInFiltered) {
+      selectedOrderId.value = null
+      emit('order-deselected')
+    }
+  }
+})
+
 // Montaje del componente
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
@@ -85,16 +109,25 @@ onUnmounted(() => {
     <header>
       <h2 class="text-subtitle">{{ title }}</h2>
       <div class="filter-wrapper" ref="filterWrapper">
-        <button class="filter-btn" @click="toggleFilterOptions">
+        <button class="filter-btn" :class="{ 'has-filter': filter }" @click="toggleFilterOptions">
           <span class="material-symbols-outlined">tune</span>
         </button>
         <div v-if="showFilters" class="filter-options">
           <button
             v-for="option in props.availableFilters"
             :key="option.value"
+            :class="{ 'active': filter === option.value }"
             @click="setFilter(option.value)"
           >
             {{ option.label }}
+            <span v-if="filter === option.value" class="material-symbols-outlined">check</span>
+          </button>
+          <button
+            v-if="filter"
+            @click="setFilter('')"
+            class="clear-filter"
+          >
+            Limpiar filtro
           </button>
         </div>
       </div>
@@ -152,10 +185,21 @@ h2 {
   background-color: var(--neutral-white);
   font-size: clamp(0.9rem, 2vw, 1rem);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .filter-btn:hover {
   background-color: var(--neutral-gray-50);
+}
+
+.filter-btn.has-filter {
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
+  border-color: var(--principal-primary);
+}
+
+.filter-btn.has-filter:hover {
+  background-color: var(--principal-primary-hover);
 }
 
 .filter-options {
@@ -179,10 +223,25 @@ h2 {
   border: none;
   cursor: pointer;
   font-size: clamp(0.9rem, 2vw, 1rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .filter-options button:hover {
   background-color: var(--neutral-gray-100);
+}
+
+.filter-options button.active {
+  background-color: var(--principal-primary-50);
+  color: var(--principal-primary);
+  font-weight: 500;
+}
+
+.clear-filter {
+  border-top: 1px solid var(--border-light) !important;
+  color: var(--principal-primary) !important;
+  font-weight: 500 !important;
 }
 
 .card-list {
