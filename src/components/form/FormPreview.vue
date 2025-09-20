@@ -104,17 +104,10 @@ const validateForm = (): boolean => {
 }
 
 const submitForm = async () => {
-    if (isReadOnly.value) return
+    if (isReadOnly.value || props.isPreview) return
 
     if (!validateForm()) {
         toast.error(submitError.value || 'Formulario incompleto')
-        return
-    }
-
-    // Si es modo preview, no enviamos nada
-    if (props.isPreview) {
-        toast.success('Formulario enviado (Preview)')
-        resetForm()
         return
     }
 
@@ -196,22 +189,12 @@ const resetForm = () => {
                         @change="handleQuestionChange" />
                 </div>
 
-                <!-- Acciones -->
-                <div v-if="questions.length > 0 && !isReadOnly" class="form-actions">
+                <!-- Acciones - Solo si NO es preview y NO es readOnly -->
+                <div v-if="questions.length > 0 && !isPreview && !isReadOnly" class="form-actions">
                     <button type="submit" class="btn-submit" :disabled="isSubmitting"
                         :class="{ submitting: isSubmitting }">
                         <span v-if="isSubmitting" class="spinner"></span>
-                        {{
-                            isSubmitting
-                                ? 'Enviando...'
-                                : isPreview
-                                    ? 'Prueba de envío'
-                        : 'Enviar formulario'
-                        }}
-                    </button>
-
-                    <button type="button" @click="resetForm" class="btn-reset" :disabled="isSubmitting">
-                        Limpiar respuestas
+                        {{ isSubmitting ? 'Enviando...' : 'Enviar formulario' }}
                     </button>
                 </div>
             </form>
@@ -350,27 +333,6 @@ const resetForm = () => {
     cursor: wait;
 }
 
-.btn-reset {
-    background: var(--neutral-white);
-    color: var(--principal-primary);
-    border: 2px solid var(--principal-primary);
-    padding: 0.875rem 2rem;
-    border-radius: 8px;
-    font-size: clamp(0.9rem, 1.8vw, 1rem);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-reset:hover:not(:disabled) {
-    background: var(--principal-primary-25);
-}
-
-.btn-reset:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .spinner {
     width: 16px;
     height: 16px;
@@ -386,22 +348,16 @@ const resetForm = () => {
     }
 }
 
-@media (max-width: 768px) {
-    .form-viewer-container {
-        width: 95%;
-        margin: 1rem;
-    }
-
+@media (max-width: 770px) {
     .form-viewer-body {
-        padding: 1rem;
+        padding: 0rem;
     }
 
     .form-actions {
         flex-direction: column;
     }
 
-    .btn-submit,
-    .btn-reset {
+    .btn-submit {
         width: 100%;
         min-width: auto;
     }

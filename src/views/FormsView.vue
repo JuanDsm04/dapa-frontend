@@ -263,7 +263,7 @@ const toggleQuestion = async (index: number) => {
         <div class="preview-header">
           <h2 class="title">Preview del formulario</h2>
         </div>
-        <FormPreview :questions="activeQuestions" :is-preview="false"/>
+        <FormPreview :questions="activeQuestions" :is-preview="true"/>
       </section>
     </main>
 

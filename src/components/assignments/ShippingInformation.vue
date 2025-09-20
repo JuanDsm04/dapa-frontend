@@ -117,7 +117,6 @@ const handleOrderSubmit = async (payload: UpdateOrderPayload) => {
 }
 
 // Mapeo de tipos de carga
-// Mapeo de tipos de carga
 const cargoTypeMap: Record<string, string> = {
   move: 'Mudanza',
   cargo: 'Flete',

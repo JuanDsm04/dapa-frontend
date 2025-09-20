@@ -16,6 +16,7 @@ import PerformanceReportView from "@/views/reports/PerformanceReportView.vue";
 import ReportsView from "@/views/reports/ReportsView.vue";
 import UsersView from "@/views/UsersView.vue";
 import VehiclesView from "@/views/VehiclesView.vue";
+import ClientResponseFormView from "@/views/ClientResponseFormView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -121,6 +122,12 @@ const router = createRouter({
       name: "FinancialControl",
       component: FinancialControlView,
       meta: {requiresAuth: true, roles: ['admin']}
+    },
+    {
+      path: "/dapa-form",
+      name: "ClientResponseForm",
+      component: ClientResponseFormView,
+      meta: { hideNavbar: true }
     }
   ],
 });
