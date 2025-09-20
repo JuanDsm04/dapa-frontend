@@ -117,14 +117,15 @@ const handleOrderSubmit = async (payload: UpdateOrderPayload) => {
 }
 
 // Mapeo de tipos de carga
-const cargoTypeMap = {
-  business: 'Negocio',
-  personal: 'Personal', 
+// Mapeo de tipos de carga
+const cargoTypeMap: Record<string, string> = {
+  move: 'Mudanza',
+  cargo: 'Flete',
   corporate: 'Empresarial'
 }
 
 // Función para obtener el tipo de carga en español
-const getCargoTypeInSpanish = (type: any) => {
+const getCargoTypeInSpanish = (type: string) => {
   return cargoTypeMap[type] || 'No especificado'
 }
 

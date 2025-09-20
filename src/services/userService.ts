@@ -18,7 +18,7 @@ export const getUserById = async (id: number): Promise<User> => {
       headers: getHeaders()
     })
   )
-  return response
+  return response.data
 }
 
 export const createUser = async (payload: Partial<User>) => {

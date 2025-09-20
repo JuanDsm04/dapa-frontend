@@ -79,7 +79,7 @@ const handleDeleteUser = (user: User) => {
     try {
       await deleteUser(user.id);
       await loadUsers();
-      toast.warning('Usuario eliminado exitosamente');
+      toast.info('Usuario eliminado exitosamente');
     } catch (error) {
       console.error("Error eliminando usuario:", error);
       toast.error('Error eliminando usuario');

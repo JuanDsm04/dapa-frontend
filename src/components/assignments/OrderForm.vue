@@ -11,8 +11,10 @@ const props = defineProps<{
 // Emitir evento para volver al componente padre
 const emit = defineEmits(["volver", "submit"])
 
+const clientName = ref('')
+const clientPhone = ref('')
 const price = ref('')
-const cargoType = ref<FrontendCargoType>('personal')
+const cargoType = ref<FrontendCargoType>('mudanza')
 const origin = ref('')
 const destination = ref('')
 const details = ref('')
@@ -20,27 +22,31 @@ const details = ref('')
 const errors = ref<Record<string, string>>({})
 
 // Mapeo de tipos de carga del backend al frontend
+// Mapeo de tipos de carga del backend al frontend
 const cargoTypeBackendToFrontend: Record<BackendCargoType, FrontendCargoType> = {
-  business: 'negocio',
-  personal: 'personal',
+  move: 'mudanza',
+  cargo: 'flete',
   corporate: 'empresarial'
 }
 
 // Mapeo de tipos de carga del frontend al backend
 const cargoTypeFrontendToBackend: Record<FrontendCargoType, BackendCargoType> = {
-  personal: 'personal',
-  empresarial: 'corporate',
-  negocio: 'business'
+  mudanza: 'move',
+  flete: 'cargo',
+  empresarial: 'corporate'
 }
+
 
 // Tipo guard para BackendCargoType
 const isBackendCargoType = (v: any): v is BackendCargoType => {
-  return v === 'business' || v === 'personal' || v === 'corporate'
+  return v === 'move' || v === 'cargo' || v === 'corporate'
 }
 
 // Cargar datos si es edición
 const loadOrderData = () => {
   if (props.orderData && props.isEdit) {
+    clientName.value = props.orderData.clientName || ''
+    clientPhone.value = props.orderData.clientPhone || ''
     price.value = props.orderData.totalAmount ? props.orderData.totalAmount.toString() : ''
     // asegurar tipo antes de indexar el Record
     if (isBackendCargoType(props.orderData.type)) {
@@ -57,6 +63,18 @@ const loadOrderData = () => {
 // Validar y preparar datos para envío
 const handleSubmit = async () => {
   errors.value = {}
+
+  // Validación del nombre del cliente
+  if (!clientName.value.trim()) {
+    errors.value.clientName = 'El nombre del cliente es requerido *'
+  }
+
+  // Validación del teléfono del cliente
+  if (!clientPhone.value.trim()) {
+    errors.value.clientPhone = 'El teléfono del cliente es requerido *'
+  } else if (!/^[\d\s\-\+\(\)]+$/.test(clientPhone.value.trim())) {
+    errors.value.clientPhone = 'El teléfono debe contener solo números y símbolos válidos *'
+  }
 
   const numericPrice = parseFloat(price.value)
   if (!price.value.trim()) {
@@ -83,11 +101,13 @@ const handleSubmit = async () => {
 
   // Construir payload
   const payload = {
+    clientName: clientName.value.trim(),
+    clientPhone: clientPhone.value.trim(),
     totalAmount: numericPrice,
     type: cargoTypeFrontendToBackend[cargoType.value],
-    origin: origin.value,
-    destination: destination.value,
-    details: details.value
+    origin: origin.value.trim(),
+    destination: destination.value.trim(),
+    details: details.value.trim()
   }
 
   // Emitir evento con los datos al componente padre
@@ -99,6 +119,13 @@ const filterPriceInput = (event: Event) => {
   const input = event.target as HTMLInputElement
   input.value = input.value.replace(/[^0-9.]/g, '')
   price.value = input.value
+}
+
+// Filtrar el input de teléfono
+const filterPhoneInput = (event: Event) => {
+  const input = event.target as HTMLInputElement
+  input.value = input.value.replace(/[^0-9\s\-\+\(\)]/g, '')
+  clientPhone.value = input.value
 }
 
 // Watch para cambios en orderData
@@ -116,6 +143,22 @@ onMounted(() => {
   <form @submit.prevent="handleSubmit">
 
     <div class="field-group">
+      <!-- Nombre del cliente -->
+      <div class="field">
+        <label for="clientName">Nombre del cliente</label>
+        <input type="text" id="clientName" v-model="clientName" />
+        <p v-if="errors.clientName" class="error">{{ errors.clientName }}</p>
+      </div>
+
+      <!-- Teléfono del cliente -->
+      <div class="field">
+        <label for="clientPhone">Teléfono del cliente</label>
+        <input type="text" id="clientPhone" v-model="clientPhone" @input="filterPhoneInput" />
+        <p v-if="errors.clientPhone" class="error">{{ errors.clientPhone }}</p>
+      </div>
+    </div>
+
+    <div class="field-group">
       <!-- Precio -->
       <div class="field">
         <label for="price">Precio</label>
@@ -130,9 +173,9 @@ onMounted(() => {
       <div class="field">
         <label for="cargoType">Tipo de servicio</label>
         <select id="cargoType" v-model="cargoType">
-          <option value="personal">Personal</option>
+          <option value="mudanza">Mudanza</option>
+          <option value="flete">Flete</option>
           <option value="empresarial">Empresarial</option>
-          <option value="negocio">Negocio</option>
         </select>
       </div>
     </div>

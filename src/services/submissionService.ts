@@ -3,13 +3,13 @@ import { API_URL, getHeaders, handleResponse } from '@/utils/api'
 
 export const createSubmission = async (payload: any) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/submissions`, {
+    await fetch(`${API_URL}/api/form/submissions`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(payload),
     })
   )
-  return response
+  return response.data
 }
 
 export const getSubmissions = async (): Promise<Submission[]> => {
@@ -33,20 +33,20 @@ export const getSubmissionById = async (id: number): Promise<Submission> => {
   return response.data as Submission
 }
 
-export const getSubmissionStats = async (): Promise<SubmissionStats> => {
-  const response = await handleResponse(
-    await fetch(`${API_URL}/api/submissions-stats`, {
-      method: 'GET',
-      headers: getHeaders(),
-    })
-  )
-  return response as SubmissionStats
-}
+// export const getSubmissionStats = async (): Promise<SubmissionStats> => {
+//   const response = await handleResponse(
+//     await fetch(`${API_URL}/api/submissions-stats`, {
+//       method: 'GET',
+//       headers: getHeaders(),
+//     })
+//   )
+//   return response as SubmissionStats
+// }
 
 export const updateSubmissionStatus = async (id: number, payload: any) => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/submissions/${id}/status`, {
-      method: 'PUT',
+    await fetch(`${API_URL}/api/form/submissions/${id}/status`, {
+      method: 'PATCH',
       headers: getHeaders(),
       body: JSON.stringify(payload),
     })
@@ -62,7 +62,7 @@ export const acceptSubmission = async (id: number, payload: any ) => {
       body: JSON.stringify(payload),
     })
   )
-  return response
+  return response.data
 }
 
 export const rejectSubmission = async (id: number) => {

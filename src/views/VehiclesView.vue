@@ -78,7 +78,7 @@ const handleDeleteVehicle = (vehicle: Vehicle) => {
     try {
       await deleteVehicle(selectedVehicle.value.id);
       await loadVehicles();
-      toast.warning('Vehículo eliminado exitosamente');
+      toast.info('Vehículo eliminado exitosamente');
     } catch (error) {
       console.error("Error eliminando vehículo:", error);
       toast.error('Error eliminando vehículo');

@@ -8,7 +8,7 @@ export const getOrders = async (): Promise<Order[]> => {
       headers: getHeaders()
     })
   )
-  return response
+  return response.data
 }
 
 export const getOrderById = async (orderId: number): Promise<Order> => {
@@ -18,7 +18,7 @@ export const getOrderById = async (orderId: number): Promise<Order> => {
       headers: getHeaders()
     })
   )
-  return response
+  return response.data
 }
 
 export const createOrder = async (payload: CreateOrderPayload): Promise<Order> => {

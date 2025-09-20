@@ -42,5 +42,5 @@ export interface orderFilter {
   label: string
 }
 
-export type BackendCargoType = 'business' | 'personal' | 'corporate'
-export type FrontendCargoType = 'negocio' | 'personal' | 'empresarial'
+export type BackendCargoType = 'move' | 'cargo' | 'corporate'
+export type FrontendCargoType = 'mudanza' | 'flete' | 'empresarial'

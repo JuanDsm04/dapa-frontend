@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import OrderForm from "@/components/assignments/OrderForm.vue";
 import FormPreview from "../form/FormPreview.vue";
+import NotificationModal from "@/components/NotificationModal.vue";
 import { acceptSubmission, rejectSubmission } from '@/services/submissionService';
 import { type Answer, type Submission } from '@/types/form';
 import { toast } from 'vue3-toastify'
@@ -14,8 +15,16 @@ const props = defineProps<{
 
 const emit = defineEmits(['back-to-list'])
 
-// Estado que indica si se está en modo formulario
+// Estado que indica si se estÃ¡ en modo formulario
 const showOrderForm = ref(false);
+
+// Estados para modals de confirmación
+const showConfirmModal = ref(false);
+const confirmTitle = ref('');
+const confirmMessage = ref('');
+const confirmAction = ref<(() => Promise<void>) | null>(null);
+const confirmText = ref('Confirmar');
+const cancelText = ref('Cancelar');
 
 const aceptar = () => {
     showOrderForm.value = true;
@@ -73,34 +82,55 @@ const statusClass = computed(() => {
   }
 });
 
-const handleReject = async () => {
+const handleReject = () => {
   if (!props.submission) return;
   
-  try {
-    await rejectSubmission(props.submission.id);
-    toast.info('Cotización rechazada');
-    emit('back-to-list', { id: props.submission.id, status: 'cancelled' });
-  } catch (error) {
-    console.error('Error al rechazar la cotización:', error);
-    toast.error('Error al rechazar la cotización');}
+  confirmTitle.value = '¿Rechazar cotización?';
+  confirmMessage.value = '¿Estás seguro de que quieres rechazar esta cotización? Se eliminará permanentemente y no podrás verla de nuevo.';
+  confirmText.value = 'Rechazar';
+  cancelText.value = 'Cancelar';
+  
+  confirmAction.value = async () => {
+    try {
+      await rejectSubmission(props.submission!.id);
+      toast.info('Cotización rechazada');
+      emit('back-to-list', { id: props.submission!.id, status: 'cancelled' });
+    } catch (error) {
+      console.error('Error al rechazar la cotización:', error);
+      toast.error('Error al rechazar la cotización');
+    }
+  };
+  
+  showConfirmModal.value = true;
 };
 
-const handleAccept = async (payload: Partial<Order>) => {
+const handleAccept = (payload: Partial<Order>) => {
   if (!props.submission) return;
-  const createOrderPayload: Partial<Order> = {
-    ...payload,
-    submissionId: props.submission.id
+
+  confirmTitle.value = '¿Aceptar cotización?';
+  confirmMessage.value = '¿Estás seguro de que quieres aceptar esta cotización? Pasará a la sección de asignación para que le asignes un piloto y vehículo.';
+  confirmText.value = 'Aceptar';
+  cancelText.value = 'Cancelar';
+
+  confirmAction.value = async () => {
+    const createOrderPayload: Partial<Order> = {
+      ...payload,
+      submissionId: props.submission!.id
+    };
+    try {
+      await acceptSubmission(props.submission!.id, createOrderPayload);
+      toast.success('Cotización aceptada');
+      showOrderForm.value = false;
+      emit('back-to-list', { id: props.submission!.id, status: 'approved' });
+    } catch (error) {
+      console.error('Error al aceptar la cotización:', error);
+      toast.error('Error al aceptar la cotización');
+    }
   };
-  try {
-    await acceptSubmission(props.submission.id, createOrderPayload);
-    toast.success('Cotización aceptada');
-    showOrderForm.value = false;
-    emit('back-to-list', { id: props.submission.id, status: 'approved' });
-  } catch (error) {
-    console.error('Error al aceptar la cotización:', error);
-    toast.error('Error al aceptar la cotización');
-  }
+
+  showConfirmModal.value = true;
 };
+
 </script>
 
 <template>
@@ -173,6 +203,21 @@ const handleAccept = async (payload: Partial<Order>) => {
             </div>
         </section>
     </div>
+
+    <!-- Modal de confirmación -->
+    <NotificationModal
+        v-if="showConfirmModal"
+        :show="showConfirmModal"
+        :title="confirmTitle"
+        :message="confirmMessage"
+        :confirmText="confirmText"
+        :cancelText="cancelText"
+        @close="showConfirmModal = false"
+        @confirm="() => { 
+            if (confirmAction) confirmAction()
+            showConfirmModal = false
+        }"
+    />
 </template>
 
 <style scoped>

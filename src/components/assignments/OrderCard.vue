@@ -19,9 +19,9 @@ const props = defineProps({
 
 // Traducción de los tipos de ordenes
 const orderTypeMap = {
-  business: 'Negocio',
-  personal: 'Personal',
-  corporate: 'Corporativo'
+  move: 'Mudanza',
+  cargo: 'Flete',
+  corporate: 'Empresarial'
 }
 
 // Función para obtener el tipo de servicio en español

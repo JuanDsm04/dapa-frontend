@@ -8,7 +8,7 @@ export const getVehicles = async (): Promise<Vehicle[]> => {
       headers: getHeaders()
     })
   )
-  return response
+  return response.data
 }
 
 export const getVehicleById = async (id: number): Promise<Vehicle> => {
@@ -18,7 +18,7 @@ export const getVehicleById = async (id: number): Promise<Vehicle> => {
       headers: getHeaders()
     })
   )
-  return response
+  return response.data
 }
 
 export const createVehicle = async (payload: Partial<Vehicle>) => {
