@@ -29,11 +29,12 @@ const { vehicleAlert } = storeToRefs(notificationStore)
 // Definición de secciones
 const sections: Section[] = [
   { id: 'quotes', icon: 'notifications', description: 'Cotizaciones', auth: ['admin'] },
-  { id: 'assignments', icon: 'pin_drop', description: 'Asignaciones', auth: ['admin', 'driver'] },
+  { id: 'assignments', icon: 'pin_drop', description: 'Asignaciones', auth: ['admin'] },
   { id: 'users', icon: 'people', description: 'Usuarios', auth: ['admin']},
   { id: 'vehicles', icon: 'local_shipping', description: 'Vehículos', auth: ['admin'] },
   { id: 'reports', icon: 'monitoring', description: 'Reportes', auth: ['admin'] },
-  { id: 'forms', icon: 'description', description: 'Formularios', auth: ['admin']}
+  { id: 'forms', icon: 'description', description: 'Formularios', auth: ['admin'] },
+  { id: 'my-assignments', icon: 'pin_drop', description: 'Mis Asignaciones', auth: ['driver'] }
 ]
 
 // Estado del menú

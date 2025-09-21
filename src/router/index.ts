@@ -1,7 +1,7 @@
 import { getUserRole, isTokenExpired } from '@/utils/auth';
 import AssignmentsView from "@/views/AssignmentsView.vue";
 import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
-import DriverAssignmentsView from "@/views/DriverAssignments.vue";
+import DriverAssignmentsView from "@/views/DriverAssignmentsView.vue";
 import FormsView from "@/views/FormsView.vue";
 import LandingPageView from "@/views/LandingPageView.vue";
 import LoginView from "@/views/LoginView.vue";

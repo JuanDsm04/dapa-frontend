@@ -54,7 +54,7 @@ export const deleteOrder = async (orderId: number): Promise<void> => {
 
 export const assignOrder = async (orderId: number, userId: number, vehicleId: number): Promise<Order> => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/orders/${orderId}`, {
+    await fetch(`${API_URL}/api/orders/${orderId}/assign`, {
       method: 'PATCH',
       headers: getHeaders(),
       body: JSON.stringify({
