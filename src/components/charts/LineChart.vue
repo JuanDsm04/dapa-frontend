@@ -51,7 +51,24 @@ const computedOptions = computed(() => ({
   },
   markers: {
     size: 5,
-}
+  },
+  responsive: [
+    {
+      breakpoint: 770,
+      options: {
+        chart: {
+          toolbar: {
+            show: false
+          },
+          width: '100%',
+          height: 'auto',
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  ]
 }))
 </script>
 
@@ -67,5 +84,12 @@ const computedOptions = computed(() => ({
   padding: 2rem;
   background-color: #ffff;
   border-radius: 1rem;
+}
+
+@media (max-width: 770px) {
+  .chart-container {
+    width: 100%;
+    padding: 1.5rem;
+  }
 }
 </style>
