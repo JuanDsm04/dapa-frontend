@@ -3,7 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import DriverOrderCard from '@/components/drivers/DriverOrderCard.vue'
 import DriverShippingInformation from '@/components/drivers/DriverShippingInformation.vue'
 import FormResponseModal from '@/components/assignments/FormResponseModal.vue'
-import { getOrders, updateOrder } from '@/services/orderService'
+import { getOrders, changeOrderStatus } from '@/services/orderService'
 import type { Order } from '@/types/order'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
@@ -51,7 +51,7 @@ const loadOrders = async () => {
     // Filtrar solo las órdenes asignadas al conductor actual
     orders.value = driverOrders.filter(order => 
       ['assigned', 'pickup', 'collected', 'delivered'].includes(order.status)
-    )
+    )//victor no le sabe
     
   } catch (err) {
     const error = err as Error
@@ -78,7 +78,7 @@ const handleOrderDeselected = () => {
 const handleUpdateStatus = async (payload: { orderId: number, newStatus: string }) => {
   try {
     // Actualizar el estado de la orden
-    await updateOrder(payload.orderId, { status: payload.newStatus })
+    await changeOrderStatus(payload.orderId, payload.newStatus)
     
     // Actualizar la orden en la lista local
     const orderIndex = orders.value.findIndex(o => o.id === payload.orderId)
@@ -140,7 +140,7 @@ const handleStartOrder = async (order: Order) => {
     }
 
     // Actualizar el estado de la orden a 'pickup'
-    await updateOrder(order.id, { status: 'pickup' })
+    await changeOrderStatus(order.id, 'pickup')
     
     // Actualizar la orden en la lista local
     const orderIndex = orders.value.findIndex(o => o.id === order.id)

@@ -49,6 +49,16 @@ export const updateOrder = async (orderId: number, payload: UpdateOrderPayload):
   return response
 }
 
+export const changeOrderStatus = async (orderId: number, status: string): Promise<void> => {
+  return handleResponse(
+    await fetch(`${API_URL}/api/orders/${orderId}/status`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+      body: JSON.stringify({status: status})
+    })
+  )
+}
+
 export const deleteOrder = async (orderId: number): Promise<void> => {
   return handleResponse(
     await fetch(`${API_URL}/api/orders/${orderId}`, {
