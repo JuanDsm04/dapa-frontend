@@ -1,14 +1,20 @@
 import type { Order, CreateOrderPayload, UpdateOrderPayload } from '@/types/order'
 import { API_URL, getHeaders, handleResponse } from '@/utils/api'
 
-export const getOrders = async (): Promise<Order[]> => {
-  const response = await handleResponse(
-    await fetch(`${API_URL}/api/orders`, {
+export const getOrders = async (status?: string): Promise<Order[]> => {
+    const url = new URL(`${API_URL}/api/orders`)
+    if (status) {
+      url.searchParams.append('status', status)
+    }
+
+    const response = await handleResponse(
+      await fetch(url.toString(), {
       method: 'GET',
       headers: getHeaders()
-    })
-  )
-  return response.data
+      })
+    )
+
+    return response.data
 }
 
 export const getOrderById = async (orderId: number): Promise<Order> => {

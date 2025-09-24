@@ -11,7 +11,7 @@ import 'vue3-toastify/dist/index.css'
 // Estados principales
 const orders = ref<Order[]>([])
 const loading = ref(false)
-const selectedOrder = ref<Order | null>(null)
+const selectedOrder = ref<Order | undefined>(undefined)
 const showDetailView = ref(false)
 
 // Estados para el modal de respuestas del formulario
@@ -35,65 +35,21 @@ const hasActiveOrder = computed(() => {
   return orders.value.some(order => ['pickup', 'collected'].includes(order.status))
 })
 
-// Datos de prueba para desarrollo - REMOVER en producción
-const getMockOrders = (): Order[] => {
-  return [
-    {
-      id: 1001,
-      type: 'cargo',
-      status: 'assigned',
-      date: '2024-01-15T10:30:00Z',
-      origin: 'Zona 1, Guatemala',
-      destination: 'Zona 10, Guatemala',
-      totalAmount: 150.00,
-      details: 'Entrega de muebles de oficina',
-      submissionId: 101
-    },
-    {
-      id: 1002,
-      type: 'move',
-      status: 'pickup',
-      date: '2024-01-14T14:15:00Z',
-      origin: 'Mixco, Guatemala',
-      destination: 'Villa Nueva, Guatemala',
-      totalAmount: 350.00,
-      details: 'Mudanza completa de casa',
-      submissionId: 102
-    },
-    {
-      id: 1003,
-      type: 'corporate',
-      status: 'collected',
-      date: '2024-01-16T08:45:00Z',
-      origin: 'Zona 4, Guatemala',
-      destination: 'Carretera a El Salvador',
-      totalAmount: 500.00,
-      details: 'Transporte de equipo empresarial'
-      // Sin submissionId para probar el caso sin formulario
-    }
-  ] as Order[]
-}
-
 // Cargar todas las órdenes del conductor
 const loadOrders = async () => {
   loading.value = true
   try {
-    // OPCIÓN 1: Usar datos mock para desarrollo
-    const allOrders = getMockOrders()
+    const driverOrders = await getOrders()
     
-    // OPCIÓN 2: Usar la API real - comentado por ahora
-    // const allOrders = await getOrders()
-    
-    // Verificar si allOrders es un array válido
-    if (!Array.isArray(allOrders)) {
-      console.error('getOrders() no devolvió un array:', allOrders)
+    if (!Array.isArray(driverOrders)) {
+      console.error('getOrders() no devolvió un array:', driverOrders)
       toast.error('Error: Los datos recibidos no tienen el formato correcto')
       orders.value = []
       return
     }
     
     // Filtrar solo las órdenes asignadas al conductor actual
-    orders.value = allOrders.filter(order => 
+    orders.value = driverOrders.filter(order => 
       ['assigned', 'pickup', 'collected', 'delivered'].includes(order.status)
     )
     
@@ -101,11 +57,6 @@ const loadOrders = async () => {
     const error = err as Error
     console.error('Error completo:', err)
     console.error('Error cargando órdenes:', error.message)
-    
-    // Fallback a datos mock en caso de error
-    orders.value = getMockOrders()
-    toast.warning('Usando datos de prueba')
-    
   } finally {
     loading.value = false
   }
@@ -119,7 +70,7 @@ const handleOrderSelected = (order: Order) => {
 
 // Manejar deselección de orden
 const handleOrderDeselected = () => {
-  selectedOrder.value = null
+  selectedOrder.value = undefined
   showDetailView.value = false
 }
 
@@ -176,7 +127,7 @@ const closeFormResponsesModal = () => {
 // Manejar regreso a la lista
 const handleBackToList = () => {
   showDetailView.value = false
-  selectedOrder.value = null
+  selectedOrder.value = undefined
 }
 
 // Manejar inicio de orden
