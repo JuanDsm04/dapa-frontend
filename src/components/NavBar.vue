@@ -6,8 +6,12 @@ import { useNotificationStore } from '@/stores/notifications'
 import { storeToRefs } from 'pinia'
 
 const activeSection = computed(() => {
-  const path = route.path.replace('/', '')
-  return path || 'quotes'
+  const path = route.path
+  if (path.startsWith('/reports')) {
+    return 'reports'
+  }
+  const section = path.replace('/', '')
+  return section || 'quotes'
 })
 
 const notificationStore = useNotificationStore()
