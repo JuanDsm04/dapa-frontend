@@ -1,7 +1,40 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import ReportFilter from '@/components/filters/ReportFilter.vue';
 import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
 import FinanceTable from '@/components/Table.vue';
+import { getFinancialReport, getTotalIncomeReport } from '@/services/reportService';
+import type { Income } from '@/types/reports';
+
+const totalIncome = ref(0);
+const incomeSources = ref<Income[]>([]);
+
+onMounted(async () => {
+  try {
+    const response = await getTotalIncomeReport();
+    totalIncome.value = response.data.totalIncome;
+  } catch (error) {
+    console.error('Error fetching total income:', error);
+  }
+
+  try {
+    const response = await getFinancialReport();
+
+    incomeSources.value = response.data.map((item: any) => {
+      const date = new Date(item.date);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return {
+        ...item,
+        formattedDate: `${day}/${month}/${year}`
+      };
+
+    });
+  } catch (error) {
+    console.error('Error fetching financial report: ', error);
+  }
+});
 </script>
 
 <template>
@@ -12,22 +45,18 @@ import FinanceTable from '@/components/Table.vue';
     <section>
       <ReportFilter />
       <TotalesFinancieros
-        :ingresos="0"
+        :ingresos="totalIncome"
         :egresos="0"
-        :diferencia="0"
+        :diferencia="totalIncome"
       />
-      <div class="table-wrapper">
+      <div class="wrapper-table">
         <FinanceTable
-          :items="[]"
+          :items="incomeSources"
           :columns="[
-            { label: 'ID', field: 'id' },
-            { label: 'Fecha', field: 'date' },
+            { label: 'Fecha', field: 'formattedDate' },
             { label: 'Tipo', field: 'type' },
-            { label: 'Monto (Q)', field: 'amount' },
-            { label: 'Categoría', field: 'category' },
-            { label: 'Método de pago', field: 'paymentMethod' },
-            { label: 'Responsable', field: 'responsable' },
-            { label: 'Descripción', field: 'desc' },
+            { label: 'Monto (Q)', field: 'totalAmount' },
+            { label: 'Responsable', field: 'user' },
           ]"
           @edit="() => {}"
           @delete="() => {}"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import DataTablesCore from 'datatables.net';
 import 'datatables.net-dt/css/dataTables.dataTables.css';
 import DataTable from 'datatables.net-vue3';
@@ -11,13 +12,17 @@ const props = defineProps<{
   diferencia: number
 }>()
 
-const data = [
+const formatCurrency = (value: number) => {
+  return `Q${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+const data = computed(() => [
   {
-    ingresos: '',
-    egresos: '',
-    saldo: ''
+    ingresos: `<span class="valor-ingresos">${formatCurrency(props.ingresos)}</span>`,
+    egresos: `<span class="valor-egresos">${formatCurrency(props.egresos)}</span>`,
+    saldo: `<span class="valor-saldo">${formatCurrency(props.diferencia)}</span>`
   }
-]
+]);
 
 const columns = [
   {
@@ -115,23 +120,21 @@ const options = {
 }
 
 :deep(.totales-table .valor-ingresos) {
+  font-weight: lighter;
   color: #388e3c;
   font-size: 1.6rem;
-  font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 :deep(.totales-table .valor-egresos) {
   color: #d32f2f;
   font-size: 1.6rem;
-  font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 :deep(.totales-table .valor-saldo) {
   color: #000000;
   font-size: 1.6rem;
-  font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
