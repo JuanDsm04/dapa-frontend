@@ -3,23 +3,20 @@ import { ref, onMounted } from 'vue';
 import ReportFilter from '@/components/filters/ReportFilter.vue';
 import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
 import FinanceTable from '@/components/Table.vue';
-import { getFinancialReport, getTotalIncomeReport } from '@/services/reportService';
+import { getFinancialReport, getTotalIncomeReport, getFinancialReportByDate } from '@/services/reportService';
 import type { Income } from '@/types/reports';
 
 const totalIncome = ref(0);
 const incomeSources = ref<Income[]>([]);
 
-onMounted(async () => {
+const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
   try {
-    const response = await getTotalIncomeReport();
-    totalIncome.value = response.data.totalIncome;
-  } catch (error) {
-    console.error('Error fetching total income:', error);
-  }
-
-  try {
-    const response = await getFinancialReport();
-
+    let response;
+    if (startDate && endDate) {
+      response = await getFinancialReportByDate(startDate, endDate);
+    } else {
+      response = await getFinancialReport();
+    }
     incomeSources.value = response.data.map((item: any) => {
       const date = new Date(item.date);
       const day = String(date.getDate()).padStart(2, '0');
@@ -32,7 +29,22 @@ onMounted(async () => {
     });
   } catch (error) {
     console.error('Error fetching financial report: ', error);
+    incomeSources.value = [];
   }
+};
+
+const handleFilterChange = ({ startDate, endDate }: { startDate: string, endDate: string }) => {
+  fetchFinancialReport(startDate, endDate);
+};
+
+onMounted(async () => {
+  try {
+    const response = await getTotalIncomeReport();
+    totalIncome.value = response.data.totalIncome;
+  } catch (error) {
+    console.error('Error fetching total income:', error);
+  }
+  fetchFinancialReport(); // Fetch initial unfiltered report
 });
 </script>
 
@@ -42,13 +54,13 @@ onMounted(async () => {
       <h1>Reporte Financiero</h1>
     </header>
     <section>
-      <ReportFilter />
+      <ReportFilter @filter-change="handleFilterChange" />
       <TotalesFinancieros
         :ingresos="totalIncome"
         :egresos="0"
         :diferencia="totalIncome"
       />
-      <div class="wrapper-table">
+      <div class="table-wrapper">
         <FinanceTable
           :items="incomeSources"
           :columns="[
