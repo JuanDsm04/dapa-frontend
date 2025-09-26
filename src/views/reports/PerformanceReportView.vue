@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline';
 import { ClipboardDocumentListIcon } from '@heroicons/vue/24/outline';
 import { ChartBarIcon } from '@heroicons/vue/24/outline';
@@ -10,9 +10,13 @@ import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
 import KpiCard from '@/components/charts/KpiCard.vue';
 import DriversTable from '@/components/Table.vue'
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { getDriversReport } from '@/services/reportService';
+import type { DriverReport } from '@/types/reports';
+
 const activeTab = ref('left')
 const selectedMonth = ref<String>('Diciembre 2024')
+const driverReports = ref<DriverReport[]>([]);
 
 // Temporary dummy data
 const linealData = ref({
@@ -44,6 +48,16 @@ const driversPieData = ref({
   labels: ['Conductor A', 'Conductor B', 'Conductor C', 'Conductor D'],
   title: 'Participación en Viajes'
 })
+
+onMounted(async () => {
+  try {
+    const response = await getDriversReport();
+    driverReports.value = response.data
+  } catch (error) {
+    console.error('Error fetching drivers:', error);
+  }
+});
+
 </script>
 
 <template>
@@ -91,11 +105,11 @@ const driversPieData = ref({
     </section>
     <div class="table-wrapper">
       <DriversTable v-if="activeTab === 'right'"
-        :items="[]"
+        :items="driverReports"
         :columns="[
-          { label: 'Conductor', field: 'driver' },
-          { label: 'Viajes completados', field: 'completedOrders' },
-          { label: 'Entregas semanales', field: 'avgWeeklyOrders' },
+          { label: 'Conductor', field: 'driverName' },
+          { label: 'Viajes completados', field: 'totalOrders' },
+          { label: 'Entregas semanales', field: 'ordersPerWeek' },
         ]"
         @edit="() => {}"
         @delete="() => {}"

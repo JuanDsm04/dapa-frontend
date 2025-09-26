@@ -29,7 +29,6 @@ onMounted(async () => {
         ...item,
         formattedDate: `${day}/${month}/${year}`
       };
-
     });
   } catch (error) {
     console.error('Error fetching financial report: ', error);

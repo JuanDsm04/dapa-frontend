@@ -4,3 +4,9 @@ export interface Income {
   type: string
   user: string
 }
+
+export interface DriverReport {
+  driverName: string
+  totalOrders: number
+  ordersPerWeek: number
+}
