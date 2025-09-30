@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline';
-import { ClipboardDocumentListIcon } from '@heroicons/vue/24/outline';
-import { ChartBarIcon } from '@heroicons/vue/24/outline';
-import { TruckIcon } from '@heroicons/vue/24/outline';
-import { BeakerIcon } from '@heroicons/vue/24/outline';
+// import { ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline';
+// import { ClipboardDocumentListIcon } from '@heroicons/vue/24/outline';
+// import { ChartBarIcon } from '@heroicons/vue/24/outline';
+// import { TruckIcon } from '@heroicons/vue/24/outline';
+// import { BeakerIcon } from '@heroicons/vue/24/outline';
 import LineChart from '@/components/charts/LineChart.vue';
 import CircularChart from '@/components/charts/CircularChart.vue';
 import BarChart from '@/components/charts/BarChart.vue';

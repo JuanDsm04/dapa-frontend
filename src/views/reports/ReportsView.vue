@@ -17,7 +17,7 @@ function goToPerformance() {
 
 <template>
   <main class="financial-main">
-    <div class="btn-column">
+    <div class="btn-container">
       <BigButton
         title="Control financiero"
         description="Administra y visualiza el control de ingresos y egresos."
@@ -45,11 +45,30 @@ function goToPerformance() {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  padding: 2rem;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
-.btn-column {
+
+.btn-container {
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 24px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* A partir de tablets, los botones se muestran en fila */
+@media (min-width: 768px) {
+  .btn-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+  }
+
+  .financial-main{
+    padding: 1.25rem;
+  }
 }
 </style>
