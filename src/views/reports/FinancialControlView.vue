@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ReportFilter from '@/components/filters/ReportFilter.vue';
-import FinanceTable from '@/components/Table.vue';
+import IncomeTable from '@/components/Table.vue';
+import ExpenseTable from '@/components/Table.vue';
 
 import BarChart from '@/components/charts/BarChart.vue';
 import CircularChart from '@/components/charts/CircularChart.vue';
@@ -56,7 +57,7 @@ const labelsCircular = ['Tarjeta', 'Efectivo', 'Transferencia', 'Cheque']
 
       <!-- Tabla -->
       <div class="table-wrapper">
-        <FinanceTable
+        <IncomeTable
           :items="[]"
           :columns="[
             { label: 'ID', field: 'id' },
@@ -67,6 +68,22 @@ const labelsCircular = ['Tarjeta', 'Efectivo', 'Transferencia', 'Cheque']
             { label: 'Método de pago', field: 'paymentMethod' },
             { label: 'Responsable', field: 'responsable' },
             { label: 'Descripción', field: 'desc' },
+          ]"
+          @edit="() => {}"
+          @delete="() => {}"
+        />
+      </div>
+      <div class="table-wrapper">
+        <ExpenseTable
+          :items="[]"
+          :columns="[
+            { label: 'ID', field: 'id' },
+            { label: 'Fecha', field: 'date' },
+            { label: 'Tipo', field: 'type' },
+            { label: 'E. Temporal', field: 'tempEmployee' },
+            { label: 'Descripción', field: 'description' },
+            { label: 'Tipo de pago', field: 'paymentType' },
+            { label: 'Costo', field: 'amount' },
           ]"
           @edit="() => {}"
           @delete="() => {}"
