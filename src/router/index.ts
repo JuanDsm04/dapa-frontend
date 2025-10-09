@@ -1,6 +1,5 @@
 import { getUserRole, isTokenExpired } from '@/utils/auth';
 import AssignmentsView from "@/views/AssignmentsView.vue";
-import AssignmentTrackingView from "@/views/AssignmentTrackingView.vue";
 import DriverAssignmentsView from "@/views/DriverAssignmentsView.vue";
 import FormsView from "@/views/FormsView.vue";
 import LandingPageView from "@/views/LandingPageView.vue";
@@ -17,6 +16,7 @@ import ReportsView from "@/views/reports/ReportsView.vue";
 import UsersView from "@/views/UsersView.vue";
 import VehiclesView from "@/views/VehiclesView.vue";
 import ClientResponseFormView from "@/views/ClientResponseFormView.vue";
+import TrackingView from "@/views/ClientTrackingView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -77,11 +77,6 @@ const router = createRouter({
       meta: { requiresAuth: true, roles: ['admin']}
     },
     {
-      path: "/assignments/tracking",
-      name: "TempClientAssignments",
-      component: AssignmentTrackingView
-    },
-    {
       path: "/my-assignments",
       name: "MyAssignments",
       component: DriverAssignmentsView,
@@ -127,6 +122,12 @@ const router = createRouter({
       path: "/dapa-form",
       name: "ClientResponseForm",
       component: ClientResponseFormView,
+      meta: { hideNavbar: true }
+    },
+    {
+      path: '/tracking',
+      name: 'Tracking',
+      component: TrackingView,
       meta: { hideNavbar: true }
     }
   ],
