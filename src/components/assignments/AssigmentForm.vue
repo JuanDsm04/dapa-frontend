@@ -188,7 +188,7 @@ onMounted(() => {
       <h2>Asignación</h2>
       <div class="header-actions" v-if="orderDetails">
         <button class="form-btn" @click="showFormResponses">
-          <span class="material-symbols-outlined">attach_file</span>
+          <span class="material-symbols-outlined">folder_eye</span>
         </button>
         <button 
           class="assign-btn" 

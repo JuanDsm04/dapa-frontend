@@ -126,7 +126,7 @@ const getStatusInSpanish = (status: string) => {
             <div class="header-actions">
                 <button class="form-btn" :class="{ 'disabled': mode === 'censored' || !currentOrderData?.submissionId }"
                     :disabled="mode === 'censored' || !currentOrderData?.submissionId" @click="handleShowFormResponses">
-                    <span class="material-symbols-outlined">attach_file</span>
+                    <span class="material-symbols-outlined">folder_eye</span>
                 </button>
             </div>
         </header>
