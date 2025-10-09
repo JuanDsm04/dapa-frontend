@@ -16,9 +16,12 @@ const props = defineProps<{
   selectedOrder: Order | null
 }>()
 
-// Emit para regresar a la lista
+// Emit para regresar a la lista y notificar estados
 const emit = defineEmits<{
   (e: 'back-to-list'): void
+  (e: 'order-assigned'): void
+  (e: 'modal-state-change', isOpen: boolean): void
+  (e: 'interaction-state-change', isActive: boolean): void
 }>()
 
 // Estado interno
@@ -80,15 +83,18 @@ const getVehiclesData = async () => {
 const showFormResponses = async () => {
   if (orderDetails.value?.submissionId) {
     showFormResponsesModal.value = true
+    emit('modal-state-change', true)
     await formResponseModal.value?.openModal(orderDetails.value.submissionId)
+
   } else {
     toast.error("Esta orden no tiene un formulario asociado")
   }
 }
 
-// Función para cerrar el modal
+// Función para cerrar el modal de respuestas
 const closeFormResponsesModal = () => {
   showFormResponsesModal.value = false
+  emit('modal-state-change', false)
 }
 
 // Asignar orden a conductor y vehículo
@@ -107,6 +113,10 @@ const assignOrderToDriver = async () => {
 
     toast.success("Orden asignada exitosamente")
     showModal.value = false
+    emit('modal-state-change', false)
+    
+    // Emitir evento de asignación exitosa
+    emit('order-assigned')
 
   } catch (error) {
     console.error("Error asignando orden:", error)
@@ -125,6 +135,30 @@ const handleBackToList = () => {
 // Manejar la actualización de la orden desde ShippingInformation
 const handleOrderUpdated = (updatedOrder: Order) => {
   orderDetails.value = { ...updatedOrder }
+  // Emitir para que se recargue la lista
+  emit('order-assigned')
+}
+
+// Manejar cuando se abre el modal de confirmación
+const openConfirmModal = () => {
+  showModal.value = true
+  emit('modal-state-change', true)
+}
+
+// Manejar cuando se cierra el modal de confirmación
+const closeConfirmModal = () => {
+  showModal.value = false
+  emit('modal-state-change', false)
+}
+
+// Detectar cuando el usuario empieza a interactuar con los selects
+const handleSelectFocus = () => {
+  emit('interaction-state-change', true)
+}
+
+// Detectar cuando el usuario termina de interactuar con los selects
+const handleSelectBlur = () => {
+  emit('interaction-state-change', false)
 }
 
 // Watch para cambios en la orden seleccionada
@@ -158,7 +192,7 @@ onMounted(() => {
         </button>
         <button 
           class="assign-btn" 
-          @click="showModal = true"
+          @click="openConfirmModal"
           :disabled="!selectedDriver || !selectedVehicle"
         >
           <span class="material-symbols-outlined">check</span>
@@ -184,7 +218,12 @@ onMounted(() => {
         <div class="field-group">
           <div class="form-field">
             <label for="driver">Elegir conductor</label>
-            <select id="driver" v-model="selectedDriver">
+            <select 
+              id="driver" 
+              v-model="selectedDriver"
+              @focus="handleSelectFocus"
+              @blur="handleSelectBlur"
+            >
               <option disabled value="">Selecciona un conductor</option>
               <option 
                 v-for="driver in drivers" 
@@ -198,7 +237,12 @@ onMounted(() => {
 
           <div class="form-field">
             <label for="vehicle">Elegir vehículo</label>
-            <select id="vehicle" v-model="selectedVehicle">
+            <select 
+              id="vehicle" 
+              v-model="selectedVehicle"
+              @focus="handleSelectFocus"
+              @blur="handleSelectBlur"
+            >
               <option disabled value="">Selecciona un vehículo</option>
               <option 
                 v-for="vehicle in vehicles" 
@@ -237,7 +281,7 @@ onMounted(() => {
       message="Recuerda tomar en cuenta la disponibilidad tanto del conductor como del vehículo."
       confirmText="Asignar"
       cancelText="Cerrar"
-      @close="showModal = false"
+      @close="closeConfirmModal"
       @confirm="handleConfirm"
     />
   </div>

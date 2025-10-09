@@ -14,6 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'back-to-list'): void
+  (e: 'modal-state-change', isOpen: boolean): void
 }>()
 
 // Estado de la orden
@@ -44,6 +45,7 @@ const getOrderDetails = async (orderId: number) => {
 const showFormResponses = async () => {
   if (orderDetails.value?.submissionId) {
     showFormResponsesModal.value = true
+    emit('modal-state-change', true)
     await formResponseModal.value?.openModal(orderDetails.value.submissionId)
   } else {
     toast.error("Esta orden no tiene un formulario asociado")
@@ -53,11 +55,17 @@ const showFormResponses = async () => {
 // Función para cerrar el modal
 const closeFormResponsesModal = () => {
   showFormResponsesModal.value = false
+  emit('modal-state-change', false)
 }
 
 // Manejar la actualización de la orden desde ShippingInformation
 const handleOrderUpdated = (updatedOrder: Order) => {
   orderDetails.value = { ...updatedOrder }
+}
+
+// Manejar cambio de estado del modal desde ShippingInformation
+const handleModalStateChange = (isOpen: boolean) => {
+  emit('modal-state-change', isOpen)
 }
 
 // Watch para cambios en la orden seleccionada
@@ -120,6 +128,7 @@ const handleBackToList = () => {
         :editable="false" 
         mode="tracking"
         @orderUpdated="handleOrderUpdated"
+        @modal-state-change="handleModalStateChange"
       />
       <br/>
     </div>
