@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import ReportFilter from '@/components/filters/ReportFilter.vue';
+import ReportFilter from '@/components/filters/FinancialControlFilter.vue';
 import { default as ExpenseTable, default as IncomeTable } from '@/components/Table.vue';
-import { ref } from 'vue'; // <-- Agrega esto
+import { ref } from 'vue';
 
-const activeTab = ref('left'); // <-- Agrega esto
+const activeTab = ref('left');
 
 const categories = ['Enero', 'Febrero', 'Marzo', 'Abril']
 const seriesBar = [{ name: 'Ingresos', data: [20, 40, 35, 50] }]
