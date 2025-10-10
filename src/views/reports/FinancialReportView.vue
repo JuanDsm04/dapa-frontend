@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
 import ReportFilter from '@/components/filters/ReportFilter.vue';
 import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
 import FinanceTable from '@/components/Table.vue';
-import { getFinancialReport, getTotalIncomeReport, getFinancialReportByDate } from '@/services/reportService';
+import { getFinancialReport, getFinancialReportByDate, getTotalIncomeReport } from '@/services/reportService';
 import type { Income } from '@/types/reports';
+import { onMounted, ref } from 'vue';
 
+const activeTab = ref('table');
 const totalIncome = ref(0);
 const incomeSources = ref<Income[]>([]);
 
@@ -17,6 +18,7 @@ const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
     } else {
       response = await getFinancialReport();
     }
+
     incomeSources.value = response.data.map((item: any) => {
       const date = new Date(item.date);
       const day = String(date.getDate()).padStart(2, '0');
@@ -44,7 +46,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error fetching total income:', error);
   }
-  fetchFinancialReport(); // Fetch initial unfiltered report
+  fetchFinancialReport(); // Carga inicial sin filtro
 });
 </script>
 
@@ -53,14 +55,29 @@ onMounted(async () => {
     <header>
       <h1>Reporte Financiero</h1>
     </header>
+
     <section>
+      <!-- Filtro -->
       <ReportFilter @filter-change="handleFilterChange" />
+
+      <!-- Totales -->
       <TotalesFinancieros
         :ingresos="totalIncome"
         :egresos="0"
         :diferencia="totalIncome"
       />
-      <div class="table-wrapper">
+
+      <!-- Toggle -->
+      <div class="toggle-row">
+        <div :class="['toggle-wrapper', activeTab === 'table' ? 'active-left' : 'active-right']">
+          <div class="toggle-indicator"></div>
+          <div class="toggle-button" @click="activeTab = 'table'">Tabla</div>
+          <div class="toggle-button" @click="activeTab = 'graphics'">Gráficas</div>
+        </div>
+      </div>
+
+      <!-- Contenido dinámico -->
+      <div v-if="activeTab === 'table'" class="table-wrapper">
         <FinanceTable
           :items="incomeSources"
           :columns="[
@@ -72,6 +89,10 @@ onMounted(async () => {
           @edit="() => {}"
           @delete="() => {}"
         />
+      </div>
+
+      <div v-if="activeTab === 'graphics'" class="graphics-section">
+        <!-- Aquí se pueden agregar gráficas en el futuro -->
       </div>
     </section>
   </main>
@@ -97,7 +118,6 @@ h1 {
   margin: 0;
 }
 
-
 section {
   width: 100%;
   min-height: calc(100vh - 150px);
@@ -107,6 +127,57 @@ section {
   align-items: stretch;
 }
 
+/* Toggle switch */
+.toggle-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0 1rem 0;
+}
+
+.toggle-wrapper {
+  display: flex;
+  background-color: #EAEEF4;
+  border-radius: 10px;
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 60px;
+  padding: 6px;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.toggle-indicator {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc(50% - 6px);
+  height: calc(100% - 12px);
+  background-color: white;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.toggle-button {
+  flex: 1;
+  text-align: center;
+  line-height: 48px;
+  cursor: pointer;
+  z-index: 2;
+  user-select: none;
+}
+
+.active-left .toggle-indicator {
+  left: 6px;
+}
+
+.active-right .toggle-indicator {
+  left: 50%;
+}
+
+/* Tabla */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -114,6 +185,14 @@ section {
   justify-content: center;
 }
 
+/* Placeholder para gráficas */
+.graphics-section {
+  min-height: 300px;
+  width: 100%;
+  background: transparent;
+}
+
+/* Responsividad */
 @media (max-width: 770px) {
   main {
     padding: 2rem 1rem;
@@ -130,16 +209,8 @@ section {
     text-align: center;
   }
 
-  .download-btn {
-    width: 100%;
-  }
-
   section {
-    gap: 0.5rem; /* Menor separación en móvil */
-  }
-
-  .table-wrapper {
-    justify-content: center;
+    gap: 0.5rem;
   }
 }
 </style>
