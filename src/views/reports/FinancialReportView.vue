@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import BarChart from '@/components/charts/BarChart.vue';
+import CircularChart from '@/components/charts/CircularChart.vue';
+import LineChart from '@/components/charts/LineChart.vue';
+import PieChart from '@/components/charts/PieChart.vue';
 import ReportFilter from '@/components/filters/ReportFilter.vue';
 import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
 import FinanceTable from '@/components/Table.vue';
@@ -9,6 +13,14 @@ import { onMounted, ref } from 'vue';
 const activeTab = ref('table');
 const totalIncome = ref(0);
 const incomeSources = ref<Income[]>([]);
+
+const categories = ['Enero', 'Febrero', 'Marzo', 'Abril']
+const seriesBar = [{ name: 'Ingresos', data: [20, 40, 35, 50] }]
+const seriesLine = [{ name: 'Gastos', data: [10, 30, 25, 40] }]
+const seriesPie = [44, 55, 13, 33]
+const labelsPie = ['Alquiler', 'Comida', 'Transporte', 'Otros']
+const seriesCircular = [30, 25, 20, 25]
+const labelsCircular = ['Tarjeta', 'Efectivo', 'Transferencia', 'Cheque']
 
 const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
   try {
@@ -46,7 +58,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('Error fetching total income:', error);
   }
-  fetchFinancialReport(); // Carga inicial sin filtro
+  fetchFinancialReport();
 });
 </script>
 
@@ -57,26 +69,22 @@ onMounted(async () => {
     </header>
 
     <section>
-      <!-- Filtro -->
       <ReportFilter @filter-change="handleFilterChange" />
 
-      <!-- Totales -->
       <TotalesFinancieros
         :ingresos="totalIncome"
         :egresos="0"
         :diferencia="totalIncome"
       />
 
-      <!-- Toggle -->
       <div class="toggle-row">
         <div :class="['toggle-wrapper', activeTab === 'table' ? 'active-left' : 'active-right']">
           <div class="toggle-indicator"></div>
           <div class="toggle-button" @click="activeTab = 'table'">Tabla</div>
-          <div class="toggle-button" @click="activeTab = 'graphics'">Gráficas</div>
+          <div class="toggle-button" @click="activeTab = 'graphics'">Métricas</div>
         </div>
       </div>
 
-      <!-- Contenido dinámico -->
       <div v-if="activeTab === 'table'" class="table-wrapper">
         <FinanceTable
           :items="incomeSources"
@@ -91,8 +99,29 @@ onMounted(async () => {
         />
       </div>
 
-      <div v-if="activeTab === 'graphics'" class="graphics-section">
-        <!-- Aquí se pueden agregar gráficas en el futuro -->
+      <div v-if="activeTab === 'graphics'" class="graphs">
+        <div class="charts-row">
+          <BarChart
+            :series="seriesBar"
+            :categories="categories"
+            title="Ingresos"
+          />
+          <PieChart
+            :series="seriesPie"
+            :labels="labelsPie"
+            title="Distribución de gastos"
+          />
+          <LineChart
+            :series="seriesLine"
+            :categories="categories"
+            title="Gastos"
+          />
+          <CircularChart
+            :series="seriesCircular"
+            :labels="labelsCircular"
+            title="Métodos de pago"
+          />
+        </div>
       </div>
     </section>
   </main>
@@ -127,12 +156,11 @@ section {
   align-items: stretch;
 }
 
-/* Toggle switch */
 .toggle-row {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 2rem 0 1rem 0;
+  margin: 2rem 0;
 }
 
 .toggle-wrapper {
@@ -177,7 +205,6 @@ section {
   left: 50%;
 }
 
-/* Tabla */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -185,14 +212,13 @@ section {
   justify-content: center;
 }
 
-/* Placeholder para gráficas */
-.graphics-section {
-  min-height: 300px;
+.charts-row {
   width: 100%;
-  background: transparent;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
-/* Responsividad */
 @media (max-width: 770px) {
   main {
     padding: 2rem 1rem;
@@ -211,6 +237,10 @@ section {
 
   section {
     gap: 0.5rem;
+  }
+
+  .charts-row {
+    justify-content: center;
   }
 }
 </style>

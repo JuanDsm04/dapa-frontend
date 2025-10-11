@@ -5,13 +5,6 @@ import { ref } from 'vue';
 
 const activeTab = ref('left');
 
-const categories = ['Enero', 'Febrero', 'Marzo', 'Abril']
-const seriesBar = [{ name: 'Ingresos', data: [20, 40, 35, 50] }]
-const seriesLine = [{ name: 'Gastos', data: [10, 30, 25, 40] }]
-const seriesPie = [44, 55, 13, 33]
-const labelsPie = ['Alquiler', 'Comida', 'Transporte', 'Otros']
-const seriesCircular = [30, 25, 20, 25]
-const labelsCircular = ['Tarjeta', 'Efectivo', 'Transferencia', 'Cheque']
 </script>
 
 <template>
@@ -49,55 +42,22 @@ const labelsCircular = ['Tarjeta', 'Efectivo', 'Transferencia', 'Cheque']
       
       <div class="kpi-wrapper" v-if="activeTab == 'right'">
         <div class="table-wrapper">
-        <ExpenseTable
-          :items="[]"
-          :columns="[
-            { label: 'ID', field: 'id' },
-            { label: 'Fecha', field: 'date' },
-            { label: 'Tipo', field: 'type' },
-            { label: 'E. Temporal', field: 'tempEmployee' },
-            { label: 'Descripción', field: 'description' },
-            { label: 'Tipo de pago', field: 'paymentType' },
-            { label: 'Costo', field: 'amount' },
-          ]"
-          @edit="() => {}"
-          @delete="() => {}"
-        />
-      </div></div>
-      <!-- GRÁFICAS
-      <div class="charts-row">
-        <BarChart
-          :series="seriesBar"
-          :categories="categories"
-          title="Ingresos"
-          :height="250"
-          :width="300"
-        />
-        <LineChart
-          :series="seriesLine"
-          :categories="categories"
-          title="Gastos"
-          :height="250"
-          :width="300"
-        />
-        <PieChart
-          :series="seriesPie"
-          :labels="labelsPie"
-          title="Distribución de gastos"
-          :height="250"
-          :width="250"
-        />
-        <CircularChart
-          :series="seriesCircular"
-          :labels="labelsCircular"
-          title="Métodos de pago"
-          :height="250"
-          :width="250"
-        />
+          <ExpenseTable
+            :items="[]"
+            :columns="[
+              { label: 'ID', field: 'id' },
+              { label: 'Fecha', field: 'date' },
+              { label: 'Tipo', field: 'type' },
+              { label: 'E. Temporal', field: 'tempEmployee' },
+              { label: 'Descripción', field: 'description' },
+              { label: 'Tipo de pago', field: 'paymentType' },
+              { label: 'Costo', field: 'amount' },
+            ]"
+            @edit="() => {}"
+            @delete="() => {}"
+          />
+        </div>
       </div>
-      -->
-
-      <!-- Tabla -->
     </section>
   </main>
 </template>
@@ -131,20 +91,12 @@ section {
   align-items: stretch;
 }
 
-.charts-row {
-  display: flex;
-  gap: 0.2rem;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin: 1rem 0;
-}
-
 .filters-toggle-row {
   display: flex;
-  justify-content: space-between; /* separa filtro y toggle */
-  align-items: center;            /* alinea verticalmente */
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
-  gap: 1rem;                      /* espacio entre ellos */
+  gap: 1rem;
 }
 
 .filters-toggle-row > *:first-child {
@@ -218,10 +170,6 @@ section {
 
   section {
     gap: 0.5rem;
-  }
-
-  .charts-row {
-    justify-content: center;
   }
 
   .table-wrapper {

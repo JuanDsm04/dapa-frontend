@@ -68,7 +68,7 @@ const computedOptions = computed(() => ({
 </script>
 
 <template>
-  <div class="chart-container">
+  <div class="chart-container" id="pie-chart">
     <apexchart type="pie" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
   </div>
 </template>

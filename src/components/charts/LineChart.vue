@@ -73,7 +73,7 @@ const computedOptions = computed(() => ({
 </script>
 
 <template>
-  <div class="chart-container">
+  <div class="chart-container" id="line-char">
     <apexchart type="line" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
   </div>
 </template>

@@ -65,7 +65,7 @@ const computedOptions = computed(() => ({
 </script>
 
 <template>
-  <div class="chart-container">
+  <div class="chart-container" id="circular-chart">
     <apexchart type="donut" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
   </div>
 </template>
@@ -74,7 +74,7 @@ const computedOptions = computed(() => ({
 .chart-container {
   width: fit-content;
   padding: 2rem;
-  background-color: #ffffzz;
+  background-color: white;
   border-radius: 1rem;
 }
 
