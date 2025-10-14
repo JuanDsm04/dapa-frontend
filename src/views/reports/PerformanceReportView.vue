@@ -111,6 +111,7 @@ onMounted(async () => {
           { label: 'Viajes completados', field: 'totalOrders' },
           { label: 'Entregas semanales', field: 'ordersPerWeek' },
         ]"
+        :viewOnly="true"
         @edit="() => {}"
         @delete="() => {}"
       />

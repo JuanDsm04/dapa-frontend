@@ -3,18 +3,31 @@ import type { HighlightConfig } from '@/types/table';
 import { ref, computed, watch, nextTick } from 'vue'
 
 import DataTable from 'datatables.net-vue3'
-import DataTablesResponsive from 'datatables.net-responsive-dt'
 import DataTablesCore from 'datatables.net'
+import DataTablesResponsive from 'datatables.net-responsive-dt'
+import Buttons from 'datatables.net-buttons-dt'
+import 'datatables.net-buttons/js/dataTables.buttons.js'
+import 'datatables.net-buttons/js/buttons.html5.js'
+import 'datatables.net-buttons/js/buttons.print.js'
+import 'datatables.net-buttons/js/buttons.colVis.js'
+import jszip from 'jszip'
+
 import 'datatables.net-dt/css/dataTables.dataTables.css'
 import 'datatables.net-responsive-dt/css/responsive.dataTables.css'
+import 'datatables.net-buttons-dt/css/buttons.dataTables.css'
+
+window.JSZip = jszip
 
 DataTable.use(DataTablesCore)
 DataTable.use(DataTablesResponsive)
+DataTable.use(Buttons)
+
 const props = defineProps<{
   items: any[]
   columns: { label: string, field: string, formatter?: (value: any, row: any) => string }[]
   highlightFn?: (item: any) => HighlightConfig | undefined
   options?: any
+  viewOnly?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -45,36 +58,43 @@ const getHighlightStyles = (item: any) => {
   }
 }
 
-const dtColumns = computed(() => [
-  ...props.columns.map(col => ({
-    data: col.field,
-    title: col.label,
-    render: (data: any, type: string, row: any) => {
-      return col.formatter ? col.formatter(data, row) : data
-    }
-  })),
-  {
-    data: null,
-    title: 'Acciones',
-    orderable: false,
-    searchable: false,
-    render: (data: any, type: string, row: any, meta: any) => {
-      const rowIndex = meta.row;
-      return `<div class="action-buttons">
-        <button class="btn-edit" type="button" data-row-index="${rowIndex}">
-          <span class="material-symbols-outlined icon md-icon">
-            edit_square
-          </span>
-        </button>
-        <button class="btn-delete" type="button" data-row-index="${rowIndex}">
-          <span class="material-symbols-outlined icon md-icon">
-            delete
-          </span>
-        </button>
-      </div>`
-    }
+const dtColumns = computed(() => {
+  const columns = [
+    ...props.columns.map(col => ({
+      data: col.field,
+      title: col.label,
+      render: (data: any, type: string, row: any) => {
+        return col.formatter ? col.formatter(data, row) : data
+      }
+    }))
+  ];
+
+  if (!props.viewOnly) {
+    columns.push({
+      data: null,
+      title: 'Acciones',
+      orderable: false,
+      searchable: false,
+      render: (data: any, type: string, row: any, meta: any) => {
+        const rowIndex = meta.row;
+        return `<div class="action-buttons">
+          <button class="btn-edit" type="button" data-row-index="${rowIndex}">
+            <span class="material-symbols-outlined icon md-icon">
+              edit_square
+            </span>
+          </button>
+          <button class="btn-delete" type="button" data-row-index="${rowIndex}">
+            <span class="material-symbols-outlined icon md-icon">
+              delete
+            </span>
+          </button>
+        </div>`
+      }
+    });
   }
-])
+
+  return columns;
+});
 
 const dtOptions = computed(() => ({
   responsive: true,
@@ -188,7 +208,7 @@ watch(() => dt.value, (newDt) => {
           <th v-for="col in columns" :key="col.field">
             {{ col.label }}
           </th>
-          <th>Acciones</th>
+          <th v-if="!viewOnly">Acciones</th>
         </tr>
       </thead>
     </DataTable>
@@ -292,7 +312,6 @@ watch(() => dt.value, (newDt) => {
   background-color: var(--principal-error-50);
 }
 
-/* Personalización de estilos DataTables */
 :deep(.dataTables_wrapper) {
   font-family: inherit;
 }

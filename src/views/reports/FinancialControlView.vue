@@ -35,6 +35,7 @@ const activeTab = ref('left');
             { label: 'Responsable', field: 'responsable' },
             { label: 'Descripción', field: 'desc' },
           ]"
+          :viewOnly="true"
           @edit="() => {}"
           @delete="() => {}"
         />
@@ -53,6 +54,7 @@ const activeTab = ref('left');
               { label: 'Tipo de pago', field: 'paymentType' },
               { label: 'Costo', field: 'amount' },
             ]"
+            :viewOnly="true"
             @edit="() => {}"
             @delete="() => {}"
           />

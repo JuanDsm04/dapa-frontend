@@ -94,6 +94,15 @@ onMounted(async () => {
             { label: 'Monto (Q)', field: 'totalAmount' },
             { label: 'Responsable', field: 'user' },
           ]"
+          :options="
+          {
+            dom: 'Bfrtip',
+            buttons: [
+              { extend: 'csv', text: 'CSV' },
+            ],
+          }
+          "
+          :viewOnly="true"
           @edit="() => {}"
           @delete="() => {}"
         />
