@@ -330,20 +330,20 @@ watch(() => dt.value, (newDt) => {
   margin-left: 0.625rem; /* 10px → rem */
 }
 
-:deep(.paginate_button) {
+:deep(.dt-paging-button) {
   border: 0.0625rem solid var(--border-base) !important; /* 1px → rem */
-  border-radius: 5px !important;
+  border-radius: 8px !important;
   margin: 0 0.125rem !important; /* 2px → rem */
   padding: 0.3125rem 0.625rem !important; /* 5px 10px → rem */
   background: white !important;
 }
 
-:deep(.paginate_button:hover) {
-  background: var(--principal-error) !important;
+:deep(.dt-paging-button:hover) {
+  background: var(--neutral-gray-500) !important;
   color: var(--neutral-black) !important;
 }
 
-:deep(.paginate_button.current) {
+:deep(.dt-paging-button.current) {
   background: var(--neutral-white) !important;
   color: var(--neutral-black) !important;
 }
@@ -379,6 +379,55 @@ watch(() => dt.value, (newDt) => {
   top: 50%;
   transform: translateY(-15%);
   left: 0.3125rem; /* 5px → rem */
+}
+
+:deep(.dt-search){
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+:deep(.dt-buttons) {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+:deep(.dt-button) {
+  background-color: var(--principal-primary-600) !important;
+  color: var(--neutral-white) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+:deep(.dt-button span){
+  display: flex !important;
+  align-items: center !important;
+  height: auto;
+  gap: 0.5rem;
+}
+
+/* Hover y focus */
+:deep(.dt-button:hover),
+:deep(.dt-button:focus) {
+  background-color: var(--principal-primary-hover);
+}
+
+/* Estado activo */
+:deep(.dt-button:active) {
+  background-color: var(--principal-primary-800);
+  transform: translateY(0);
+}
+
+:deep(.dt-info){
+  margin: 1rem;
 }
 
 </style>

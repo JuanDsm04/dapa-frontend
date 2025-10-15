@@ -60,6 +60,13 @@ onMounted(async () => {
   }
   fetchFinancialReport();
 });
+
+const myTable = {
+  dom: 'Bfrtip',
+  buttons: [
+    { extend: 'csv', text: `<span class="material-symbols-outlined sm-icon">download</span> CSV`},
+  ],
+}
 </script>
 
 <template>
@@ -94,14 +101,7 @@ onMounted(async () => {
             { label: 'Monto (Q)', field: 'totalAmount' },
             { label: 'Responsable', field: 'user' },
           ]"
-          :options="
-          {
-            dom: 'Bfrtip',
-            buttons: [
-              { extend: 'csv', text: 'CSV' },
-            ],
-          }
-          "
+          :options="myTable"
           :viewOnly="true"
           @edit="() => {}"
           @delete="() => {}"
