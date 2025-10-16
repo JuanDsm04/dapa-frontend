@@ -123,7 +123,7 @@ onMounted(async () => {
 main {
   width: 100%;
   padding: 2rem;
-  background-color: var(--bg-general, #fff);
+  background-color: var(--bg-general);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -139,8 +139,8 @@ main header {
 .month-select {
   padding: 0.4rem 0.8rem;
   border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  background: white;
+  border: 1px solid var(--neutral-gray-100);
+  background: var(--neutral-white);
 }
 
 h1 {
@@ -156,7 +156,7 @@ h2 {
 
 .toggle-wrapper {
   display: flex;
-  background-color: #EAEEF4;
+  background-color: var(--neutral-gray-200);
   border-radius: 10px;
   position: relative;
   width: 100%;
@@ -173,7 +173,7 @@ h2 {
   left: 6px;
   width: calc(50% - 6px);
   height: calc(100% - 12px);
-  background-color: white;
+  background-color: var(--neutral-white);
   border-radius: 10px;
   transition: all 0.3s ease;
   z-index: 1;

@@ -140,7 +140,7 @@ const myTable = {
 main {
   width: 100%;
   padding: 2rem;
-  background-color: var(--bg-general, #fff);
+  background-color: var(--bg-general);
   min-height: 100vh;
 }
 
@@ -174,7 +174,7 @@ section {
 
 .toggle-wrapper {
   display: flex;
-  background-color: #EAEEF4;
+  background-color: var(--neutral-gray-200);
   border-radius: 10px;
   position: relative;
   width: 100%;
@@ -191,7 +191,7 @@ section {
   left: 6px;
   width: calc(50% - 6px);
   height: calc(100% - 12px);
-  background-color: white;
+  background-color: var(--neutral-white);
   border-radius: 10px;
   transition: all 0.3s ease;
   z-index: 1;
