@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
   title: string
-  icon: any
   value: number
   lastMonth: number
   goal: number
@@ -17,7 +16,6 @@ const goalComparasion = Math.abs(props.goal - props.value) / props.goal * 100
   <div class="card">
     <header>
       <span class="title">{{ props.title }}</span>
-      <component v-if="props.icon" :is="props.icon" class="icon" />
     </header>
     <span class="value">{{ props.value }}</span>
     <div class="metrics">

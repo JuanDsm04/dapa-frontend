@@ -1,9 +1,4 @@
 <script setup lang="ts">
-// import { ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline';
-// import { ClipboardDocumentListIcon } from '@heroicons/vue/24/outline';
-// import { ChartBarIcon } from '@heroicons/vue/24/outline';
-// import { TruckIcon } from '@heroicons/vue/24/outline';
-// import { BeakerIcon } from '@heroicons/vue/24/outline';
 import LineChart from '@/components/charts/LineChart.vue';
 import CircularChart from '@/components/charts/CircularChart.vue';
 import BarChart from '@/components/charts/BarChart.vue';
@@ -73,14 +68,15 @@ onMounted(async () => {
 
     <h2>Indicadores clave de desempeño (KPI)</h2>
     <div class="kpi-wrapper" v-if="activeTab == 'left'">
-      <KpiCard class="kpi" title="Ordenes completadas" :icon="ClipboardDocumentCheckIcon" value=57 last-month=71 goal=80 />
-      <KpiCard class="kpi" title="Utilidad (Q)" :icon="ChartBarIcon" value=5342 last-month=4971 goal=5000 />
-      <KpiCard class="kpi" title="Monto promedio por orden (Q)" :icon="ClipboardDocumentListIcon" value=345 last-month=245 goal=500 />
+      <KpiCard class="kpi" title="Ordenes completadas" :value=57 :last-month=71 :goal=80 />
+      <KpiCard class="kpi" title="Utilidad (Q)" :value=5342 :last-month=4971 :goal=5000 />
+      <KpiCard class="kpi" title="Monto promedio por orden (Q)" :value=345 :last-month=245 :goal=500 />
     </div>
     <div class="kpi-wrapper" v-if="activeTab == 'right'">
-      <KpiCard class="kpi" title="Viajes completados" :icon="TruckIcon" value=112 last-month=100 goal=150 />
-      <KpiCard class="kpi" title="Calificación global (%)" :icon="ChartBarIcon" value=92 last-month=93 goal=95 />
-      <KpiCard class="kpi" title="Eficiencia global de combustible (L/km)" :icon="BeakerIcon" value=2.5 last-month=2.5 goal=2.5 />
+      <KpiCard class="kpi" title="Viajes completados" :value=112 :last-month=100 :goal=150 />
+      <KpiCard class="kpi" title="Entregas por empleado" :value="12" :last-month="11" :goal="15" />
+      <KpiCard class="kpi" title="Tasa de cumplimiento (%)" :value="89" :last-month="97" :goal="100" 
+    />
     </div>
 
     <section class="stats-header">
