@@ -93,21 +93,21 @@ const options = {
 }
 
 :deep(.totales-table thead th.col-ingresos) {
-  color: #388e3c;
+  color: var(--principal-secondary-600);
   font-weight: bold;
   font-size: 1.2rem;
   background: transparent; /* Cambiado a transparente */
   text-align: center;
 }
 :deep(.totales-table thead th.col-egresos) {
-  color: #d32f2f;
+  color: var(--principal-error);
   font-weight: bold;
   font-size: 1.2rem;
   background: transparent; /* Cambiado a transparente */
   text-align: center;
 }
 :deep(.totales-table thead th.col-saldo) {
-  color: #000000;
+  color: var(--neutral-black);
   font-weight: bold;
   font-size: 1.2rem;
   background: transparent; /* Cambiado a transparente */
@@ -121,19 +121,19 @@ const options = {
 
 :deep(.totales-table .valor-ingresos) {
   font-weight: lighter;
-  color: #388e3c;
+  color: var(--principal-secondary-600);
   font-size: 1.6rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 :deep(.totales-table .valor-egresos) {
-  color: #d32f2f;
+  color: var(--principal-error);
   font-size: 1.6rem;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 :deep(.totales-table .valor-saldo) {
-  color: #000000;
+  color: var(--neutral-black);
   font-size: 1.6rem;
   text-transform: uppercase;
   letter-spacing: 1px;

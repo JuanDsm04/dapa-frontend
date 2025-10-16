@@ -55,7 +55,7 @@ const goalComparasion = Math.abs(props.goal - props.value) / props.goal * 100
   gap: 1.5rem;
   border-radius: 8px;
   flex-direction: column;
-  background-color: white;
+  background-color: var(--neutral-white);
 }
 
 header {
@@ -64,11 +64,11 @@ header {
 }
 
 .title {
-  color: grey;
+  color: var(--neutral-gray-600);
 }
 
 .icon {
-  color: skyblue;
+  color: var(--principal-primary-200);
   width: 24px;
   height: 24px;
 }
@@ -80,15 +80,15 @@ header {
 }
 
 .trend-down {
-  color: darkred;
+  color: var(--principal-error-700);
 }
 
 .trend-up {
-  color: darkgreen;
+  color: var(--principal-secondary-700);
 }
 
 .trend-neutral {
-  color: black;
+  color: var(--neutral-black);
 }
 
 .metrics {

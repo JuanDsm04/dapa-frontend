@@ -47,20 +47,20 @@ function onFilterChange() {
 label {
   font-size: 0.95rem;
   margin-bottom: 4px;
-  color: #3F74BD;
+  color: var(--principal-primary-400);
 }
 
 input[type="date"],
 input[type="text"] {
   padding: 6px 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--neutral-gray-400);
   font-size: 1rem;
 }
 
 button {
-  background-color: #3F74BD;
-  color: white;
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -71,7 +71,7 @@ button {
 }
 
 button:hover {
-  background-color: #285a8c;
+  background-color: var(--principal-primary-700);
 }
 
 @media (max-width: 600px) {

@@ -282,7 +282,6 @@ const isEditing = computed(() => props.updating || !!props.initialData?.id)
 </template>
 
 <style scoped>
-/* Usa los mismos estilos de QuestionForm.vue para mantener la sintonía */
 .question-form {
   width: 100%;
 }
@@ -293,10 +292,10 @@ const isEditing = computed(() => props.updating || !!props.initialData?.id)
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #555;
+  color: var(--neutral-gray-700);
 }
 .required {
-  color: #e74c3c;
+  color: var(--principal-error-500);
   margin-left: 0.25rem;
 }
 .error-message {
@@ -304,7 +303,7 @@ const isEditing = computed(() => props.updating || !!props.initialData?.id)
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.5rem;
-  color: #dc2626;
+  color: var(--principal-error-500);
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -312,13 +311,13 @@ const isEditing = computed(() => props.updating || !!props.initialData?.id)
   margin-top: 0.25rem;
   margin-left: 0.25rem;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: var(--neutral-gray-400);
 }
 .form-input,
 .form-select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--neutral-gray-50);
   border-radius: 6px;
   font-size: 0.95rem;
   transition: border-color 0.2s ease;
@@ -327,34 +326,34 @@ const isEditing = computed(() => props.updating || !!props.initialData?.id)
 .form-input:focus,
 .form-select:focus {
   outline: none;
-  border-color: var(--add-btn, #2196f3);
+  border-color: var(--add-btn, var(--principal-primary-500));
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 .form-input.error,
 .form-select.error {
-  border-color: #ef4444;
+  border-color: var(--principal-error-500);
 }
 .form-input.error:focus,
 .form-select.error:focus {
-  border-color: #dc2626;
+  border-color: var(--principal-error-400);
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }
 .form-input:disabled,
 .form-select:disabled {
-  background-color: #f5f5f5;
+  background-color: var(--neutral-gray-50);
   cursor: not-allowed;
   opacity: 0.7;
 }
 .form-actions {
   padding-top: 1rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--neutral-gray-50);
   display: flex;
   justify-content: flex-end;
 }
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background-color: var(--add-btn, #2196f3);
-  color: white;
+  background-color: var(--add-btn, var(--principal-primary-400));
+  color: var(--neutral-white);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -368,10 +367,10 @@ const isEditing = computed(() => props.updating || !!props.initialData?.id)
   gap: 0.5rem;
 }
 .btn-primary:hover:not(:disabled) {
-  background-color: var(--add-btn-hover, #1976d2);
+  background-color: var(--add-btn-hover, ar(--principal-primary-400));
 }
 .btn-primary:disabled {
-  background-color: #ccc;
+  background-color: var(--neutral-gray-100);
   cursor: not-allowed;
 }
 </style>
