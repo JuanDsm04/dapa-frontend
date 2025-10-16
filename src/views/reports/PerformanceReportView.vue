@@ -143,7 +143,13 @@ main header {
   background: white;
 }
 
-h1, h2 {
+h1 {
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem);
+}
+
+h2 {
   font-weight: 600;
   margin: 0;
 }
@@ -212,7 +218,7 @@ h1, h2 {
   flex-wrap: wrap;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 770px) {
   main {
     width: 100%;
     margin-left: 0;
@@ -225,15 +231,13 @@ h1, h2 {
     align-items: stretch;
   }
 
-  h1 {
-    margin-top: 10px;
-    margin-left: 50px;
-    font-size: 1.5rem;
+   h1 {
+    margin-left: 0;
+    text-align: center;
   }
 
   h2 {
     font-size: 1rem;
-    align-self: center;
   }
 
   .kpi {
