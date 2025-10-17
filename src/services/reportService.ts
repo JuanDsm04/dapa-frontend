@@ -40,3 +40,25 @@ export const getTotalIncomeReport = async () => {
   )
   return response
 }
+
+export const getFinancialControlIncome = async (startDate?: string, endDate?: string) => {
+  const qp = startDate && endDate ? `?startDate=${startDate}&endDate=${endDate}` : ''
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/reports/financial-control-income${qp}`, {
+      method: 'GET',
+      headers: getHeaders()
+    })
+  )
+  return response
+}
+
+export const getFinancialControlSpending = async (startDate?: string, endDate?: string) => {
+  const qp = startDate && endDate ? `?startDate=${startDate}&endDate=${endDate}` : ''
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/reports/financial-control-spending${qp}`, {
+      method: 'GET',
+      headers: getHeaders()
+    })
+  )
+  return response
+}

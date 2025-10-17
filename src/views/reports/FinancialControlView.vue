@@ -1,10 +1,86 @@
 <script setup lang="ts">
-import ReportFilter from '@/components/filters/FinancialControlFilter.vue';
-import { default as ExpenseTable, default as IncomeTable } from '@/components/Table.vue';
-import { ref } from 'vue';
+import ReportFilter from '@/components/filters/FinancialControlFilter.vue'
+import { default as ExpenseTable, default as IncomeTable } from '@/components/Table.vue'
+import { getFinancialControlIncome, getFinancialControlSpending } from '@/services/reportService'
+import { onMounted, ref } from 'vue'
 
-const activeTab = ref('left');
+const activeTab = ref('left')
 
+const incomeItems = ref<any[]>([])
+const expenseItems = ref<any[]>([])
+
+const mapIncome = (rows: any[]) => rows.map((r: any, idx: number) => ({
+  id: idx + 1,
+  date: formatDate(r.date),
+  type: r.in_type,
+  amount: r.amount,
+  category: '',
+  paymentMethod: r.payment_method ?? 'N/A',
+  responsable: r.assigned && r.assigned.trim() !== '' ? r.assigned : 'Sin responsable',
+  userId: r.user_id ?? null,
+  desc: r.description ?? ''
+}))
+
+const mapExpenses = (rows: any[]) => rows.map((r: any, idx: number) => ({
+  id: idx + 1,
+  date: formatDate(r.date),
+  type: r.ex_type,
+  tempEmployee: !!r.temporal_employee,
+  description: r.description ?? '',
+  paymentType: 'N/A',
+  amount: r.amount
+}))
+
+const formatDate = (s: string | Date | undefined | null) => {
+  if (!s) return ''
+  // Cast to string to satisfy TypeScript Date constructors and overloads
+  const d = new Date(String(s))
+  try {
+    return new Intl.DateTimeFormat(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
+  } catch (e) {
+    return d.toLocaleDateString()
+  }
+}
+
+// helper to normalize different response shapes
+const extractRows = (resp: any): any[] => {
+  if (!resp) return []
+  if (Array.isArray(resp)) return resp
+  if (resp.data && Array.isArray(resp.data)) return resp.data
+  if (resp.result && Array.isArray(resp.result)) return resp.result
+  if (resp.items && Array.isArray(resp.items)) return resp.items
+  return []
+}
+
+const fetchAll = async (startDate?: string, endDate?: string) => {
+  try {
+    const inc = await getFinancialControlIncome(startDate, endDate)
+    const rows = extractRows(inc)
+    incomeItems.value = mapIncome(rows)
+  } catch (e) {
+    console.error('Error fetching income', e)
+    incomeItems.value = []
+  }
+
+  try {
+    const exp = await getFinancialControlSpending(startDate, endDate)
+    const rows = extractRows(exp)
+    expenseItems.value = mapExpenses(rows)
+  } catch (e) {
+    console.error('Error fetching expenses', e)
+    expenseItems.value = []
+  }
+}
+
+// Handler for filter component
+const handleFilterChange = (payload: { startDate?: string; endDate?: string; search?: string }) => {
+  const { startDate, endDate } = payload || {}
+  fetchAll(startDate, endDate)
+}
+
+onMounted(() => {
+  fetchAll()
+})
 </script>
 
 <template>
@@ -16,7 +92,7 @@ const activeTab = ref('left');
       <h1>Control Financiero</h1>
     </header>
     <div class="filters-toggle-row">
-      <ReportFilter />
+      <ReportFilter @filter-change="handleFilterChange" />
       <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
         <div class="toggle-indicator"></div>
         <div class="toggle-button" @click="activeTab = 'left'">Ingresos</div>
@@ -25,29 +101,29 @@ const activeTab = ref('left');
     </div>
     <section>
       <div class="kpi-wrapper" v-if="activeTab == 'left'">
-      <div class="table-wrapper">
-        <IncomeTable
-          :items="[]"
-          :columns="[
-            { label: 'ID', field: 'id' },
-            { label: 'Fecha', field: 'date' },
-            { label: 'Tipo', field: 'type' },
-            { label: 'Monto (Q)', field: 'amount' },
-            { label: 'Categoría', field: 'category' },
-            { label: 'Método de pago', field: 'paymentMethod' },
-            { label: 'Responsable', field: 'responsable' },
-            { label: 'Descripción', field: 'desc' },
-          ]"
-          :viewOnly="true"
-          @edit="() => {}"
-          @delete="() => {}"
-        />
-      </div></div>
-      
+        <div class="table-wrapper">
+          <IncomeTable
+            :items="incomeItems"
+            :columns="[
+              { label: 'ID', field: 'id' },
+              { label: 'Fecha', field: 'date' },
+              { label: 'Tipo', field: 'type' },
+              { label: 'Monto (Q)', field: 'amount' },
+              { label: 'Método de pago', field: 'paymentMethod' },
+              { label: 'Responsable', field: 'responsable' },
+              { label: 'Descripción', field: 'desc' }
+            ]"
+            :viewOnly="true"
+            @edit="() => {}"
+            @delete="() => {}"
+          />
+        </div>
+      </div>
+
       <div class="kpi-wrapper" v-if="activeTab == 'right'">
         <div class="table-wrapper">
           <ExpenseTable
-            :items="[]"
+            :items="expenseItems"
             :columns="[
               { label: 'ID', field: 'id' },
               { label: 'Fecha', field: 'date' },
@@ -55,7 +131,7 @@ const activeTab = ref('left');
               { label: 'E. Temporal', field: 'tempEmployee' },
               { label: 'Descripción', field: 'description' },
               { label: 'Tipo de pago', field: 'paymentType' },
-              { label: 'Costo', field: 'amount' },
+              { label: 'Costo', field: 'amount' }
             ]"
             :viewOnly="true"
             @edit="() => {}"
