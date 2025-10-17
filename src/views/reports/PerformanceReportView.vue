@@ -58,6 +58,9 @@ onMounted(async () => {
 <template>
   <main>
     <header>
+      <button class="btn-back" @click="$router.back()">
+        <span class="material-symbols-outlined md-icon">arrow_back</span>
+      </button>
       <h1>Reporte de desempeño</h1>
     </header>
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
@@ -128,8 +131,10 @@ main {
 
 main header {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 2rem;
 }
 
 .month-select {
@@ -214,6 +219,25 @@ h2 {
   flex-wrap: wrap;
 }
 
+.btn-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 50%;
+  padding: 0.75rem;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-back:hover{
+  background-color: var(--neutral-gray-200);
+}
+
+.btn-back:active{
+  background-color: var(--neutral-gray-300);
+}
+
 @media (max-width: 770px) {
   main {
     width: 100%;
@@ -222,14 +246,16 @@ h2 {
   }
   
   main header {
-    flex-direction: column;
+    margin-top: 3rem;
     gap: 1rem;
     align-items: stretch;
+    align-items: center;
   }
 
    h1 {
-    margin-left: 0;
+    margin: 0;
     text-align: center;
+    font-size: 1.4rem;
   }
 
   h2 {
@@ -244,6 +270,10 @@ h2 {
   .charts-wrapper {
     display: flex;
     flex-direction: column;
+  }
+
+  .toggle-wrapper{
+    align-self: center;
   }
 }
 </style>
