@@ -31,6 +31,7 @@ const mapExpenses = (rows: any[]) => rows.map((r: any, idx: number) => ({
   amount: r.amount
 }))
 
+
 const formatDate = (s: string | Date | undefined | null) => {
   if (!s) return ''
   // Cast to string to satisfy TypeScript Date constructors and overloads
@@ -81,6 +82,25 @@ const handleFilterChange = (payload: { startDate?: string; endDate?: string; sea
 onMounted(() => {
   fetchAll()
 })
+
+// Opciones para exportar la tabla en PDF
+const myTable = {
+  dom: 'Bfrtip',
+  buttons: [
+    {
+      extend: 'pdf',
+      text: `<span class="material-symbols-outlined sm-icon">picture_as_pdf</span> PDF`,
+      title: 'Reporte Financiero', 
+      orientation: 'landscape',    
+      pageSize: 'A4',              
+      exportOptions: {             
+        columns: ':visible'
+      }
+    },
+    { extend: 'csv', text: `<span class="material-symbols-outlined sm-icon">download</span> CSV`},
+  ],
+}
+
 </script>
 
 <template>
@@ -113,6 +133,7 @@ onMounted(() => {
               { label: 'Responsable', field: 'responsable' },
               { label: 'Descripción', field: 'desc' }
             ]"
+            :options="myTable"
             :viewOnly="true"
             @edit="() => {}"
             @delete="() => {}"
@@ -133,6 +154,7 @@ onMounted(() => {
               { label: 'Tipo de pago', field: 'paymentType' },
               { label: 'Costo', field: 'amount' }
             ]"
+            :options="myTable"
             :viewOnly="true"
             @edit="() => {}"
             @delete="() => {}"
