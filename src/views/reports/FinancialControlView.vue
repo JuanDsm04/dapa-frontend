@@ -10,6 +10,9 @@ const activeTab = ref('left');
 <template>
   <main>
     <header>
+      <button class="btn-back" @click="$router.back()">
+        <span class="material-symbols-outlined md-icon">arrow_back</span>
+      </button>
       <h1>Control Financiero</h1>
     </header>
     <div class="filters-toggle-row">
@@ -74,9 +77,10 @@ main {
 
 main header {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
   margin-bottom: 0.5rem;
+  gap: 2rem;
 }
 
 h1 {
@@ -154,15 +158,36 @@ section {
   left: 50%;
 }
 
+.btn-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 50%;
+  padding: 0.75rem;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-back:hover{
+  background-color: var(--neutral-gray-200);
+}
+
+.btn-back:active{
+  background-color: var(--neutral-gray-300);
+}
+
 @media (max-width: 770px) {
   main {
     padding: 2rem 1rem;
   }
 
   main header {
-    flex-direction: column;
+    margin-top: 3rem;
     gap: 1rem;
     align-items: stretch;
+    font-size: 0.8rem;
+    align-items: center;
   }
 
   h1 {
@@ -176,6 +201,15 @@ section {
 
   .table-wrapper {
     justify-content: center;
+  }
+
+  .filters-toggle-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .toggle-wrapper{
+    align-self: center;
   }
 }
 </style>
