@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import DataTablesCore from 'datatables.net';
-import 'datatables.net-dt/css/dataTables.dataTables.css';
+import { ref, computed, watch } from 'vue';
 import DataTable from 'datatables.net-vue3';
+import DataTablesCore from 'datatables.net-dt';
+import DataTablesResponsive from 'datatables.net-responsive-dt';
+import 'datatables.net-dt/css/dataTables.dataTables.css';
+import 'datatables.net-responsive-dt/css/responsive.dataTables.css';
 
-DataTable.use(DataTablesCore)
+DataTable.use(DataTablesCore);
+DataTable.use(DataTablesResponsive);
 
 const props = defineProps<{
   ingresos: number,
@@ -47,6 +50,7 @@ const options = {
   searching: false,
   info: false,
   ordering: false,
+  responsive: true,
   language: {
     emptyTable: 'No hay totales disponibles'
   }
@@ -90,6 +94,7 @@ const options = {
   width: 33%;            /* Cada columna ocupa un tercio */
   padding: 24px 32px;    /* Más espacio interno */
   font-size: 1.3rem;     /* Más grande el texto */
+  text-align: center;
 }
 
 :deep(.totales-table thead th.col-ingresos) {
@@ -139,7 +144,7 @@ const options = {
   letter-spacing: 1px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   :deep(.totales-table) {
     width: 98vw;
     min-width: unset;
@@ -148,7 +153,13 @@ const options = {
   :deep(.totales-table th),
   :deep(.totales-table td) {
     padding: 12px 8px;
-    font-size: 1rem;
+    font-size: 0.8rem !important;
+  }
+  
+  :deep(.valor-ingresos),
+  :deep(.valor-egresos),
+  :deep(.valor-saldo) {
+    font-size: 1.2rem !important;
   }
 }
 </style>
