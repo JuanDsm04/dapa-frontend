@@ -1,0 +1,24 @@
+name: CI Frontend
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker container
+        run: docker-compose -f frontend/docker-compose.dev.yml up --build -d
+
+      - name: Run tests (si tienes)
+        run: echo "Aquí puedes ejecutar tus pruebas si las tienes"

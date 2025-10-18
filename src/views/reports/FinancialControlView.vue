@@ -35,6 +35,7 @@ const mapExpenses = (rows: any[]) => rows.map((r: any, idx: number) => ({
 const formatDate = (s: string | Date | undefined | null) => {
   if (!s) return ''
   // Cast to string to satisfy TypeScript Date constructors and overloads
+  // Prueba GitHub Actions
   const d = new Date(String(s))
   try {
     return new Intl.DateTimeFormat(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
