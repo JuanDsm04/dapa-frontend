@@ -11,14 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Clonar el repositorio
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up Docker
+      # 2️⃣ Configurar Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker container
-        run: docker-compose -f frontend/docker-compose.dev.yml up --build -d
+      # 3️⃣ Construir la imagen Docker usando la acción oficial
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend          # Carpeta donde está tu Dockerfile
+          file: ./frontend/Dockerfile  # Ruta al Dockerfile
+          push: false                  # Solo construir, no subir a un registry
+          tags: frontend:ci            # Etiqueta para la imagen
 
-      - name: Run tests (si tienes)
-        run: echo "Aquí puedes ejecutar tus pruebas si las tienes"
+      # 4️⃣ (Opcional) Ejecutar contenedor para pruebas
+      - name: Run Docker container for tests
+        run: |
+          docker run --rm frontend:ci echo "Contenedor levantado correctamente"
+      
+      # 5️⃣ (Opcional) Aquí puedes ejecutar tests dentro del contenedor
+      - name: Run tests
+        run: |
+          echo "Aquí puedes agregar tus comandos de test dentro del contenedor"
+
