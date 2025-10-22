@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import OrderForm from "@/components/assignments/OrderForm.vue";
 import FormPreview from "../form/FormPreview.vue";
 import NotificationModal from "@/components/NotificationModal.vue";
 import { acceptSubmission, rejectSubmission } from '@/services/submissionService';
-import { type Answer, type Submission } from '@/types/form';
+import { type Submission } from '@/types/form';
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 import type { Order } from "@/types/order";
@@ -13,9 +13,13 @@ const props = defineProps<{
   submission: Submission | undefined
 }>();
 
-const emit = defineEmits(['back-to-list'])
+const emit = defineEmits<{
+  (e: 'back-to-list', payload?: { id: number | string, status: string } | null): void
+  (e: 'modal-state-change', isOpen: boolean): void
+  (e: 'interaction-state-change', isActive: boolean): void
+}>()
 
-// Estado que indica si se estÃ¡ en modo formulario
+// Estado que indica si se está en modo formulario
 const showOrderForm = ref(false);
 
 // Estados para modals de confirmación
@@ -26,12 +30,22 @@ const confirmAction = ref<(() => Promise<void>) | null>(null);
 const confirmText = ref('Confirmar');
 const cancelText = ref('Cancelar');
 
+// Watch para resetear el formulario cuando cambia la submission seleccionada
+watch(() => props.submission?.id, (newId, oldId) => {
+  if (newId !== oldId && showOrderForm.value) {
+    showOrderForm.value = false;
+    emit('interaction-state-change', false);
+  }
+});
+
 const aceptar = () => {
     showOrderForm.value = true;
+    emit('interaction-state-change', true);
 };
 
 const volver = () => {
     showOrderForm.value = false;
+    emit('interaction-state-change', false);
 };
 
 const handleBackToList = () => {
@@ -102,6 +116,7 @@ const handleReject = () => {
   };
   
   showConfirmModal.value = true;
+  emit('modal-state-change', true);
 };
 
 const handleAccept = (payload: Partial<Order>) => {
@@ -121,6 +136,7 @@ const handleAccept = (payload: Partial<Order>) => {
       await acceptSubmission(props.submission!.id, createOrderPayload);
       toast.success('Cotización aceptada');
       showOrderForm.value = false;
+      emit('interaction-state-change', false);
       emit('back-to-list', { id: props.submission!.id, status: 'approved' });
     } catch (error) {
       console.error('Error al aceptar la cotización:', error);
@@ -129,6 +145,12 @@ const handleAccept = (payload: Partial<Order>) => {
   };
 
   showConfirmModal.value = true;
+  emit('modal-state-change', true);
+};
+
+const closeConfirmModal = () => {
+  showConfirmModal.value = false;
+  emit('modal-state-change', false);
 };
 
 </script>
@@ -212,10 +234,10 @@ const handleAccept = (payload: Partial<Order>) => {
         :message="confirmMessage"
         :confirmText="confirmText"
         :cancelText="cancelText"
-        @close="showConfirmModal = false"
+        @close="closeConfirmModal"
         @confirm="() => { 
             if (confirmAction) confirmAction()
-            showConfirmModal = false
+            closeConfirmModal()
         }"
     />
 </template>
@@ -315,7 +337,7 @@ header h2 {
 }
 
 .answer-container {
-    border: 0.0625rem solid var(--border-light); /* 1px -> rem */
+    border: 0.0625rem solid var(--border-light);
     border-radius: 10px;
     padding: 1rem;
     margin-bottom: 1rem;

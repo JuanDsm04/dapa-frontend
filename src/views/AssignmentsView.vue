@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, onBeforeUnmount } from 'vue'
 import OrderList from '@/components/assignments/OrderList.vue';
 import AssigmentForm from '@/components/assignments/AssigmentForm.vue';
 import OrderTracking from '@/components/assignments/OrderTracking.vue';
@@ -13,6 +13,12 @@ const selectedOrder = ref<Order | null>(null)
 const showDetailView = ref(false)
 const orders = ref<Order[]>([])
 const loading = ref(false)
+
+// Polling para actualizar la lista de órdenes
+const POLLING_INTERVAL = 5000
+let pollingTimer: NodeJS.Timeout | null = null
+const isModalOpen = ref(false)
+const isInteracting = ref(false)
 
 // Computed para órdenes pendientes
 const pendingOrders = computed(() => {
@@ -28,17 +34,99 @@ const inProgressOrders = computed(() => {
   )
 })
 
+// Función para comparar y actualizar órdenes
+const smartUpdateOrders = (newOrders: Order[]) => {
+  if (orders.value.length === 0) {
+    orders.value = newOrders
+    return
+  }
+
+  const currentOrdersMap = new Map(orders.value.map(order => [order.id, order]))
+  const newOrdersMap = new Map(newOrders.map(order => [order.id, order]))
+
+  // Actualizar órdenes existentes y agregar nuevas
+  const updatedOrders: Order[] = []
+
+  orders.value.forEach(currentOrder => {
+    const newOrder = newOrdersMap.get(currentOrder.id)
+    if (newOrder) {
+      if (selectedOrder.value?.id === currentOrder.id) {
+        updatedOrders.push(currentOrder)
+
+      } else {
+        if (JSON.stringify(currentOrder) !== JSON.stringify(newOrder)) {
+          updatedOrders.push(newOrder)
+        } else {
+          updatedOrders.push(currentOrder)
+        }
+      }
+    }
+  })
+
+  // Agregar nuevas órdenes que no existían antes
+  newOrders.forEach(newOrder => {
+    if (!currentOrdersMap.has(newOrder.id)) {
+      updatedOrders.push(newOrder)
+    }
+  })
+
+  orders.value = updatedOrders
+}
+
 // Cargar todas las órdenes
-const loadOrders = async () => {
-  loading.value = true;
+const loadOrders = async (showLoading = true, isPolling = false) => {
+  // Si hay un modal abierto o el usuario está interactuando, no actualizar
+  if (isPolling && (isModalOpen.value || isInteracting.value)) {
+    return
+  }
+
+  if (showLoading) {
+    loading.value = true;
+  }
+  
   try {
-    orders.value = await getOrders()
+    const newOrders = await getOrders()
+    if (isPolling) {
+      smartUpdateOrders(newOrders)
+      
+      if (selectedOrder.value) {
+        const updatedSelectedOrder = newOrders.find(o => o.id === selectedOrder.value!.id)
+        if (updatedSelectedOrder && 
+            JSON.stringify(selectedOrder.value) !== JSON.stringify(updatedSelectedOrder)) {
+          selectedOrder.value = updatedSelectedOrder
+        }
+      }
+    } else {
+      orders.value = newOrders
+    }
   } catch (err) {
     const error = err as Error
     console.error('Error cargando órdenes:', error)
-    toast.error(`Error al cargar órdenes: ${error.message}`)
+    
+    if (showLoading) {
+      toast.error(`Error al cargar órdenes: ${error.message}`)
+    }
   } finally {
-    loading.value = false;
+    if (showLoading) {
+      loading.value = false;
+    }
+  }
+}
+
+// Iniciar polling
+const startPolling = () => {
+  stopPolling() // Limpiar cualquier polling existente
+  
+  pollingTimer = setInterval(async () => {
+    await loadOrders(false, true)
+  }, POLLING_INTERVAL)
+}
+
+// Detener polling
+const stopPolling = () => {
+  if (pollingTimer) {
+    clearInterval(pollingTimer)
+    pollingTimer = null
   }
 }
 
@@ -57,15 +145,37 @@ const handleBackToList = () => {
   selectedOrder.value = null
 }
 
+// Manejar actualización de orden (desde AssignmentForm)
+const handleOrderUpdated = async () => {
+  // Recargar inmediatamente después de una actualización manual
+  await loadOrders(false, false)
+}
+
+// Detectar cuando se abre/cierra un modal
+const handleModalStateChange = (isOpen: boolean) => {
+  isModalOpen.value = isOpen
+}
+
+// Detectar cuando el usuario está interactuando con selects u otros inputs
+const handleInteractionStateChange = (isActive: boolean) => {
+  isInteracting.value = isActive
+}
+
 // Watch para detectar cambio de pestañas y limpiar selección
 watch(activeTab, () => {
   showDetailView.value = false
   selectedOrder.value = null
 })
 
-// Cargar órdenes al montar
+// Cargar órdenes al montar e iniciar polling
 onMounted(async () => {
   await loadOrders()
+  startPolling()
+})
+
+// Limpiar polling al desmontar
+onBeforeUnmount(() => {
+  stopPolling()
 })
 </script>
 
@@ -109,6 +219,9 @@ onMounted(async () => {
             <AssigmentForm 
               :selectedOrder="selectedOrder" 
               @back-to-list="handleBackToList"
+              @order-assigned="handleOrderUpdated"
+              @modal-state-change="handleModalStateChange"
+              @interaction-state-change="handleInteractionStateChange"
             />
         </div>
     </section>
@@ -134,6 +247,7 @@ onMounted(async () => {
             <OrderTracking 
               :selectedOrder="selectedOrder" 
               @back-to-list="handleBackToList"
+              @modal-state-change="handleModalStateChange"
             />
         </div>
     </section>
@@ -166,9 +280,9 @@ h1 {
   background-color: var(--neutral-gray-200);
   border-radius: 10px;
   position: relative;
-  width: 18.75rem; /* 300px → rem */
-  height: 3.75rem; /* 60px → rem */
-  padding: 0.375rem; /* 6px → rem */
+  width: 18.75rem;
+  height: 3.75rem;
+  padding: 0.375rem;
   font-family: sans-serif;
   font-weight: bold;
   margin-bottom: 2rem;
@@ -177,10 +291,10 @@ h1 {
 
 .toggle-indicator {
   position: absolute;
-  top: 0.375rem; /* 6px → rem */
-  left: 0.375rem; /* 6px → rem */
+  top: 0.375rem;
+  left: 0.375rem;
   width: calc(50% - 0.375rem);
-  height: calc(100% - 0.75rem); /* 12px → rem */
+  height: calc(100% - 0.75rem);
   background-color: var(--neutral-white);
   border-radius: 10px;
   transition: all 0.3s ease;
@@ -190,7 +304,7 @@ h1 {
 .toggle-button {
   flex: 1;
   text-align: center;
-  line-height: 3rem; /* 48px → rem */
+  line-height: 3rem;
   cursor: pointer;
   z-index: 1;
   user-select: none;
@@ -208,7 +322,7 @@ h1 {
   width: 100%;
   display: grid;
   grid-template-columns: 0.75fr 1fr;
-  height: calc(100vh - 15.625rem); /* 250px → rem */
+  height: calc(100vh - 15.625rem);
   background-color: var(--neutral-white);
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
@@ -278,21 +392,18 @@ h1 {
     text-align: center;
   }
 
-  /* Título principal de la página */
   .text-title {
-    margin-left: 3.125rem; /* 50px → rem */
+    margin-left: 3.125rem;
     font-size: 1.5rem;
   }
 
-  /* Switch */
   .toggle-wrapper {
-    width: 15.625rem; /* 250px → rem */
-    height: 3.125rem; /* 50px → rem */
+    width: 15.625rem;
+    height: 3.125rem;
     font-size: 0.9rem;
     align-items: center;
   }
 
-  /* Responsive behavior para móvil */
   .orders-section .list.mobile-hidden {
     display: none;
   }

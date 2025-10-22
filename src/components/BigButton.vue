@@ -80,6 +80,7 @@ const props = defineProps<{
 /* Descripción del botón */
 .btn-description {
   font-size: 1rem;
+  text-align: left;
   color: #666;
 }
 
@@ -100,7 +101,7 @@ const props = defineProps<{
 }
 
 /* Responsive: se ajusta el ancho en pantallas pequeñas */
-@media (max-width: 800px) {
+@media (max-width: 768px) {
   .big-btn {
     width: 100%;
     height: 100px;
@@ -129,6 +130,24 @@ const props = defineProps<{
   .btn-arrow {
     font-size: 1.5rem;
     padding-left: 16px;
+  }
+}
+
+@media (max-width: 480px){
+  .btn-description{
+    display: none;
+  }
+
+  .btn-title{
+    margin: 0;
+  }
+
+  .big-btn{
+    height: 140px;
+  }
+
+  .btn-img{
+    margin: 0;
   }
 }
 </style>

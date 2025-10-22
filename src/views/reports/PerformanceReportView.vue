@@ -1,11 +1,17 @@
-<script setup>
+<script setup lang="ts">
 import LineChart from '@/components/charts/LineChart.vue';
 import CircularChart from '@/components/charts/CircularChart.vue';
 import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
-import { ref } from 'vue';
+import KpiCard from '@/components/charts/KpiCard.vue';
+import DriversTable from '@/components/Table.vue'
+import { ref, onMounted } from 'vue';
+import { getDriversReport } from '@/services/reportService';
+import type { DriverReport } from '@/types/reports';
+
 const activeTab = ref('left')
 const selectedMonth = ref<String>('Diciembre 2024')
+const driverReports = ref<DriverReport[]>([]);
 
 // Temporary dummy data
 const linealData = ref({
@@ -22,39 +28,68 @@ const pieData = ref({
   title: 'Cotizaciones 2025'
 })
 
-const financialBarData = ref({
+const driversBarData = ref({
   series: [
-    { name: 'Ingresos', data: [120, 150, 180] },
-    { name: 'Egresos', data: [80, 90, 100] }
+    { name: 'Viajes completados', data: [52, 23, 42] },
+    { name: 'Calificación global (promedio)', data: [92, 88, 95] },
+    { name: 'Eficiencia combustible (km/L)', data: [3.1, 3.3, 3.2] }
   ],
   categories: ['Ene', 'Feb', 'Mar'],
-  title: 'Resumen Financiero'
+  title: 'Desempeño de Conductores'
 })
 
-const financialPieData = ref({
-  series: [30, 40, 20, 10],
-  labels: ['Transporte', 'Almacenamiento', 'Logística', 'Otros'],
-  title: 'Distribución de Costos'
+const driversPieData = ref({
+  series: [400, 350, 300, 230],
+  labels: ['Conductor A', 'Conductor B', 'Conductor C', 'Conductor D'],
+  title: 'Participación en Viajes'
 })
+
+onMounted(async () => {
+  try {
+    const response = await getDriversReport();
+    driverReports.value = response.data
+  } catch (error) {
+    console.error('Error fetching drivers:', error);
+  }
+});
+
 </script>
 
 <template>
   <main>
-    <header class="header">
+    <header>
+      <button class="btn-back" @click="$router.back()">
+        <span class="material-symbols-outlined md-icon">arrow_back</span>
+      </button>
       <h1>Reporte de desempeño</h1>
-      <select v-model="selectedMonth" class="month-select">
-        <option v-for="(month, index) in linealData.categories" :key="index" :value="month">
-          {{ month }}
-        </option>
-      </select>
     </header>
-
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
       <div class="toggle-indicator"></div>
       <div class="toggle-button" @click="activeTab = 'left'">Cotizaciones</div>
       <div class="toggle-button" @click="activeTab = 'right'">Empleados</div>
     </div>
 
+    <h2>Indicadores clave de desempeño (KPI)</h2>
+    <div class="kpi-wrapper" v-if="activeTab == 'left'">
+      <KpiCard class="kpi" title="Ordenes completadas" :value=57 :last-month=71 :goal=80 />
+      <KpiCard class="kpi" title="Utilidad (Q)" :value=5342 :last-month=4971 :goal=5000 />
+      <KpiCard class="kpi" title="Monto promedio por orden (Q)" :value=345 :last-month=245 :goal=500 />
+    </div>
+    <div class="kpi-wrapper" v-if="activeTab == 'right'">
+      <KpiCard class="kpi" title="Viajes completados" :value=112 :last-month=100 :goal=150 />
+      <KpiCard class="kpi" title="Entregas por empleado" :value="12" :last-month="11" :goal="15" />
+      <KpiCard class="kpi" title="Tasa de cumplimiento (%)" :value="89" :last-month="97" :goal="100" 
+    />
+    </div>
+
+    <section class="stats-header">
+      <h2>Resumen estadístico</h2>
+      <select v-model="selectedMonth" class="month-select">
+        <option v-for="(month, index) in linealData.categories" :key="index" :value="month">
+          {{ month }}
+        </option>
+      </select>
+    </section>
     <section class="quotes" v-if="activeTab == 'left'">
       <div class="charts-wrapper">
         <LineChart :categories="linealData.categories" :series="linealData.series" :title="linealData.title"/>
@@ -63,10 +98,23 @@ const financialPieData = ref({
     </section>
     <section class="employees" v-if="activeTab == 'right'">
       <div class="charts-wrapper">
-        <BarChart :categories="financialBarData.categories" :series="financialBarData.series" :title="financialBarData.title"/>
-        <PieChart :labels="financialPieData.labels" :series="financialPieData.series" :title="financialPieData.title"/>
+        <BarChart :categories="driversBarData.categories" :series="driversBarData.series" :title="driversBarData.title"/>
+        <PieChart :labels="driversPieData.labels" :series="driversPieData.series" :title="driversPieData.title"/>
       </div>
     </section>
+    <div class="table-wrapper">
+      <DriversTable v-if="activeTab === 'right'"
+        :items="driverReports"
+        :columns="[
+          { label: 'Conductor', field: 'driverName' },
+          { label: 'Viajes completados', field: 'totalOrders' },
+          { label: 'Entregas semanales', field: 'ordersPerWeek' },
+        ]"
+        :viewOnly="true"
+        @edit="() => {}"
+        @delete="() => {}"
+      />
+    </div>
   </main>
 </template>
 
@@ -74,40 +122,50 @@ const financialPieData = ref({
 main {
   width: 100%;
   padding: 2rem;
-  background-color: var(--bg-general, #fff);
+  background-color: var(--bg-general);
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 main header {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 0.5rem;
+  gap: 2rem;
 }
 
 .month-select {
   padding: 0.4rem 0.8rem;
   border-radius: 0.5rem;
-  border: 1px solid #ccc;
-  background: white;
+  border: 1px solid var(--neutral-gray-100);
+  background: var(--neutral-white);
 }
 
 h1 {
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  font-size: clamp(1.5rem, 1.5vw + 1rem, 2rem);
+}
+
+h2 {
   font-weight: 600;
   margin: 0;
 }
 
 .toggle-wrapper {
   display: flex;
-  background-color: #EAEEF4;
+  background-color: var(--neutral-gray-200);
   border-radius: 10px;
   position: relative;
-  width: 300px;
+  width: 100%;
+  max-width: 300px;
   height: 60px;
   padding: 6px;
   font-family: sans-serif;
   font-weight: bold;
-  margin-bottom: 2rem;
 }
 
 .toggle-indicator {
@@ -116,7 +174,7 @@ h1 {
   left: 6px;
   width: calc(50% - 6px);
   height: calc(100% - 12px);
-  background-color: white;
+  background-color: var(--neutral-white);
   border-radius: 10px;
   transition: all 0.3s ease;
   z-index: 1;
@@ -139,9 +197,83 @@ h1 {
   left: 50%;
 }
 
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.kpi-wrapper {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.kpi {
+  min-width: 430px;
+}
+
 .charts-wrapper {
   display: flex;
   gap: 2rem;
   flex-wrap: wrap;
+}
+
+.btn-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 50%;
+  padding: 0.75rem;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-back:hover{
+  background-color: var(--neutral-gray-200);
+}
+
+.btn-back:active{
+  background-color: var(--neutral-gray-300);
+}
+
+@media (max-width: 770px) {
+  main {
+    width: 100%;
+    margin-left: 0;
+    padding: 2rem 1rem;
+  }
+  
+  main header {
+    margin-top: 3rem;
+    gap: 1rem;
+    align-items: stretch;
+    align-items: center;
+  }
+
+   h1 {
+    margin: 0;
+    text-align: center;
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1rem;
+  }
+
+  .kpi {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .charts-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .toggle-wrapper{
+    align-self: center;
+  }
 }
 </style>

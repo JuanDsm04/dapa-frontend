@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
-import { getOrderById } from '@/services/orderService'
+import { getOrderById, getOrderToken } from '@/services/orderService'
 import OrderSteps from './OrderSteps.vue'
 import ShippingInformation from './ShippingInformation.vue'
 import FormResponseModal from './FormResponseModal.vue'
@@ -14,6 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'back-to-list'): void
+  (e: 'modal-state-change', isOpen: boolean): void
 }>()
 
 // Estado de la orden
@@ -40,10 +41,36 @@ const getOrderDetails = async (orderId: number) => {
   }
 }
 
+// Función para copiar el link de tracking
+const copyTrackingLink = async () => {
+  if (!orderDetails.value) {
+    toast.error("No hay orden seleccionada")
+    return
+  }
+
+  try {
+    // Obtener el token y crear el link
+    const token = await getOrderToken(orderDetails.value.id)
+    const trackingUrl = `${window.location.origin}/tracking?token=${token}`
+    
+    // Copiar al portapapeles
+    await navigator.clipboard.writeText(trackingUrl)
+    
+    toast.success("Link de rastreo copiado al portapapeles", {
+      position: "top-right",
+      autoClose: 3000
+    })
+  } catch (error) {
+    console.error("Error copiando al portapapeles:", error)
+    toast.error("Error al copiar el link")
+  }
+}
+
 // Función para mostrar las respuestas del formulario
 const showFormResponses = async () => {
   if (orderDetails.value?.submissionId) {
     showFormResponsesModal.value = true
+    emit('modal-state-change', true)
     await formResponseModal.value?.openModal(orderDetails.value.submissionId)
   } else {
     toast.error("Esta orden no tiene un formulario asociado")
@@ -53,11 +80,17 @@ const showFormResponses = async () => {
 // Función para cerrar el modal
 const closeFormResponsesModal = () => {
   showFormResponsesModal.value = false
+  emit('modal-state-change', false)
 }
 
 // Manejar la actualización de la orden desde ShippingInformation
 const handleOrderUpdated = (updatedOrder: Order) => {
   orderDetails.value = { ...updatedOrder }
+}
+
+// Manejar cambio de estado del modal desde ShippingInformation
+const handleModalStateChange = (isOpen: boolean) => {
+  emit('modal-state-change', isOpen)
 }
 
 // Watch para cambios en la orden seleccionada
@@ -104,9 +137,12 @@ const handleBackToList = () => {
           </p>
         </div>
 
-        <div class="header-button">
-           <button class="form-btn" @click="showFormResponses">
-            <span class="material-symbols-outlined">attach_file</span>
+        <div class="header-buttons">
+          <button class="action-btn" @click="copyTrackingLink" title="Copiar link de rastreo">
+            <span class="material-symbols-outlined">link</span>
+          </button>
+          <button class="action-btn" @click="showFormResponses" title="Ver formulario">
+            <span class="material-symbols-outlined">folder_eye</span>
           </button>
         </div>
       </header>
@@ -120,6 +156,7 @@ const handleBackToList = () => {
         :editable="false" 
         mode="tracking"
         @orderUpdated="handleOrderUpdated"
+        @modal-state-change="handleModalStateChange"
       />
       <br/>
     </div>
@@ -135,7 +172,7 @@ const handleBackToList = () => {
 
 <style scoped>
 .tracking-container {
-  padding: 0 2rem;
+  padding: 2rem;
   background-color: var(--neutral-white);
   border-radius: 10px;
   height: 100%;
@@ -193,7 +230,12 @@ header {
   display: none;
 }
 
-.form-btn {
+.header-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.action-btn {
   padding: 0.6rem;
   cursor: pointer;
   font-size: clamp(1.1rem, 2.2vw, 1.2rem);
@@ -201,14 +243,20 @@ header {
   align-items: center;
   justify-content: center;
   height: 55px;
+  width: 55px;
   color: var(--principal-primary);
   border: 1px solid var(--principal-primary);
   border-radius: 10px;
   background-color: var(--neutral-white);
+  transition: all 0.2s;
 }
 
-.form-btn:hover {
-  background-color: var(--neutral-gray-100);
+.action-btn:hover {
+  background-color: var(--principal-primary-50);
+}
+
+.action-btn:active {
+  transform: scale(0.95);
 }
 
 header h2 {
@@ -235,6 +283,10 @@ header h2 {
 
   .header-information {
     margin-top: 2.5rem;
+  }
+
+  .header-buttons {
+    flex-direction: column;
   }
 }
 </style>

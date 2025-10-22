@@ -47,11 +47,25 @@ const computedOptions = computed(() => ({
   legend: {
     show: true
   },
+  responsive: [
+    {
+      breakpoint: 770,
+      options: {
+        chart: {
+          width: '100%',
+          height: 'auto',
+        },
+        legend: {
+          position: 'bottom'
+        }
+      }
+    }
+  ]
 }))
 </script>
 
 <template>
-  <div class="chart-container">
+  <div class="chart-container" id="circular-chart">
     <apexchart type="donut" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
   </div>
 </template>
@@ -60,7 +74,14 @@ const computedOptions = computed(() => ({
 .chart-container {
   width: fit-content;
   padding: 2rem;
-  background-color: #ffffzz;
+  background-color: var(--neutral-white);
   border-radius: 1rem;
+}
+
+@media (max-width: 770px) {
+  .chart-container {
+    width: 100%;
+    padding: 1.5rem;
+  }
 }
 </style>

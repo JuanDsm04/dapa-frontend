@@ -17,7 +17,7 @@ const props = defineProps<{
 }>()
 
 // Emit para comunicar cambios al componente padre
-const emit = defineEmits(['orderUpdated'])
+const emit = defineEmits(['orderUpdated', 'modal-state-change'])
 const showModal = ref(false)
 const localOrderData = ref<Partial<Order> | null>(null)
 
@@ -77,10 +77,12 @@ const vehicleInfo = computed(() => {
 // Modals
 const openModal = () => {
   showModal.value = true
+  emit('modal-state-change', true)
 }
 
 const closeModal = () => {
   showModal.value = false
+  emit('modal-state-change', false)
 }
 
 // Función para manejar la actualización de la orden

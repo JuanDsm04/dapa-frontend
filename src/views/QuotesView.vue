@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue'
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
 import InformationQuote from '@/components/quotes/InformationQuote.vue';
 import QuotesList from '@/components/quotes/QuotesList.vue';
 import { getSubmissions, getSubmissionById } from '@/services/submissionService';
-import {  type Submission } from '@/types/form';
+import { type Submission } from '@/types/form';
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
@@ -13,21 +13,105 @@ const loading = ref(false)
 const showDetailView = ref(false)
 const selectedSubmissionId = ref<string | number | null>(null)
 
-onMounted(async()=>{
-  await loadSubmissions()
-})
+// Control de polling
+const POLLING_INTERVAL = 5000
+let pollingTimer: NodeJS.Timeout | null = null
+const isModalOpen = ref(false)
+const isInteracting = ref(false)
+
+// Función para comparar y actualizar submissions
+const smartUpdateSubmissions = (newSubmissions: Submission[]) => {
+  if (submissions.value.length === 0) {
+    submissions.value = newSubmissions
+    return
+  }
+
+  const currentSubmissionsMap = new Map(submissions.value.map(sub => [sub.id, sub]))
+  const newSubmissionsMap = new Map(newSubmissions.map(sub => [sub.id, sub]))
+
+  // Actualizar submissions existentes y agregar nuevas
+  const updatedSubmissions: Submission[] = []
+
+  submissions.value.forEach(currentSub => {
+    const newSub = newSubmissionsMap.get(currentSub.id)
+    if (newSub) {
+      if (selectedSubmission.value?.id === currentSub.id) {
+        updatedSubmissions.push(currentSub)
+      } else {
+        if (JSON.stringify(currentSub) !== JSON.stringify(newSub)) {
+          updatedSubmissions.push(newSub)
+        } else {
+          updatedSubmissions.push(currentSub)
+        }
+      }
+    }
+  })
+
+  // Agregar nuevas submissions que no existían antes
+  newSubmissions.forEach(newSub => {
+    if (!currentSubmissionsMap.has(newSub.id)) {
+      updatedSubmissions.push(newSub)
+    }
+  })
+
+  submissions.value = updatedSubmissions
+}
 
 // Obtener cotizaciones
-const loadSubmissions = async() => {
-  loading.value = true;
-  try{
-    submissions.value = await getSubmissions()
-  }catch(err){
+const loadSubmissions = async (showLoading = true, isPolling = false) => {
+  // Si hay un modal abierto o el usuario está interactuando, no actualizar
+  if (isPolling && (isModalOpen.value || isInteracting.value)) {
+    return
+  }
+
+  if (showLoading) {
+    loading.value = true;
+  }
+  
+  try {
+    const newSubmissions = await getSubmissions()
+    
+    if (isPolling) {
+      smartUpdateSubmissions(newSubmissions)
+      
+      if (selectedSubmission.value) {
+        const updatedSelectedSubmission = newSubmissions.find(s => s.id === selectedSubmission.value!.id)
+        if (updatedSelectedSubmission && 
+            JSON.stringify(selectedSubmission.value) !== JSON.stringify(updatedSelectedSubmission)) {
+          selectedSubmission.value = updatedSelectedSubmission
+        }
+      }
+    } else {
+      submissions.value = newSubmissions
+    }
+  } catch (err) {
     const error = err as Error
     console.error('Error cargando formularios:', error)
-    toast.error(`Error al cargar formularios: ${error.message}`)
-  }finally{
-    loading.value = false;
+    
+    if (showLoading) {
+      toast.error(`Error al cargar formularios: ${error.message}`)
+    }
+  } finally {
+    if (showLoading) {
+      loading.value = false;
+    }
+  }
+}
+
+// Iniciar polling
+const startPolling = () => {
+  stopPolling()
+  
+  pollingTimer = setInterval(async () => {
+    await loadSubmissions(false, true)
+  }, POLLING_INTERVAL)
+}
+
+// Detener polling
+const stopPolling = () => {
+  if (pollingTimer) {
+    clearInterval(pollingTimer)
+    pollingTimer = null
   }
 }
 
@@ -45,6 +129,7 @@ const handleQuoteSelected = async (submission: Submission) => {
     loading.value = false
   }
 }
+
 // Manejar deselección de cotización
 const handleQuoteDeselected = () => {
   selectedSubmission.value = undefined
@@ -67,11 +152,21 @@ const handleBackToList = async (payload?: { id: number | string, status: string 
         status: payload.status as any
       }
     } else {
-      await loadSubmissions()
+      await loadSubmissions(false, false)
     }
   } else {
-    await loadSubmissions()
+    await loadSubmissions(false, false)
   }
+}
+
+// Detectar cuando se abre/cierra un modal
+const handleModalStateChange = (isOpen: boolean) => {
+  isModalOpen.value = isOpen
+}
+
+// Detectar cuando el usuario está interactuando con inputs
+const handleInteractionStateChange = (isActive: boolean) => {
+  isInteracting.value = isActive
 }
 
 // Filtrar cotizaciones pendientes
@@ -79,6 +174,16 @@ const pendingSubmissions = computed(() => {
   return submissions.value.filter(submission => submission.status === 'pending')
 })
 
+// Cargar submissions al montar e iniciar polling
+onMounted(async () => {
+  await loadSubmissions()
+  startPolling()
+})
+
+// Limpiar polling al desmontar
+onBeforeUnmount(() => {
+  stopPolling()
+})
 </script>
 
 <template>
@@ -106,6 +211,8 @@ const pendingSubmissions = computed(() => {
             <InformationQuote 
               :submission="selectedSubmission"
               @back-to-list="handleBackToList"
+              @modal-state-change="handleModalStateChange"
+              @interaction-state-change="handleInteractionStateChange"
             />
         </div>
     </section>

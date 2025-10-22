@@ -1,0 +1,40 @@
+name: CI Frontend
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Clonar el repositorio
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Configurar Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 3️⃣ Construir la imagen Docker usando la acción oficial
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend          # Carpeta donde está tu Dockerfile
+          file: ./frontend/Dockerfile  # Ruta al Dockerfile
+          push: false                  # Solo construir, no subir a un registry
+          tags: frontend:ci            # Etiqueta para la imagen
+
+      # 4️⃣ (Opcional) Ejecutar contenedor para pruebas
+      - name: Run Docker container for tests
+        run: |
+          docker run --rm frontend:ci echo "Contenedor levantado correctamente"
+      
+      # 5️⃣ (Opcional) Aquí puedes ejecutar tests dentro del contenedor
+      - name: Run tests
+        run: |
+          echo "Aquí puedes agregar tus comandos de test dentro del contenedor"
+

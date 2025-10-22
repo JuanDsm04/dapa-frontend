@@ -81,3 +81,32 @@ export const assignOrder = async (orderId: number, userId: number, vehicleId: nu
   )
   return response
 }
+
+export interface OrderTracking {
+  origin: string
+  destination: string
+  status: string
+  type: string
+}
+
+export const trackOrder = async (token: string): Promise<OrderTracking> => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/orders/track?token=${encodeURIComponent(token)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+  )
+  return response.data
+}
+
+export const getOrderToken = async (orderId: number): Promise<string> => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/orders/${orderId}/token`, {
+      method: 'GET',
+      headers: getHeaders()
+    })
+  )
+  return response.data.token
+}

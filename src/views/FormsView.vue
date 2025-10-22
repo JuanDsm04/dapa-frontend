@@ -7,6 +7,7 @@ import 'vue3-toastify/dist/index.css'
 import QuestionCard from '@/components/form/QuestionCard.vue'
 import QuestionForm from '@/components/form/QuestionForm.vue'
 import FormPreview from '@/components/form/FormPreview.vue'
+import NotificationModal from '@/components/NotificationModal.vue'
 
 import { type QuestionType, type Question } from '@/types/form'
 import { 
@@ -35,6 +36,12 @@ let sortableInstance: Sortable | null = null
 /* Propiedades computadas */
 const activeQuestionsCount = computed(() => questions.value.filter(q => q.isActive).length)
 const totalQuestions = computed(() => questions.value.length)
+
+/* Estados del modal de confirmación */
+const showConfirmModal = ref(false)
+const confirmTitle = ref('')
+const confirmMessage = ref('')
+const confirmAction = ref<(() => Promise<void>) | null>(null)
 
 /* Ciclo de vida */
 onMounted(async () => {
@@ -168,20 +175,26 @@ const handleDeleteQuestion = async (index: number) => {
   const q = questions.value[index]
   if (!q) return
 
-  if (!confirm(`¿Eliminar la pregunta: "${q.question}"?`)) return
+  confirmTitle.value = 'Eliminar pregunta'
+  confirmMessage.value = `¿Seguro que deseas eliminar la pregunta: "${q.question}"?`
 
-  loading.value = true
-  try {
-    await deleteQuestion(q.id!)
-    await loadQuestions()
-    toast.warning('Pregunta eliminada')
-  } catch (err) {
-    const error = err as Error
-    console.error('Error eliminando pregunta:', error)
-    toast.error(`Error eliminando pregunta: ${error.message}`)
-  } finally {
-    loading.value = false
+  confirmAction.value = async () => {
+    loading.value = true
+    try {
+      await deleteQuestion(q.id!)
+      await loadQuestions()
+      toast.warning('Pregunta eliminada')
+    } catch (err) {
+      const error = err as Error
+      console.error('Error eliminando pregunta:', error)
+      toast.error(`Error eliminando pregunta: ${error.message}`)
+    } finally {
+      loading.value = false
+      showConfirmModal.value = false
+    }
   }
+
+  showConfirmModal.value = true
 }
 
 const toggleQuestion = async (index: number) => {
@@ -284,6 +297,21 @@ const toggleQuestion = async (index: number) => {
       </article>
     </div>
   </div>
+
+  <!-- Modal de confirmación -->
+  <NotificationModal
+    v-if="showConfirmModal"
+    :show="showConfirmModal"
+    :title="confirmTitle"
+    :message="confirmMessage"
+    confirmText="Confirmar"
+    cancelText="Cancelar"
+    @close="showConfirmModal = false"
+    @confirm="() => { 
+      if (confirmAction) confirmAction()
+      showConfirmModal = false
+    }"
+  />
 </template>
 
 <style scoped>
@@ -363,7 +391,7 @@ const toggleQuestion = async (index: number) => {
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-0.125rem);
-  background: var(--add-btn-hover);
+  background: var(--principal-primary-700);
 }
 
 .btn-primary:disabled {

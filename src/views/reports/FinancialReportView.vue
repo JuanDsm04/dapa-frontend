@@ -1,37 +1,139 @@
 <script setup lang="ts">
+import BarChart from '@/components/charts/BarChart.vue';
+import CircularChart from '@/components/charts/CircularChart.vue';
+import LineChart from '@/components/charts/LineChart.vue';
+import PieChart from '@/components/charts/PieChart.vue';
 import ReportFilter from '@/components/filters/ReportFilter.vue';
 import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
 import FinanceTable from '@/components/Table.vue';
+import { getFinancialReport, getFinancialReportByDate, getTotalIncomeReport } from '@/services/reportService';
+import type { Income } from '@/types/reports';
+import { onMounted, ref } from 'vue';
+
+const activeTab = ref('table');
+const totalIncome = ref(0);
+const incomeSources = ref<Income[]>([]);
+
+const categories = ['Enero', 'Febrero', 'Marzo', 'Abril']
+const seriesBar = [{ name: 'Ingresos', data: [20, 40, 35, 50] }]
+const seriesLine = [{ name: 'Gastos', data: [10, 30, 25, 40] }]
+const seriesPie = [44, 55, 13, 33]
+const labelsPie = ['Alquiler', 'Comida', 'Transporte', 'Otros']
+const seriesCircular = [30, 25, 20, 25]
+const labelsCircular = ['Tarjeta', 'Efectivo', 'Transferencia', 'Cheque']
+
+const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
+  try {
+    let response;
+    if (startDate && endDate) {
+      response = await getFinancialReportByDate(startDate, endDate);
+    } else {
+      response = await getFinancialReport();
+    }
+
+    incomeSources.value = response.data.map((item: any) => {
+      const date = new Date(item.date);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return {
+        ...item,
+        formattedDate: `${day}/${month}/${year}`
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching financial report: ', error);
+    incomeSources.value = [];
+  }
+};
+
+const handleFilterChange = ({ startDate, endDate }: { startDate: string, endDate: string }) => {
+  fetchFinancialReport(startDate, endDate);
+};
+
+onMounted(async () => {
+  try {
+    const response = await getTotalIncomeReport();
+    totalIncome.value = response.data.totalIncome;
+  } catch (error) {
+    console.error('Error fetching total income:', error);
+  }
+  fetchFinancialReport();
+});
+
+const myTable = {
+  dom: 'Bfrtip',
+  buttons: [
+    { extend: 'csv', text: `<span class="material-symbols-outlined sm-icon">download</span> CSV`},
+  ],
+}
 </script>
 
 <template>
   <main>
     <header>
+      <button class="btn-back" @click="$router.back()">
+        <span class="material-symbols-outlined md-icon">arrow_back</span>
+      </button>
       <h1>Reporte Financiero</h1>
     </header>
+
     <section>
-      <ReportFilter />
+      <ReportFilter @filter-change="handleFilterChange" />
+
       <TotalesFinancieros
-        :ingresos="0"
+        :ingresos="totalIncome"
         :egresos="0"
-        :diferencia="0"
+        :diferencia="totalIncome"
       />
-      <div class="table-wrapper">
+
+      <div class="toggle-row">
+        <div :class="['toggle-wrapper', activeTab === 'table' ? 'active-left' : 'active-right']">
+          <div class="toggle-indicator"></div>
+          <div class="toggle-button" @click="activeTab = 'table'">Tabla</div>
+          <div class="toggle-button" @click="activeTab = 'graphics'">Métricas</div>
+        </div>
+      </div>
+
+      <div v-if="activeTab === 'table'" class="table-wrapper">
         <FinanceTable
-          :items="[]"
+          :items="incomeSources"
           :columns="[
-            { label: 'ID', field: 'id' },
-            { label: 'Fecha', field: 'date' },
+            { label: 'Fecha', field: 'formattedDate' },
             { label: 'Tipo', field: 'type' },
-            { label: 'Monto (Q)', field: 'amount' },
-            { label: 'Categoría', field: 'category' },
-            { label: 'Método de pago', field: 'paymentMethod' },
-            { label: 'Responsable', field: 'responsable' },
-            { label: 'Descripción', field: 'desc' },
+            { label: 'Monto (Q)', field: 'totalAmount' },
+            { label: 'Responsable', field: 'user' },
           ]"
+          :options="myTable"
+          :viewOnly="true"
           @edit="() => {}"
           @delete="() => {}"
         />
+      </div>
+
+      <div v-if="activeTab === 'graphics'" class="graphs">
+        <div class="charts-row">
+          <BarChart
+            :series="seriesBar"
+            :categories="categories"
+            title="Ingresos"
+          />
+          <PieChart
+            :series="seriesPie"
+            :labels="labelsPie"
+            title="Distribución de gastos"
+          />
+          <LineChart
+            :series="seriesLine"
+            :categories="categories"
+            title="Gastos"
+          />
+          <CircularChart
+            :series="seriesCircular"
+            :labels="labelsCircular"
+            title="Métodos de pago"
+          />
+        </div>
       </div>
     </section>
   </main>
@@ -39,24 +141,26 @@ import FinanceTable from '@/components/Table.vue';
 
 <style scoped>
 main {
+  display: block;
+  margin: 0 auto;
   width: 100%;
   padding: 2rem;
-  background-color: var(--bg-general, #fff);
+  background-color: var(--bg-general);
   min-height: 100vh;
 }
 
 main header {
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
   align-items: center;
   margin-bottom: 0.5rem;
+  gap: 2rem;
 }
 
 h1 {
   font-weight: 600;
   margin: 0;
 }
-
 
 section {
   width: 100%;
@@ -67,6 +171,55 @@ section {
   align-items: stretch;
 }
 
+.toggle-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.toggle-wrapper {
+  display: flex;
+  background-color: var(--neutral-gray-200);
+  border-radius: 10px;
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 60px;
+  padding: 6px;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+.toggle-indicator {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: calc(50% - 6px);
+  height: calc(100% - 12px);
+  background-color: var(--neutral-white);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.toggle-button {
+  flex: 1;
+  text-align: center;
+  line-height: 48px;
+  cursor: pointer;
+  z-index: 2;
+  user-select: none;
+}
+
+.active-left .toggle-indicator {
+  left: 6px;
+}
+
+.active-right .toggle-indicator {
+  left: 50%;
+}
+
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
@@ -74,15 +227,45 @@ section {
   justify-content: center;
 }
 
+.charts-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.btn-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 50%;
+  padding: 0.75rem;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-back:hover{
+  background-color: var(--neutral-gray-200);
+}
+
+.btn-back:active{
+  background-color: var(--neutral-gray-300);
+}
+
 @media (max-width: 770px) {
   main {
     padding: 2rem 1rem;
+    width: 95%;
   }
 
   main header {
-    flex-direction: column;
+    margin-top: 3rem;
     gap: 1rem;
     align-items: stretch;
+    font-size: 0.8rem;
+    align-items: center;
   }
 
   h1 {
@@ -90,15 +273,11 @@ section {
     text-align: center;
   }
 
-  .download-btn {
-    width: 100%;
-  }
-
   section {
-    gap: 0.5rem; /* Menor separación en móvil */
+    gap: 0.5rem;
   }
 
-  .table-wrapper {
+  .charts-row {
     justify-content: center;
   }
 }

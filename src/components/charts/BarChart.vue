@@ -47,11 +47,29 @@ const computedOptions = computed(() => ({
   legend: {
     show: true
   },
+  responsive: [
+    {
+      breakpoint: 770,
+      options: {
+        chart: {
+          toolbar: {
+            show: false
+          },
+          width: '100%',
+          height: 'auto',
+        },
+        legend: {
+          show: false
+        }
+      }
+    }
+  ]
+
 }))
 </script>
 
 <template>
-  <div class="chart-container">
+  <div class="chart-container" id="bar-char">
     <apexchart type="bar" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
   </div>
 </template>
@@ -60,7 +78,14 @@ const computedOptions = computed(() => ({
 .chart-container {
   width: fit-content;
   padding: 2rem;
-  background-color: #ffff;
+  background-color: var(--neutral-white);
   border-radius: 1rem;
+}
+
+@media (max-width: 770px) {
+  .chart-container {
+    width: 100%;
+    padding: 1.5rem;
+  }
 }
 </style>

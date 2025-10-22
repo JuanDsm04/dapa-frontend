@@ -49,6 +49,19 @@
   --principal-tertiary-100: rgb(250, 238, 175);
   --principal-tertiary-50: rgb(253, 248, 215);
 
+  /* Principal Extra (Morado) - Variaciones */
+  --principal-extra-900: rgb(54, 34, 97);
+  --principal-extra-800: rgb(74, 44, 137);
+  --principal-extra-700: rgb(94, 54, 177);
+  --principal-extra-600: rgb(114, 64, 217);
+  --principal-extra: rgb(134, 74, 247);
+  --principal-extra-500: rgb(134, 74, 247);
+  --principal-extra-400: rgb(161, 118, 250);
+  --principal-extra-300: rgb(189, 162, 252);
+  --principal-extra-200: rgb(212, 195, 253);
+  --principal-extra-100: rgb(226, 215, 254);
+  --principal-extra-50: rgb(235, 227, 254);
+
   /* Principal Error (Rojo) - Variaciones */
   --principal-error-900: rgb(124, 28, 44);
   --principal-error-800: rgb(144, 32, 51);
