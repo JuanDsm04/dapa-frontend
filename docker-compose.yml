@@ -1,5 +1,4 @@
 services:
-  
   database:
     build:
       context: ../dapa-database
@@ -15,39 +14,33 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-  go:
+
+  backend:
     build:
       context: ../dapa-backend
       dockerfile: Dockerfile
     container_name: dapa_backend
     ports:
       - "8080:8080"
-    volumes:
-      - ../dapa-database/migrations/:/database/migrations
-    depends_on:
-      database:
-        condition: service_healthy
     env_file:
       - ../dapa-backend/.env
     environment:
       - DB_HOST=database
       - DB_PORT=5432
+    depends_on:
+      database:
+        condition: service_healthy
     networks:
       - app-network
 
-  vue:
+  frontend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: dapa_frontend
-    ports:
-      - "5173:5173"
-    depends_on:
-      - go
+    container_name: dapa_frontend_builder
     networks:
       - app-network
-    environment:
-      - VITE_API_URL=http://localhost:8080
+    command: ["npm", "run", "build"]
 
 networks:
   app-network:
