@@ -76,6 +76,7 @@ const validateForm = (): boolean => {
     let hasErrors = false
 
     for (const question of props.questions) {
+        if (!question.isRequired) continue
         const value = formData.value[question.id]
         let isValid = true
 

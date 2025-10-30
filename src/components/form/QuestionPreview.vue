@@ -83,53 +83,30 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
   <div class="preview-question" :class="{ 'has-error': hasError }">
     <label class="question-label">
       {{ question.question }}
-      <span class="required-indicator">*</span>
+      <span v-if="question.isRequired" class="required-indicator">*</span>
     </label>
 
     <!-- Pregunta de texto -->
     <div v-if="question.type.type === 'text'" class="input-group">
-      <input
-        v-model="localValue"
-        type="text"
-        class="text-input"
-        :class="{ 'error': hasError }"
-        placeholder="Escribe tu respuesta aquí..."
-        :readonly="props.readOnly"
-      />
+      <input v-model="localValue" type="text" class="text-input" :class="{ 'error': hasError }"
+        placeholder="Escribe tu respuesta aquí..." :readonly="props.readOnly" />
     </div>
 
     <!-- Pregunta de texto larga -->
     <div v-if="question.type.type === 'area'" class="input-group">
-      <textarea
-        v-model="localValue"
-        class="text-input"
-        :class="{ 'error': hasError }"
-        placeholder="Escribe tu respuesta aquí..."
-        :readonly="props.readOnly"
-      ></textarea>
+      <textarea v-model="localValue" class="text-input" :class="{ 'error': hasError }"
+        placeholder="Escribe tu respuesta aquí..." :readonly="props.readOnly"></textarea>
     </div>
 
     <!-- Pregunta de selección múltiple -->
     <div v-else-if="question.type.type === 'multiple'" class="input-group">
       <div class="checkbox-group" :class="{ 'error': hasError }">
-        <div
-          v-for="option in question.options"
-          :key="option.id"
-          class="checkbox-item"
-        >
-          <input
-            :id="`${question.id}-${option.option}`"
-            type="checkbox"
-            :value="option.id"
+        <div v-for="option in question.options" :key="option.id" class="checkbox-item">
+          <input :id="`${question.id}-${option.option}`" type="checkbox" :value="option.id"
             :checked="Array.isArray(localValue) && localValue.includes(option.id)"
             @change="handleCheckboxChange(option.id, ($event.target as HTMLInputElement).checked)"
-            class="checkbox-input"
-            :disabled="props.readOnly"
-          />
-          <label
-            :for="`${question.id}-${option.option}`"
-            class="checkbox-label"
-          >
+            class="checkbox-input" :disabled="props.readOnly" />
+          <label :for="`${question.id}-${option.option}`" class="checkbox-label">
             {{ option.option }}
           </label>
         </div>
@@ -138,18 +115,9 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
 
     <!-- Pregunta de lista desplegable -->
     <div v-else-if="question.type.type === 'dropdown'" class="input-group">
-      <select 
-        v-model="localValue" 
-        class="select-input"
-        :class="{ 'error': hasError }"
-        :disabled="props.readOnly"
-      >
+      <select v-model="localValue" class="select-input" :class="{ 'error': hasError }" :disabled="props.readOnly">
         <option value="">Selecciona una opción</option>
-        <option
-          v-for="option in question.options"
-          :key="option.id"
-          :value="option.id"
-        >
+        <option v-for="option in question.options" :key="option.id" :value="option.id">
           {{ option.option }}
         </option>
       </select>
@@ -158,23 +126,10 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
     <!-- Pregunta de selección única -->
     <div v-else-if="question.type.type === 'unique'" class="input-group">
       <div class="radio-group" :class="{ 'error': hasError }">
-        <div
-          v-for="option in question.options"
-          :key="option.id"
-          class="radio-item"
-        >
-          <input
-            :id="`${question.id}-${option.option}`"
-            v-model="localValue"
-            type="radio"
-            :value="option.id"
-            class="radio-input"
-            :disabled="props.readOnly"
-          />
-          <label
-            :for="`${question.id}-${option.option}`"
-            class="radio-label"
-          >
+        <div v-for="option in question.options" :key="option.id" class="radio-item">
+          <input :id="`${question.id}-${option.option}`" v-model="localValue" type="radio" :value="option.id"
+            class="radio-input" :disabled="props.readOnly" />
+          <label :for="`${question.id}-${option.option}`" class="radio-label">
             {{ option.option }}
           </label>
         </div>
@@ -223,7 +178,8 @@ const handleCheckboxChange = (optionId: number, checked: boolean) => {
 .text-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 0.125rem solid var(--border-base); /* 2px -> rem */
+  border: 0.125rem solid var(--border-base);
+  /* 2px -> rem */
   border-radius: 8px;
   font-size: clamp(0.9rem, 2vw, 1rem);
   transition: all 0.2s ease;
@@ -291,7 +247,8 @@ textarea.text-input {
 
 .checkbox-input,
 .radio-input {
-  width: 1.125rem; /* 18px -> rem */
+  width: 1.125rem;
+  /* 18px -> rem */
   height: 1.125rem;
   accent-color: var(--principal-primary);
   cursor: pointer;
@@ -331,26 +288,28 @@ textarea.text-input {
 }
 
 /* Responsive */
-@media (max-width: 48rem) { /* 768px -> rem */
+@media (max-width: 48rem) {
+
+  /* 768px -> rem */
   .preview-question {
     padding: 1rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .question-label {
     font-size: clamp(0.9rem, 2vw, 1rem);
   }
-  
+
   .text-input,
   .select-input {
     font-size: clamp(0.9rem, 2vw, 1rem);
   }
-  
+
   .checkbox-group,
   .radio-group {
     padding: 0.5rem;
   }
-  
+
   .error-message {
     font-size: clamp(0.7rem, 2vw, 0.8rem);
     padding: 0.5rem;

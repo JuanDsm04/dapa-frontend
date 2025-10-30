@@ -11,6 +11,7 @@ const emit = defineEmits<{
   (e: "edit"): void;
   (e: "delete"): void;
   (e: "toggle"): void;
+  (e: "toggle-required"): void;
 }>();
 
 const questionTypeLabels: Record<string, string> = {
@@ -75,6 +76,10 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
                 :class="{ 'status-active': question.isActive, 'status-inactive': !question.isActive }">
                 {{ question.isActive ? 'Activa' : 'Inactiva' }}
               </span>
+              <span class="required-badge"
+                :class="{ 'required-true': question.isRequired, 'required-false': !question.isRequired }">
+                {{ question.isRequired ? 'Obligatoria' : 'Opcional' }}
+              </span>
             </div>
             <p v-if="question.description" class="question-description">
               {{ question.description }}
@@ -103,6 +108,14 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
         <!-- Action buttons moved to bottom right -->
         <div class="actions-container">
           <div class="actions">
+            <button class="btn btn-required-toggle" @click="emit('toggle-required')"
+              :title="question.isRequired ? 'Marcar como opcional' : 'Marcar como obligatoria'">
+              <span class="material-symbols-outlined btn-icon sm-icon">
+                {{ question.isRequired ? 'lock' : 'lock_open' }}
+              </span>
+              <span class="btn-text">{{ question.isRequired ? 'Obligatoria' : 'Opcional' }}</span>
+            </button>
+
             <button class="btn btn-edit" @click="emit('edit')" title="Editar pregunta">
               <span class="material-symbols-outlined btn-icon sm-icon">
                 edit_square
@@ -110,13 +123,11 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
               <span class="btn-text">Editar</span>
             </button>
 
-            <button 
-              class="btn btn-toggle" 
-              @click="emit('toggle')" 
+            <button class="btn btn-toggle" @click="emit('toggle')"
               :title="question.isActive ? 'Desactivar pregunta' : 'Activar pregunta'"
-              :class="{ 'btn-toggle-active': question.isActive }"
-            >
-              <span class="material-symbols-outlined btn-icon sm-icon">{{ question.isActive ? 'check_circle' : 'cancel' }}</span>
+              :class="{ 'btn-toggle-active': question.isActive }">
+              <span class="material-symbols-outlined btn-icon sm-icon">{{ question.isActive ? 'check_circle' : 'cancel'
+              }}</span>
               <span class="btn-text">{{ question.isActive ? 'Desactivar' : 'Activar' }}</span>
             </button>
 
@@ -261,6 +272,25 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .status-inactive {
   color: var(--terciary-dark);
   background: var(--neutral-gray-300);
+}
+
+.required-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.required-true {
+  background: var(--principal-error-100);
+  color: var(--principal-error);
+}
+
+.required-false {
+  background: var(--neutral-gray-200);
+  color: var(--neutral-gray-600);
 }
 
 .options-section {
@@ -421,6 +451,18 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   color: var(--neutral-white);
 }
 
+/* Botón toggle obligatorio */
+.btn-required-toggle {
+  background: var(--neutral-white);
+  color: var(--principal-primary-600);
+  border: 2px solid var(--principal-primary-600);
+}
+
+.btn-required-toggle:hover {
+  background: var(--principal-primary-600);
+  color: var(--neutral-white);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .card-body {
@@ -428,7 +470,8 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     padding: 1.25rem;
     gap: 1rem;
   }
-  .card-content{
+
+  .card-content {
     width: 80%;
     align-self: center;
   }
@@ -449,7 +492,8 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     min-width: unset;
   }
 
-  .status-badge, .type-badge {
+  .status-badge,
+  .type-badge {
     align-self: flex-start;
   }
 
@@ -486,12 +530,14 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     padding: 1rem;
   }
 
-  .card-content{
+  .card-content {
     width: 100%;
   }
+
   .question-title-container {
     flex-direction: column;
   }
+
   .question-title {
     font-size: 1.1rem;
   }

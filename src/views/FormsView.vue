@@ -16,7 +16,8 @@ import {
   updateQuestion, 
   deleteQuestion, 
   getQuestionTypes, 
-  toggleActiveQuestion, 
+  toggleActiveQuestion,
+  toggleRequiredQuestion, 
   reorderQuestions 
 } from '@/services/formService'
 
@@ -211,6 +212,21 @@ const toggleQuestion = async (index: number) => {
     toast.error(`Error: ${error.message}`)
   }
 }
+
+const toggleRequired = async (index: number) => {
+  const q = questions.value[index]
+  if (!q) return
+
+  try {
+    await toggleRequiredQuestion(q.id!)
+    await loadQuestions()
+    toast.info(`Pregunta ${!q.isRequired ? 'obligatoria' : 'opcional'}`)
+  } catch (err) {
+    const error = err as Error
+    console.error('Error actualizando pregunta:', error)
+    toast.error(`Error: ${error.message}`)
+  }
+}
 </script>
 
 <template>
@@ -261,7 +277,7 @@ const toggleQuestion = async (index: number) => {
             <div v-for="(question, index) in questions" :key="`question-${question.id}`" class="sortable-item"
               :data-id="question.id">
               <QuestionCard :question="question" :question_types="questionTypes" @edit="editQuestion(index)"
-                @delete="handleDeleteQuestion(index)" @toggle="toggleQuestion(index)" />
+                @delete="handleDeleteQuestion(index)" @toggle="toggleQuestion(index)" @toggle-required="toggleRequired(index)" />
             </div>
           </div>
 
