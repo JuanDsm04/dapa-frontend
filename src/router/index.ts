@@ -62,7 +62,7 @@ const router = createRouter({
       path: "/profile",
       name: "Profile",
       component: ProfileView,
-      meta: { requiresAuth: true, roles: ['admin', 'driver']}
+      meta: { requiresAuth: true, roles: ['admin', 'driver', 'helper']}
     },
     {
       path: "/vehicles",
@@ -80,7 +80,7 @@ const router = createRouter({
       path: "/my-assignments",
       name: "MyAssignments",
       component: DriverAssignmentsView,
-      meta: { requiresAuth: true, roles: ['driver'] }
+      meta: { requiresAuth: true, roles: ['driver', 'helper'] }
     },
     {
       path: "/:pathMatch(.*)*",
