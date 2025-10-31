@@ -294,26 +294,6 @@ section {
   flex-wrap: wrap;
 }
 
-.btn-back{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: 50%;
-  padding: 0.75rem;
-  background: none;
-  cursor: pointer;
-}
-
-.btn-back:hover{
-  background-color: var(--neutral-gray-200);
-}
-
-.btn-back:active{
-  background-color: var(--neutral-gray-300);
-}
-
-
 .chart-placeholder {
   width: 100%;
   padding: 2rem;

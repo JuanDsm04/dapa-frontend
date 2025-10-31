@@ -26,6 +26,14 @@ const reportCards = ref([
     icon: 'analytics',
     color: 'tertiary',
     route: '/reports/performance'
+  },
+  {
+    id: 'history',
+    title: 'Historial de servicios',
+    description: 'Consulta el historial de servicios completados.',
+    icon: 'history',
+    color: 'error',
+    route: '/reports/service-history'
   }
 ])
 
@@ -133,6 +141,10 @@ h1 {
   background: var(--principal-extra-500);
 }
 
+.report-card.card-error::before {
+  background: var(--principal-error-400);
+}
+
 .report-card:hover::before {
   transform: scaleX(1);
 }
@@ -156,6 +168,10 @@ h1 {
   background: var(--principal-extra-50);
 }
 
+.card-error .card-icon {
+  background: var(--principal-error-50);
+}
+
 .card-icon .material-symbols-outlined {
   font-size: 2rem;
   color: var(--principal-primary);
@@ -167,6 +183,10 @@ h1 {
 
 .card-tertiary .card-icon .material-symbols-outlined {
   color: var(--principal-extra-500);
+}
+
+.card-error .card-icon .material-symbols-outlined {
+  color: var(--principal-error-400);
 }
 
 .report-card:hover .card-icon {
@@ -210,6 +230,10 @@ h1 {
 
 .card-tertiary .card-action .material-symbols-outlined {
   color: var(--principal-extra-500);
+}
+
+.card-error .card-action .material-symbols-outlined {
+  color: var(--principal-error-400);
 }
 
 .report-card:hover .card-action .material-symbols-outlined {

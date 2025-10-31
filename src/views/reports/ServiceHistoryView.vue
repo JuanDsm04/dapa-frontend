@@ -110,6 +110,9 @@ onMounted(async () => {
 <template>
     <main>
         <header>
+            <button class="btn-back" @click="$router.back()">
+                <span class="material-symbols-outlined md-icon">arrow_back</span>
+            </button>
             <h1>Historial de servicios</h1>
         </header>
 
@@ -229,14 +232,20 @@ onMounted(async () => {
 
 <style scoped>
 main {
-    width: 100%;
-    padding: 2rem;
-    background-color: var(--bg-general);
-    min-height: 100vh;
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  padding: 2rem;
+  background-color: var(--bg-general);
+  min-height: 100vh;
 }
 
-header {
-    margin-bottom: 2rem;
+main header {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: 2rem;
 }
 
 h1 {
@@ -356,7 +365,7 @@ section {
 }
 
 .modal-body {
-    padding: 0rem;
+    padding: 2rem 0rem;
     width: 100%;
 }
 
@@ -388,10 +397,43 @@ section {
     color: var(--neutral-black);
 }
 
+.btn-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 50%;
+  padding: 0.75rem;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-back:hover{
+  background-color: var(--neutral-gray-200);
+}
+
+.btn-back:active{
+  background-color: var(--neutral-gray-300);
+}
+
+
 @media (max-width: 770px) {
     main {
-        margin-left: 0;
         padding: 2rem 1rem;
+        width: 95%;
+    }
+
+    main header {
+        margin-top: 3rem;
+        gap: 1rem;
+        align-items: stretch;
+        font-size: 0.8rem;
+        align-items: center;
+    }
+
+    h1 {
+        margin-left: 0;
+        text-align: center;
     }
 
     .detail-grid {

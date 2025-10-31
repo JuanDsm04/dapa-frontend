@@ -132,7 +132,7 @@ const router = createRouter({
       meta: { hideNavbar: true }
     },
     {
-      path: '/service-history',
+      path: '/reports/service-history',
       name: 'ServiceHistory',
       component: ServiceHistoryView,
       meta: { requiresAuth: true, roles: ['admin'] }
