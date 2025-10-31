@@ -17,6 +17,7 @@ import UsersView from "@/views/UsersView.vue";
 import VehiclesView from "@/views/VehiclesView.vue";
 import ClientResponseFormView from "@/views/ClientResponseFormView.vue";
 import TrackingView from "@/views/ClientTrackingView.vue";
+import ServiceHistoryView from "@/views/reports/ServiceHistoryView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -129,6 +130,12 @@ const router = createRouter({
       name: 'Tracking',
       component: TrackingView,
       meta: { hideNavbar: true }
+    },
+    {
+      path: '/service-history',
+      name: 'ServiceHistory',
+      component: ServiceHistoryView,
+      meta: { requiresAuth: true, roles: ['admin'] }
     }
   ],
 });

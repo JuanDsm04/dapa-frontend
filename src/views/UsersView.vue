@@ -202,6 +202,9 @@ onMounted(async () => {
             }
           }
         ]"
+        :showView="false"
+        :showEdit="true"
+        :showDelete="true"
         :highlightFn="highlightUser"
         @edit="handleEditUser"
         @delete="handleDeleteUser"

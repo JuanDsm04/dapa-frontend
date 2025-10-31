@@ -191,6 +191,9 @@ onMounted(async () => {
             }
           }
         ]"
+        :showView="false"
+        :showEdit="true"
+        :showDelete="true"
         :highlightFn="highlightVeh"
         @edit="handleEditVehicle"
         @delete="handleDeleteVehicle"

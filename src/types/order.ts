@@ -4,6 +4,8 @@ export interface Order {
   userId?: number
   vehicleId?: number
   helperId?: number
+  clientName?: string
+  clientPhone?: string
   origin: string
   destination: string
   totalAmount: number

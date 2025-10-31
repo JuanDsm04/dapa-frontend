@@ -195,6 +195,14 @@ onMounted(() => {
 
         <!-- Información común para ambos modos -->
         <div class="info-item">
+          <label>Cliente</label>
+          <p>{{ currentOrderData.clientName || 'No especificado' }}</p>
+        </div>
+        <div class="info-item">
+          <label>Teléfono</label>
+          <p>{{ currentOrderData.clientPhone || 'No especificado' }}</p>
+        </div>
+        <div class="info-item">
           <label>Precio</label>
           <p>{{ formatPrice(currentOrderData.totalAmount) }}</p>
         </div>
