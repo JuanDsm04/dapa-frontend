@@ -43,7 +43,7 @@ const loadUsersAndVehicles = async () => {
   try {
     const [usersData, vehiclesData] = await Promise.all([
       getUsers(),
-      getVehicles()
+      getVehicles(),
     ])
     users.value = usersData
     vehicles.value = vehiclesData
@@ -73,6 +73,16 @@ const vehicleInfo = computed(() => {
   const vehicle = vehicles.value.find(v => v.id === currentOrderData.value?.vehicleId)
   return vehicle ? `${vehicle.brand} - ${vehicle.licensePlate}` : 'No encontrado'
 })
+
+// Computed para obtener información del ayudante
+const helperInfo = computed(() => {
+  if (!currentOrderData.value?.helperId || !users.value.length) {
+    return 'No especificado'
+  }
+  
+  const helper = users.value.find(user => user.id === currentOrderData.value?.helperId)
+  return helper ? `${helper.name} ${helper.lastName}` : 'No encontrado'
+});
 
 // Modals
 const openModal = () => {
@@ -126,7 +136,8 @@ const cargoTypeMap: Record<string, string> = {
 }
 
 // Función para obtener el tipo de carga en español
-const getCargoTypeInSpanish = (type: string) => {
+const getCargoTypeInSpanish = (type?: string) => {
+  if (!type) return 'No especificado'
   return cargoTypeMap[type] || 'No especificado'
 }
 
@@ -174,6 +185,11 @@ onMounted(() => {
             <label>Vehículo</label>
             <p v-if="loadingUserData">Cargando...</p>
             <p v-else><strong>{{ vehicleInfo }}</strong></p>
+          </div>
+          <div class="info-item">
+            <label>Ayudante</label>
+            <p v-if="loadingUserData">Cargando...</p>
+            <p v-else><strong>{{ helperInfo }}</strong></p>
           </div>
         </template>
 

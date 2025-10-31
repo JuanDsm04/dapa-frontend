@@ -180,6 +180,7 @@ onMounted(async () => {
             formatter: (value: string) => {
               if (value === 'admin') return 'Administrador'
               if (value === 'driver') return 'Piloto'
+              if (value === 'helper') return 'Ayudante'
               return value
             }
           },

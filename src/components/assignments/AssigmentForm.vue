@@ -27,11 +27,13 @@ const emit = defineEmits<{
 // Estado interno
 const selectedDriver = ref<string>('')
 const selectedVehicle = ref<string>('')
+const selectedHelper = ref<string>('')
 const showModal = ref(false)
 const showFormResponsesModal = ref(false)
 const orderDetails = ref<Order | null>(null)
 const drivers = ref<User[]>([])
 const vehicles = ref<Vehicle[]>([])
+const helpers = ref<User[]>([])
 const loading = ref(false)
 
 // Referencia al modal de respuestas
@@ -48,6 +50,7 @@ const getOrderDetails = async (orderId: number | undefined) => {
 
     selectedDriver.value = data.userId ? String(data.userId) : ''
     selectedVehicle.value = data.vehicleId ? String(data.vehicleId) : ''
+    selectedHelper.value = data.helperId ? String(data.helperId) : ''
 
   } catch (error) {
     console.error("Error obteniendo observaciones de la orden:", error)
@@ -65,6 +68,17 @@ const getDrivers = async () => {
   } catch (error) {
     console.error("Error obteniendo conductores:", error)
     toast.error("Error al cargar conductores")
+  }
+}
+
+// Obtener ayudantes disponibles
+const getHelpers = async () => {
+  try {
+    const data = await getUsers()
+    helpers.value = data.filter(user => user.role === 'helper')
+  } catch (error) {
+    console.error("Error obteniendo ayudantes:", error)
+    toast.error("Error al cargar ayudantes")
   }
 }
 
@@ -108,7 +122,8 @@ const assignOrderToDriver = async () => {
     await assignOrder(
       orderDetails.value.id,
       parseInt(selectedDriver.value),
-      parseInt(selectedVehicle.value)
+      parseInt(selectedVehicle.value),
+      parseInt(selectedHelper.value)
     )
 
     toast.success("Orden asignada exitosamente")
@@ -174,6 +189,7 @@ watch(() => props.selectedOrder, (newOrder) => {
 onMounted(() => {
   getDrivers()
   getVehiclesData()
+  getHelpers()
 })
 </script>
 
@@ -193,7 +209,7 @@ onMounted(() => {
         <button 
           class="assign-btn" 
           @click="openConfirmModal"
-          :disabled="!selectedDriver || !selectedVehicle"
+          :disabled="!selectedDriver || !selectedVehicle || !selectedHelper"
         >
           <span class="material-symbols-outlined">check</span>
           Asignar
@@ -250,6 +266,25 @@ onMounted(() => {
                 :value="vehicle.id"
               >
                 {{ vehicle.brand }} - {{ vehicle.licensePlate }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="helper">Elegir ayudante</label>
+            <select 
+              id="helper" 
+              v-model="selectedHelper"
+              @focus="handleSelectFocus"
+              @blur="handleSelectBlur"
+            >
+              <option disabled value="">Selecciona un ayudante</option>
+              <option 
+                v-for="helper in helpers" 
+                :key="helper.id" 
+                :value="helper.id"
+              >
+                {{ helper.name }} {{ helper.lastName }}
               </option>
             </select>
           </div>
