@@ -6,7 +6,7 @@ import PieChart from '@/components/charts/PieChart.vue';
 import KpiCard from '@/components/charts/KpiCard.vue';
 import DriversTable from '@/components/Table.vue'
 import { ref, onMounted } from 'vue';
-import { getDriversReport } from '@/services/reportService';
+import { getDriversReport } from '@/services/performanceReportService';
 import type { DriverReport } from '@/types/reports';
 
 const activeTab = ref('left')

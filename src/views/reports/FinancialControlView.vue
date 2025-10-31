@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ReportFilter from '@/components/filters/FinancialControlFilter.vue'
 import { default as ExpenseTable, default as IncomeTable } from '@/components/Table.vue'
-import { getFinancialControlIncome, getFinancialControlSpending } from '@/services/reportService'
+import { getFinancialControlIncome, getFinancialControlSpending } from '@/services/financialReportService'
 import { onMounted, ref } from 'vue'
 
 const activeTab = ref('left')

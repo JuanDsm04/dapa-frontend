@@ -6,21 +6,18 @@ import PieChart from '@/components/charts/PieChart.vue';
 import ReportFilter from '@/components/filters/ReportFilter.vue';
 import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
 import FinanceTable from '@/components/Table.vue';
-import { getFinancialReport, getFinancialReportByDate, getTotalIncomeReport } from '@/services/reportService';
-import type { Income } from '@/types/reports';
+import { getExpensesPerMonth, getExpensesPerType, getFinancialReport, getFinancialReportByDate, getIncomePerMonth, getPaymentMethods, getTotalIncomeReport } from '@/services/financialReportService';
+import type { GraphData, Income } from '@/types/reports';
 import { onMounted, ref } from 'vue';
 
-const activeTab = ref('table');
-const totalIncome = ref(0);
-const incomeSources = ref<Income[]>([]);
+const activeTab = ref('table')
+const totalIncome = ref(0)
+const incomeSources = ref<Income[]>([])
 
-const categories = ['Enero', 'Febrero', 'Marzo', 'Abril']
-const seriesBar = [{ name: 'Ingresos', data: [20, 40, 35, 50] }]
-const seriesLine = [{ name: 'Gastos', data: [10, 30, 25, 40] }]
-const seriesPie = [44, 55, 13, 33]
-const labelsPie = ['Alquiler', 'Comida', 'Transporte', 'Otros']
-const seriesCircular = [30, 25, 20, 25]
-const labelsCircular = ['Tarjeta', 'Efectivo', 'Transferencia', 'Cheque']
+const incomePerMonth = ref<GraphData>()
+const expensesPerMonth = ref<GraphData>()
+const expensesPerType = ref<GraphData>()
+const paymentMethods = ref<GraphData>()
 
 const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
   try {
@@ -30,17 +27,18 @@ const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
     } else {
       response = await getFinancialReport();
     }
-
-    incomeSources.value = response.data.map((item: any) => {
-      const date = new Date(item.date);
-      const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const year = date.getFullYear();
-      return {
-        ...item,
-        formattedDate: `${day}/${month}/${year}`
-      };
-    });
+    if (response.data) {
+      incomeSources.value = response.data.map((item: any) => {
+        const date = new Date(item.date);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return {
+          ...item,
+          formattedDate: `${day}/${month}/${year}`
+        }
+      })
+    }
   } catch (error) {
     console.error('Error fetching financial report: ', error);
     incomeSources.value = [];
@@ -53,12 +51,41 @@ const handleFilterChange = ({ startDate, endDate }: { startDate: string, endDate
 
 onMounted(async () => {
   try {
-    const response = await getTotalIncomeReport();
-    totalIncome.value = response.data.totalIncome;
+    const response = await getTotalIncomeReport()
+    totalIncome.value = response.data.totalIncome
   } catch (error) {
-    console.error('Error fetching total income:', error);
+    console.error('Error fetching total income:', error)
   }
-  fetchFinancialReport();
+  fetchFinancialReport()
+
+  try {
+    const response = await getIncomePerMonth()
+    incomePerMonth.value = response.data
+  } catch (error) {
+    console.error('Error fetching monthly income:', error);
+  }
+
+  try {
+    const response = await getExpensesPerType()
+    expensesPerType.value = response.data
+  } catch (error) {
+    console.error('Error fetching expenses per type:', error);
+  }
+
+  try {
+    const response = await getExpensesPerMonth()
+    expensesPerMonth.value = response.data
+  } catch (error) {
+    console.error('Error fetching monthly expenses:', error);
+  }
+
+  try {
+    const response = await getPaymentMethods()
+    paymentMethods.value = response.data
+  } catch (error) {
+    console.error('Error fetching payment method distributions:', error);
+  }
+
 });
 
 const myTable = {
@@ -113,26 +140,58 @@ const myTable = {
 
       <div v-if="activeTab === 'graphics'" class="graphs">
         <div class="charts-row">
-          <BarChart
-            :series="seriesBar"
-            :categories="categories"
-            title="Ingresos"
-          />
-          <PieChart
-            :series="seriesPie"
-            :labels="labelsPie"
-            title="Distribución de gastos"
-          />
-          <LineChart
-            :series="seriesLine"
-            :categories="categories"
-            title="Gastos"
-          />
-          <CircularChart
-            :series="seriesCircular"
-            :labels="labelsCircular"
-            title="Métodos de pago"
-          />
+          <div>
+            <div v-if="incomePerMonth && incomePerMonth.series && incomePerMonth.series.length > 0">
+              <BarChart
+                :series="[{ name: 'Ingresos', data: incomePerMonth?.series ?? [] }]"
+                :categories="incomePerMonth?.categories ?? []"
+                title="Ingresos"
+              />
+            </div>
+            <div v-else class="chart-placeholder">
+              <h3>Ingresos</h3>
+              <p>No hay datos suficientes</p>
+            </div>
+          </div>
+          <div>
+            <div v-if="expensesPerType && expensesPerType.series && expensesPerType.series.length > 0">
+              <PieChart
+                :series="expensesPerType?.series ?? []"
+                :labels="expensesPerType?.categories ?? []"
+                title="Distribución de gastos"
+              />
+            </div>
+            <div v-else class="chart-placeholder">
+              <h3>Distribución de gastos</h3>
+              <p>No hay datos suficientes</p>
+            </div>
+          </div>
+          <div>
+            <div v-if="expensesPerMonth && expensesPerMonth.series && expensesPerMonth.series.length > 0">
+              <LineChart
+                :series="[{ name: 'Gastos', data: expensesPerMonth?.series ?? [] }]"
+                :categories="expensesPerMonth?.categories ?? []"
+                title="Gastos"
+              />
+            </div>
+            <div v-else class="chart-placeholder">
+              <h3>Gastos</h3>
+              <p>No hay datos suficientes</p>
+            </div>
+          </div>
+          <div>
+            <div v-if="paymentMethods && paymentMethods.series && paymentMethods.series.length > 0">
+              <CircularChart
+                :series="paymentMethods?.series ?? []"
+                :labels="paymentMethods?.categories ?? []"
+                title="Métodos de pago"
+              />
+            </div>
+            <div v-else class="chart-placeholder">
+              <h3>Métodos de pago</h3>
+              <p>No hay datos suficientes</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -252,6 +311,20 @@ section {
 
 .btn-back:active{
   background-color: var(--neutral-gray-300);
+}
+
+
+.chart-placeholder {
+  width: 100%;
+  padding: 2rem;
+  background-color: var(--neutral-white);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 600px;
+  min-height: 400px;
 }
 
 @media (max-width: 770px) {

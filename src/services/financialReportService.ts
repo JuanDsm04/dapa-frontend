@@ -21,9 +21,9 @@ export const getFinancialReportByDate = async (startDate: string, endDate: strin
   return response
 }
 
-export const getDriversReport = async () => {
+export const getTotalIncomeReport = async () => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/reports/drivers`, {
+    await fetch(`${API_URL}/api/reports/income`, {
       method: 'GET',
       headers: getHeaders()
     })
@@ -31,9 +31,39 @@ export const getDriversReport = async () => {
   return response
 }
 
-export const getTotalIncomeReport = async () => {
+export const getIncomePerMonth = async () => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/reports/income`, {
+    await fetch(`${API_URL}/api/reports/financial/monthly`, {
+      method: 'GET',
+      headers: getHeaders()
+    })
+  )
+  return response
+}
+
+export const getExpensesPerMonth = async () => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/reports/expenses/monthly`, {
+      method: 'GET',
+      headers: getHeaders()
+    })
+  )
+  return response
+}
+
+export const getExpensesPerType = async () => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/reports/expenses/grouped`, {
+      method: 'GET',
+      headers: getHeaders()
+    })
+  )
+  return response
+}
+
+export const getPaymentMethods = async () => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/reports/expenses/methods`, {
       method: 'GET',
       headers: getHeaders()
     })
