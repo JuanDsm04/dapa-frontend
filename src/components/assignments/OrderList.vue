@@ -147,6 +147,12 @@ onUnmounted(() => {
             <p>No hay ordenes disponibles</p>
         </div>
       </section>
+      <div v-if="filter === 'delivered' && filteredOrders.length === 10" class="info-banner">
+        <span class="material-symbols-outlined">info</span>
+        <p>Mostrando los 10 servicios completados más recientes. 
+          <router-link to="/reports/service-history">Ver historial completo</router-link>
+        </p>
+      </div>
     </div>
   </section>
 </template>
@@ -269,9 +275,25 @@ h2 {
     opacity: 0.5;
 }
 
+.info-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--principal-primary-50);
+  color: var(--principal-primary);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
 @media (max-width: 770px) {
   .text-subtitle {
     font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+  }
+
+  .info-banner {
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
   }
 }
 </style>
