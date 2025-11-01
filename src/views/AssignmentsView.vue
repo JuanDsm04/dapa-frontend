@@ -29,9 +29,24 @@ const pendingOrders = computed(() => {
 
 // Computed para órdenes en progreso
 const inProgressOrders = computed(() => {
-  return orders.value.filter(order => 
+  const filtered = orders.value.filter(order => 
     ['pickup', 'collected', 'delivered'].includes(order.status)
   )
+  
+  // Separar las órdenes delivered de las demás
+  const deliveredOrders = filtered.filter(order => order.status === 'delivered')
+  const activeOrders = filtered.filter(order => order.status !== 'delivered')
+  
+  // Ordenar delivered por date (más reciente primero) y tomar solo las 10 más recientes
+  const recentDelivered = deliveredOrders
+    .sort((a, b) => {
+      const dateA = new Date(a.date).getTime()
+      const dateB = new Date(b.date).getTime()
+      return dateB - dateA // Descendente (más reciente primero)
+    })
+    .slice(0, 10) // Solo las 10 más recientes
+  
+  return [...activeOrders, ...recentDelivered]
 })
 
 // Función para comparar y actualizar órdenes
