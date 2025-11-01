@@ -24,7 +24,6 @@ function onFilterChange() {
       <label for="endDate">Fecha fin</label>
       <input v-model="endDate" type="date" name="endDate" id="endDate" @input="onFilterChange">
     </div>
-    <button type="button">Descargar</button>
   </form>
 </template>
 
@@ -56,22 +55,6 @@ input[type="text"] {
   border-radius: 6px;
   border: 1px solid var(--neutral-gray-200);
   font-size: 1rem;
-}
-
-button {
-  background-color: var(--principal-primary-500);
-  color: var(--neutral-white);
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background 0.2s;
-  margin-top: 20px;
-}
-
-button:hover {
-  background-color: var(--principal-primary-800);
 }
 
 @media (max-width: 600px) {

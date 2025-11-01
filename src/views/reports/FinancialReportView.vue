@@ -1,18 +1,21 @@
 <script setup lang="ts">
-import BarChart from '@/components/charts/BarChart.vue';
-import CircularChart from '@/components/charts/CircularChart.vue';
-import LineChart from '@/components/charts/LineChart.vue';
-import PieChart from '@/components/charts/PieChart.vue';
-import ReportFilter from '@/components/filters/ReportFilter.vue';
-import TotalesFinancieros from '@/components/reports/FinancialTotal.vue';
-import FinanceTable from '@/components/Table.vue';
-import { getExpensesPerMonth, getExpensesPerType, getFinancialReport, getFinancialReportByDate, getIncomePerMonth, getPaymentMethods, getTotalIncomeReport } from '@/services/financialReportService';
-import type { GraphData, Income } from '@/types/reports';
-import { onMounted, ref } from 'vue';
+import BarChart from '@/components/charts/BarChart.vue'
+import CircularChart from '@/components/charts/CircularChart.vue'
+import LineChart from '@/components/charts/LineChart.vue'
+import PieChart from '@/components/charts/PieChart.vue'
+import ReportFilter from '@/components/filters/ReportFilter.vue'
+import TotalesFinancieros from '@/components/reports/FinancialTotal.vue'
+import FinanceTable from '@/components/Table.vue'
+import FinancialReportPDF from '@/components/reports/FinancialReportPDF.vue'
+import { getExpensesPerMonth, getExpensesPerType, getFinancialReport, getFinancialReportByDate, getIncomePerMonth, getPaymentMethods, getTotalIncomeReport } from '@/services/financialReportService'
+import type { GraphData, Income } from '@/types/reports'
+import { onMounted, ref, nextTick } from 'vue'
+import html2pdf from 'html2pdf.js'
 
 const activeTab = ref('table')
 const totalIncome = ref(0)
 const incomeSources = ref<Income[]>([])
+const showPDF = ref(false)
 
 const incomePerMonth = ref<GraphData>()
 const expensesPerMonth = ref<GraphData>()
@@ -21,33 +24,50 @@ const paymentMethods = ref<GraphData>()
 
 const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
   try {
-    let response;
+    let response
     if (startDate && endDate) {
-      response = await getFinancialReportByDate(startDate, endDate);
+      response = await getFinancialReportByDate(startDate, endDate)
     } else {
-      response = await getFinancialReport();
+      response = await getFinancialReport()
     }
     if (response.data) {
       incomeSources.value = response.data.map((item: any) => {
-        const date = new Date(item.date);
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
+        const date = new Date(item.date)
+        const day = String(date.getDate()).padStart(2, '0')
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const year = date.getFullYear()
         return {
           ...item,
-          formattedDate: `${day}/${month}/${year}`
+          formattedDate: `${day}/${month}/${year}`,
         }
       })
     }
   } catch (error) {
-    console.error('Error fetching financial report: ', error);
-    incomeSources.value = [];
+    console.error('Error fetching financial report: ', error)
+    incomeSources.value = []
   }
-};
+}
 
 const handleFilterChange = ({ startDate, endDate }: { startDate: string, endDate: string }) => {
-  fetchFinancialReport(startDate, endDate);
-};
+  fetchFinancialReport(startDate, endDate)
+}
+
+const generateReport = async () => {
+  showPDF.value = true
+  await nextTick()
+  const element = document.getElementById('pdf-content')
+  const options = {
+    margin: 0.5,
+    filename: 'reporte-financiero.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+  }
+  html2pdf().from(element).set(options).save()
+  setTimeout(() => {
+    showPDF.value = false
+  }, 1)
+}
 
 onMounted(async () => {
   try {
@@ -62,36 +82,35 @@ onMounted(async () => {
     const response = await getIncomePerMonth()
     incomePerMonth.value = response.data
   } catch (error) {
-    console.error('Error fetching monthly income:', error);
+    console.error('Error fetching monthly income:', error)
   }
 
   try {
     const response = await getExpensesPerType()
     expensesPerType.value = response.data
   } catch (error) {
-    console.error('Error fetching expenses per type:', error);
+    console.error('Error fetching expenses per type:', error)
   }
 
   try {
     const response = await getExpensesPerMonth()
     expensesPerMonth.value = response.data
   } catch (error) {
-    console.error('Error fetching monthly expenses:', error);
+    console.error('Error fetching monthly expenses:', error)
   }
 
   try {
     const response = await getPaymentMethods()
     paymentMethods.value = response.data
   } catch (error) {
-    console.error('Error fetching payment method distributions:', error);
+    console.error('Error fetching payment method distributions:', error)
   }
-
-});
+})
 
 const myTable = {
   dom: 'Bfrtip',
   buttons: [
-    { extend: 'csv', text: `<span class="material-symbols-outlined sm-icon">download</span> CSV`},
+    { extend: 'csv', text: `<span class="material-symbols-outlined sm-icon">download</span> CSV` },
   ],
 }
 </script>
@@ -105,14 +124,24 @@ const myTable = {
       <h1>Reporte Financiero</h1>
     </header>
 
-    <section>
-      <ReportFilter @filter-change="handleFilterChange" />
-
-      <TotalesFinancieros
-        :ingresos="totalIncome"
-        :egresos="0"
-        :diferencia="totalIncome"
+    <div v-if="showPDF" id="pdf-content">
+      <FinancialReportPDF
+        :incomeSources="incomeSources"
+        :totalIncome="totalIncome"
+        :incomePerMonth="incomePerMonth"
+        :expensesPerMonth="expensesPerMonth"
+        :expensesPerType="expensesPerType"
+        :paymentMethods="paymentMethods"
       />
+    </div>
+
+    <section>
+      <section class="controls">
+        <ReportFilter @filter-change="handleFilterChange" />
+        <button class="btn-primary" @click="generateReport">Descargar</button>
+      </section>
+
+      <TotalesFinancieros :ingresos="totalIncome" :egresos="0" :diferencia="totalIncome" />
 
       <div class="toggle-row">
         <div :class="['toggle-wrapper', activeTab === 'table' ? 'active-left' : 'active-right']">
@@ -223,11 +252,48 @@ h1 {
 
 section {
   width: 100%;
-  min-height: calc(100vh - 150px);
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
   align-items: stretch;
+}
+
+.btn-primary {
+  background-color: var(--principal-primary-500);
+  color: var(--neutral-white);
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+  margin-top: 20px;
+  max-height: fit-content;
+}
+
+.controls {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.btn-back{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 50%;
+  padding: 0.75rem;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-back:hover{
+  background-color: var(--neutral-gray-200);
+}
+
+.btn-back:active{
+  background-color: var(--neutral-gray-300);
 }
 
 .toggle-row {
