@@ -50,11 +50,8 @@ const handleCreateOrUpdateExpense = async (payload: Partial<Expense>) => {
   try {
     let typeId = payload.typeId
 
-    // If creating a new expense type
      if (!typeId && payload.expenseType) {
-      console.log('Creating new type:', payload.expenseType) // DEBUG
       const newType = await handleCreateExpenseType({ type: payload.expenseType })
-      console.log('New type result:', newType) // DEBUG
       
       if (!newType?.id) {
         toast.error('Error al crear el tipo de egreso')
@@ -62,7 +59,6 @@ const handleCreateOrUpdateExpense = async (payload: Partial<Expense>) => {
         return
       }
       typeId = newType.id
-      console.log('Using new typeId:', typeId) // DEBUG
     }
 
     if (!typeId) {

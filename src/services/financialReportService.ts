@@ -61,9 +61,9 @@ export const getExpensesPerType = async () => {
   return response
 }
 
-export const getPaymentMethods = async () => {
+export const getOrderTypeDist = async () => {
   const response = await handleResponse(
-    await fetch(`${API_URL}/api/reports/expenses/methods`, {
+    await fetch(`${API_URL}/api/reports/financial/order-type`, {
       method: 'GET',
       headers: getHeaders()
     })

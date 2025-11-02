@@ -7,20 +7,25 @@ import ReportFilter from '@/components/filters/ReportFilter.vue'
 import TotalesFinancieros from '@/components/reports/FinancialTotal.vue'
 import FinanceTable from '@/components/Table.vue'
 import FinancialReportPDF from '@/components/reports/FinancialReportPDF.vue'
-import { getExpensesPerMonth, getExpensesPerType, getFinancialReport, getFinancialReportByDate, getIncomePerMonth, getPaymentMethods, getTotalIncomeReport } from '@/services/financialReportService'
+import { getExpensesPerMonth, getExpensesPerType, getFinancialReport, getFinancialReportByDate, getIncomePerMonth, getOrderTypeDist, getTotalIncomeReport } from '@/services/financialReportService'
 import type { GraphData, Income } from '@/types/reports'
-import { onMounted, ref, nextTick } from 'vue'
+import { onMounted, ref, nextTick, computed } from 'vue'
 import html2pdf from 'html2pdf.js'
+import type { Expense } from '@/types/expense'
+import { getExpenses } from '@/services/expenseService'
 
 const activeTab = ref('table')
-const totalIncome = ref(0)
+const expenses = ref<Expense[]>([])
+const totalExpenses = ref(0)
 const incomeSources = ref<Income[]>([])
+const totalIncome = ref(0)
+const totalDifference = computed(() => totalIncome.value - totalExpenses.value)
 const showPDF = ref(false)
 
 const incomePerMonth = ref<GraphData>()
 const expensesPerMonth = ref<GraphData>()
 const expensesPerType = ref<GraphData>()
-const paymentMethods = ref<GraphData>()
+const orderTypeDist = ref<GraphData>()
 
 const fetchFinancialReport = async (startDate?: string, endDate?: string) => {
   try {
@@ -100,10 +105,25 @@ onMounted(async () => {
   }
 
   try {
-    const response = await getPaymentMethods()
-    paymentMethods.value = response.data
+    const response = await getOrderTypeDist()
+    orderTypeDist.value = response.data
   } catch (error) {
-    console.error('Error fetching payment method distributions:', error)
+    console.error('Error fetching order type distributions:', error)
+  }
+
+  try {
+    const response = await getExpensesPerMonth()
+    expenses.value = response.data
+  } catch (error) {
+    console.error('Error fetching order type distributions:', error)
+  }
+
+  try {
+    const response = await getExpenses()
+    expenses.value = response.data
+    totalExpenses.value = expenses.value.reduce((sum, e) => sum + (e.amount ?? 0), 0)
+  } catch (error) {
+    console.error('Error fetching expenses:', error)
   }
 })
 
@@ -131,7 +151,7 @@ const myTable = {
         :incomePerMonth="incomePerMonth"
         :expensesPerMonth="expensesPerMonth"
         :expensesPerType="expensesPerType"
-        :paymentMethods="paymentMethods"
+        :paymentMethods="orderTypeDist"
       />
     </div>
 
@@ -141,7 +161,7 @@ const myTable = {
         <button class="btn-primary" @click="generateReport">Descargar</button>
       </section>
 
-      <TotalesFinancieros :ingresos="totalIncome" :egresos="0" :diferencia="totalIncome" />
+      <TotalesFinancieros :ingresos="totalIncome" :egresos="totalExpenses" :diferencia="totalDifference" />
 
       <div class="toggle-row">
         <div :class="['toggle-wrapper', activeTab === 'table' ? 'active-left' : 'active-right']">
@@ -192,9 +212,9 @@ const myTable = {
           </div>
           <div>
             <CircularChart
-              :series="paymentMethods?.series"
-              :labels="paymentMethods?.categories"
-              title="Métodos de pago"
+              :series="orderTypeDist?.series"
+              :labels="orderTypeDist?.categories"
+              title="Tipos de egreso"
             />
           </div>
         </div>

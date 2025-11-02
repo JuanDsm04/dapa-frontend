@@ -1,6 +1,16 @@
 import type { Expense, ExpenseType } from '@/types/expense';
 import { API_URL, getHeaders, handleResponse } from '@/utils/api'
 
+export const getExpenses = async () => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/expenses`, {
+      method: 'GET',
+      headers: getHeaders()
+    })
+  )
+  return response
+}
+
 export const getExpenseTypes = async () => {
   const response = await handleResponse(
     await fetch(`${API_URL}/api/expense-types`, {

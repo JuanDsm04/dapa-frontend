@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   title: string
   value: number
   goal: number
-}>()
+  readonly?: boolean
+}>(), {
+  readonly: false
+})
 
 const emit = defineEmits(['update:goal'])
 
@@ -13,8 +16,8 @@ const isEditingGoal = ref(false);
 const editableGoal = ref(props.goal);
 
 const goalComparison = computed(() => {
-  if (props.goal === 0 && props.value === 0) return 0; // both zero
-  if (props.goal === 0) return 0; // avoid Infinity
+  if (props.goal === 0 && props.value === 0) return 0;
+  if (props.goal === 0) return 0;
   return Math.abs(props.goal - props.value) / props.goal * 100;
 });
 
@@ -32,7 +35,7 @@ const saveGoal = () => {
   <div class="card">
     <header>
       <span class="title">{{ props.title }}</span>
-      <div class="edit-goal-controls">
+      <div class="edit-goal-controls" v-if="!readonly">
         <button
           v-if="!isEditingGoal"
           @click="isEditingGoal = true"
@@ -49,9 +52,7 @@ const saveGoal = () => {
         </button>
       </div>
     </header>
-
     <span class="value">{{ props.value }}</span>
-
     <div class="metrics">
       <div class="metric">
         <span>
@@ -65,7 +66,6 @@ const saveGoal = () => {
             @keyup.enter="saveGoal"
           />
         </span>
-
         <div>
           <span
             :class="(props.value - props.goal) > 0
@@ -76,7 +76,6 @@ const saveGoal = () => {
           >
             {{ goalComparison.toFixed(2) }}%
           </span>
-
           <span v-if="(props.value - props.goal) > 0">▲</span>
           <span v-else-if="(props.value - props.goal) < 0">▼</span>
           <span v-else>||</span>
@@ -85,7 +84,6 @@ const saveGoal = () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .card {

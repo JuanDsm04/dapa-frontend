@@ -5,9 +5,11 @@ import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
 import KpiCard from '@/components/charts/KpiCard.vue';
 import DriversTable from '@/components/Table.vue'
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 import { getCurrentKPIs, getDriversParticipationChart, getDriversReport, getKPIGoals, getPerformanceChart, getQuotationsPerMonth, getQuotationsPerStatus, updatePerformanceGoal } from '@/services/performanceReportService';
 import type { DriverReport, GraphData } from '@/types/reports';
+import html2pdf from 'html2pdf.js';
+import PerformanceReportPDF from './PerformanceReportPDF.vue';
 
 const activeTab = ref('left')
 const selectedMonth = ref<String>('Diciembre 2024')
@@ -35,6 +37,26 @@ const deliveriesPerEmployeeGoal = ref(0);
 const fulfillmentRateCurrent = ref(0);
 const fulfillmentRateGoal = ref(0);
 
+const showPDF = ref(false)
+
+const generateReport = async () => {
+  showPDF.value = true
+  await nextTick()
+  const element = document.getElementById('pdf-content')
+  const options = {
+    margin: 0.5,
+    filename: 'reporte-desempeño.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+  }
+  html2pdf().from(element).set(options).save()
+  setTimeout(() => {
+    showPDF.value = false
+  }, 1)
+}
+
+
 const saveAllGoals = async () => {
   try {
     const payload = {
@@ -47,7 +69,6 @@ const saveAllGoals = async () => {
     }
 
     await updatePerformanceGoal(payload)
-    console.log('Performance goals updated successfully')
   } catch (error) {
     console.error('Error updating performance goals:', error)
   }
@@ -133,11 +154,33 @@ onMounted(async () => {
 
 <template>
   <main>
+    <div v-if="showPDF" id="pdf-content">
+    <PerformanceReportPDF
+      :ordersCompleted="ordersCompletedCurrently"
+      :ordersCompletedGoal="ordersCompletedGoal"
+      :utility="utilityCurrent"
+      :utilityGoal="utilityGoal"
+      :avgOrderAmount="avgOrderAmountCurrent"
+      :avgOrderAmountGoal="avgOrderAmountGoal"
+      :tripsCompleted="tripsCompletedCurrently"
+      :tripsCompletedGoal="tripsCompletedGoal"
+      :deliveriesPerEmployee="deliveriesPerEmployeeCurrent"
+      :deliveriesPerEmployeeGoal="deliveriesPerEmployeeGoal"
+      :fulfillmentRate="fulfillmentRateCurrent"
+      :fulfillmentRateGoal="fulfillmentRateGoal"
+      :quotationsPerMonth="quotationsPerMonth"
+      :quotationsPerStatus="quotationsPerStatus"
+      :driversPerformance="driversPerformanceChart"
+      :driversParticipation="driversDriversParticipationChart"
+      :driverReports="driverReports"
+    />
+  </div>
     <header>
       <button class="btn-back" @click="$router.back()">
         <span class="material-symbols-outlined md-icon">arrow_back</span>
       </button>
       <h1>Reporte de desempeño</h1>
+      <button class="btn-primary" @click="generateReport">Descargar</button>
     </header>
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
       <div class="toggle-indicator"></div>
@@ -305,6 +348,18 @@ h2 {
   background: none;
   cursor: pointer;
 }
+
+.btn-primary {
+  background: var(--principal-primary);
+  color: var(--neutral-white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 
 .btn-back:hover{
   background-color: var(--neutral-gray-200);
