@@ -35,35 +35,6 @@ const deliveriesPerEmployeeGoal = ref(0);
 const fulfillmentRateCurrent = ref(0);
 const fulfillmentRateGoal = ref(0);
 
-// Temporary dummy data
-const linealData = ref({
-  series: [
-    { name: 'Cotizaciones', data: [20, 40, 35, 48] },
-  ],
-  categories: ['Diciembre 2024', 'Enero 2025', 'Febrero 2025', 'Marzo 2025'],
-  title: 'Cotizaciones completadas'
-})
-
-const pieData = ref({
-  series: [50, 6.3, 12.5, 31.3],
-  labels: ['Completadas', 'Pendientes', 'Aprobadas', 'En progreso'],
-  title: 'Cotizaciones 2025'
-})
-
-const driversBarData = ref({
-  series: [
-    { name: 'Viajes completados', data: [52, 23, 42] },
-    { name: 'Tasa de cumplimiento', data: [92, 88, 95] },
-  ],
-  categories: ['Ene', 'Feb', 'Mar'],
-})
-
-const driversPieData = ref({
-  series: [400, 350, 300, 230],
-  labels: ['Conductor A', 'Conductor B', 'Conductor C', 'Conductor D'],
-  title: 'Participación en Viajes'
-})
-
 const saveAllGoals = async () => {
   try {
     const payload = {

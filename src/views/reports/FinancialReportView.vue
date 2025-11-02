@@ -170,56 +170,32 @@ const myTable = {
       <div v-if="activeTab === 'graphics'" class="graphs">
         <div class="charts-row">
           <div>
-            <div v-if="incomePerMonth && incomePerMonth.series && incomePerMonth.series.length > 0">
-              <BarChart
-                :series="[{ name: 'Ingresos', data: incomePerMonth?.series ?? [] }]"
-                :categories="incomePerMonth?.categories ?? []"
-                title="Ingresos"
-              />
-            </div>
-            <div v-else class="chart-placeholder">
-              <h3>Ingresos</h3>
-              <p>No hay datos suficientes</p>
-            </div>
+            <BarChart
+              :series="[{ name: 'Ingresos mensuales', data: incomePerMonth?.series }]"
+              :categories="incomePerMonth?.categories"
+              title="Ingresos mensuales"
+            />
           </div>
           <div>
-            <div v-if="expensesPerType && expensesPerType.series && expensesPerType.series.length > 0">
-              <PieChart
-                :series="expensesPerType?.series ?? []"
-                :labels="expensesPerType?.categories ?? []"
-                title="Distribución de gastos"
-              />
-            </div>
-            <div v-else class="chart-placeholder">
-              <h3>Distribución de gastos</h3>
-              <p>No hay datos suficientes</p>
-            </div>
+            <PieChart
+              :series="expensesPerType?.series"
+              :labels="expensesPerType?.categories"
+              title="Distribución de egresos"
+            />
           </div>
           <div>
-            <div v-if="expensesPerMonth && expensesPerMonth.series && expensesPerMonth.series.length > 0">
-              <LineChart
-                :series="[{ name: 'Gastos', data: expensesPerMonth?.series ?? [] }]"
-                :categories="expensesPerMonth?.categories ?? []"
-                title="Gastos"
-              />
-            </div>
-            <div v-else class="chart-placeholder">
-              <h3>Gastos</h3>
-              <p>No hay datos suficientes</p>
-            </div>
+            <LineChart
+              :series="[{ name: 'Egresos mensuales', data: expensesPerMonth?.series }]"
+              :categories="expensesPerMonth?.categories"
+              title="Egresos mensuales"
+            />
           </div>
           <div>
-            <div v-if="paymentMethods && paymentMethods.series && paymentMethods.series.length > 0">
-              <CircularChart
-                :series="paymentMethods?.series ?? []"
-                :labels="paymentMethods?.categories ?? []"
-                title="Métodos de pago"
-              />
-            </div>
-            <div v-else class="chart-placeholder">
-              <h3>Métodos de pago</h3>
-              <p>No hay datos suficientes</p>
-            </div>
+            <CircularChart
+              :series="paymentMethods?.series"
+              :labels="paymentMethods?.categories"
+              title="Métodos de pago"
+            />
           </div>
         </div>
       </div>

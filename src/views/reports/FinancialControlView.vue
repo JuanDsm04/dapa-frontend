@@ -1,13 +1,98 @@
 <script setup lang="ts">
 import ReportFilter from '@/components/filters/FinancialControlFilter.vue'
 import { default as ExpenseTable, default as IncomeTable } from '@/components/Table.vue'
+import ExpenseForm from '@/components/ExpenseForm.vue'
 import { getFinancialControlIncome, getFinancialControlSpending } from '@/services/financialReportService'
+import { getExpenseTypes, createExpense, createExpenseType } from '@/services/expenseService'
+import type { Expense, ExpenseType } from '@/types/expense'
 import { onMounted, ref } from 'vue'
+import { toast } from 'vue3-toastify'
+import 'vue3-toastify/dist/index.css'
 
 const activeTab = ref('left')
+const showModal = ref(false)
+const loading = ref(false)
+const expenseTypes = ref<ExpenseType[]>([])
 
 const incomeItems = ref<any[]>([])
 const expenseItems = ref<any[]>([])
+
+const openModal = async () => {
+  loading.value = true
+  try {
+    const response = await getExpenseTypes()
+    expenseTypes.value = response.data || []
+    showModal.value = true
+  } catch (error) {
+    toast.error('Error al obtener los tipos de egreso')
+  } finally {
+    loading.value = false
+  }
+}
+
+const closeModal = () => {
+  showModal.value = false
+}
+
+const handleCreateExpenseType = async (payload: Partial<ExpenseType>): Promise<ExpenseType | null> => {
+  try {
+    const newType = await createExpenseType(payload)
+    toast.success('Nuevo tipo de egreso registrado exitosamente')
+    return newType.data 
+  } catch (error) {
+    toast.error('Error al registrar el tipo de egreso')
+    return null
+  }
+}
+
+const handleCreateOrUpdateExpense = async (payload: Partial<Expense>) => {
+  loading.value = true
+  try {
+    let typeId = payload.typeId
+
+    // If creating a new expense type
+     if (!typeId && payload.expenseType) {
+      console.log('Creating new type:', payload.expenseType) // DEBUG
+      const newType = await handleCreateExpenseType({ type: payload.expenseType })
+      console.log('New type result:', newType) // DEBUG
+      
+      if (!newType?.id) {
+        toast.error('Error al crear el tipo de egreso')
+        loading.value = false
+        return
+      }
+      typeId = newType.id
+      console.log('Using new typeId:', typeId) // DEBUG
+    }
+
+    if (!typeId) {
+      toast.error('Debe seleccionar o crear un tipo de egreso')
+      loading.value = false
+      return
+    }
+
+    await createExpense({
+      date: payload.date ? new Date(payload.date).toISOString() : new Date().toISOString(),
+      typeId: typeId,
+      temporalEmployee: payload.temporalEmployee === true,
+      description: payload.description || '',
+      amount: payload.amount
+    })
+
+    toast.success('Egreso registrado exitosamente')
+    closeModal()
+    
+    await fetchAll()
+    expenseTypes.value = (await getExpenseTypes()) || []
+    
+  } catch (error) {
+    console.error('Error creating expense:', error)
+    toast.error('Error al registrar el egreso')
+  } finally {
+    loading.value = false
+  }
+}
+
 
 const mapIncome = (rows: any[]) => rows.map((r: any, idx: number) => ({
   id: idx + 1,
@@ -34,7 +119,6 @@ const mapExpenses = (rows: any[]) => rows.map((r: any, idx: number) => ({
 
 const formatDate = (s: string | Date | undefined | null) => {
   if (!s) return ''
-  // Cast to string to satisfy TypeScript Date constructors and overloads
   const d = new Date(String(s))
   try {
     return new Intl.DateTimeFormat(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' }).format(d)
@@ -43,7 +127,6 @@ const formatDate = (s: string | Date | undefined | null) => {
   }
 }
 
-// helper to normalize different response shapes
 const extractRows = (resp: any): any[] => {
   if (!resp) return []
   if (Array.isArray(resp)) return resp
@@ -73,7 +156,6 @@ const fetchAll = async (startDate?: string, endDate?: string) => {
   }
 }
 
-// Handler for filter component
 const handleFilterChange = (payload: { startDate?: string; endDate?: string; search?: string }) => {
   const { startDate, endDate } = payload || {}
   fetchAll(startDate, endDate)
@@ -83,7 +165,6 @@ onMounted(() => {
   fetchAll()
 })
 
-// Opciones para exportar la tabla en PDF
 const myTable = {
   dom: 'Bfrtip',
   buttons: [
@@ -110,6 +191,9 @@ const myTable = {
         <span class="material-symbols-outlined md-icon">arrow_back</span>
       </button>
       <h1>Control Financiero</h1>
+      <button class="add-btn" @click="openModal" :disabled="loading">
+        {{ loading ? 'Cargando...' : '+ Agregar Egreso' }}
+      </button>
     </header>
     <div class="filters-toggle-row">
       <ReportFilter @filter-change="handleFilterChange" />
@@ -151,7 +235,6 @@ const myTable = {
               { label: 'Tipo', field: 'type' },
               { label: 'E. Temporal', field: 'tempEmployee' },
               { label: 'Descripción', field: 'description' },
-              { label: 'Tipo de pago', field: 'paymentType' },
               { label: 'Costo', field: 'amount' }
             ]"
             :options="myTable"
@@ -162,6 +245,19 @@ const myTable = {
         </div>
       </div>
     </section>
+    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
+      <article>
+        <header>
+          <h3>Agregar Egreso</h3>
+          <button class="close-btn" @click="closeModal">
+            <span class="material-symbols-outlined md-icon">close</span>
+          </button>
+        </header>
+        <section>
+          <ExpenseForm :expenseTypes="expenseTypes" @submit="handleCreateOrUpdateExpense" />
+        </section>
+      </article>
+    </div>
   </main>
 </template>
 
@@ -273,6 +369,81 @@ section {
 
 .btn-back:active{
   background-color: var(--neutral-gray-300);
+}
+
+.add-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--principal-primary);
+  color: var(--neutral-white);
+  border: none;
+  border-radius: 6px;
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: auto;
+}
+
+.add-btn:hover:not(:disabled) {
+  background-color: var(--principal-primary-hover);
+}
+
+.add-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--shadow-dark);
+  z-index: 1001;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+article {
+  background: var(--neutral-white);
+  border-radius: 10px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px var(--shadow-dark);
+  display: flex;
+  flex-direction: column;
+}
+
+article header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-base);
+}
+
+article header h3 {
+  font-size: clamp(1.1rem, 1vw + 0.5rem, 1.5rem);
+  font-weight: 500;
+  margin: 0;
+}
+
+article section {
+  padding: 1.5rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--neutral-gray-400);
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: var(--neutral-gray-600);
 }
 
 @media (max-width: 770px) {

@@ -24,7 +24,6 @@ function onFilterChange() {
       <label for="endDate">Fecha fin</label>
       <input v-model="endDate" type="date" name="endDate" id="endDate" @input="onFilterChange">
     </div>
-    <button type="button">Buscar</button>
   </form>
 </template>
 
