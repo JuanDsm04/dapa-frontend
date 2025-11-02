@@ -130,11 +130,11 @@ header h1 {
   font-size: 2rem;
   font-weight: 600;
   margin: 0;
-  color: #333;
+  color: var(--neutral-gray-900);
 }
 
 header span {
-  color: #666;
+  color: var(--neutral-gray-600);
   font-size: 1rem;
 }
 
@@ -159,7 +159,7 @@ header img.logo {
 }
 
 .info-description {
-  color: #666;
+  color: var(--neutral-gray-600);
   margin-bottom: 2rem;
   line-height: 1.5;
 }
@@ -168,11 +168,11 @@ header img.logo {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
-  color: #333;
+  color: var(--neutral-gray-900);
 }
 
 .steps-info {
-  color: #666;
+  color: var(--neutral-gray-600);
   margin-bottom: 2rem;
   line-height: 1.6;
 }
@@ -190,16 +190,14 @@ header img.logo {
 .info-item label {
   display: block;
   font-size: 0.9rem;
-  color: #666;
-  font-weight: 500;
+  color: var(--neutral-gray-600);
   margin-bottom: 0.25rem;
 }
 
 .info-item p {
   margin: 0;
   font-size: 1rem;
-  font-weight: 600;
-  color: #333;
+  color: var(--neutral-black);
 }
 
 @media (max-width: 768px) {

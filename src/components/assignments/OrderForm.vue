@@ -22,7 +22,6 @@ const details = ref('')
 const errors = ref<Record<string, string>>({})
 
 // Mapeo de tipos de carga del backend al frontend
-// Mapeo de tipos de carga del backend al frontend
 const cargoTypeBackendToFrontend: Record<BackendCargoType, FrontendCargoType> = {
   move: 'mudanza',
   cargo: 'flete',
@@ -48,11 +47,8 @@ const loadOrderData = () => {
     clientName.value = props.orderData.clientName || ''
     clientPhone.value = props.orderData.clientPhone || ''
     price.value = props.orderData.totalAmount ? props.orderData.totalAmount.toString() : ''
-    // asegurar tipo antes de indexar el Record
     if (isBackendCargoType(props.orderData.type)) {
       cargoType.value = cargoTypeBackendToFrontend[props.orderData.type]
-    } else {
-      cargoType.value = 'personal'
     }
     origin.value = props.orderData.origin || ''
     destination.value = props.orderData.destination || ''

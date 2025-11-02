@@ -139,9 +139,9 @@ const onPhoneInput = (event: Event) => {
             <select name="Role" id="Role" v-model="role">
                 <option value="driver">Piloto</option>
                 <option value="admin">Administrador</option>
+                <option value="helper">Ayudante</option>
             </select>
         </div>
-
 
         <div class="field" v-if="role === 'driver' && !isProfile">
             <label for="LicenseExpiration">Fecha de vencimiento de licencia</label>

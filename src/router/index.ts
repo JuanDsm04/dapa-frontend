@@ -17,6 +17,7 @@ import UsersView from "@/views/UsersView.vue";
 import VehiclesView from "@/views/VehiclesView.vue";
 import ClientResponseFormView from "@/views/ClientResponseFormView.vue";
 import TrackingView from "@/views/ClientTrackingView.vue";
+import ServiceHistoryView from "@/views/reports/ServiceHistoryView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -62,7 +63,7 @@ const router = createRouter({
       path: "/profile",
       name: "Profile",
       component: ProfileView,
-      meta: { requiresAuth: true, roles: ['admin', 'driver']}
+      meta: { requiresAuth: true, roles: ['admin', 'driver', 'helper']}
     },
     {
       path: "/vehicles",
@@ -80,7 +81,7 @@ const router = createRouter({
       path: "/my-assignments",
       name: "MyAssignments",
       component: DriverAssignmentsView,
-      meta: { requiresAuth: true, roles: ['driver'] }
+      meta: { requiresAuth: true, roles: ['driver', 'helper'] }
     },
     {
       path: "/:pathMatch(.*)*",
@@ -129,6 +130,12 @@ const router = createRouter({
       name: 'Tracking',
       component: TrackingView,
       meta: { hideNavbar: true }
+    },
+    {
+      path: '/reports/service-history',
+      name: 'ServiceHistory',
+      component: ServiceHistoryView,
+      meta: { requiresAuth: true, roles: ['admin'] }
     }
   ],
 });

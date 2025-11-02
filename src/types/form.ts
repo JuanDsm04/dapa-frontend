@@ -17,6 +17,7 @@ export interface Question {
   options?: QuestionOption[];
   isActive: boolean;
   position: number;
+  isRequired: boolean;
 }
 
 export interface Answer {

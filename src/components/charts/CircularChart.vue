@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  series: Array<any>
-  labels: string[]
+  series: Array<any> | undefined
+  labels: string[] | undefined
   title: string
   height?: number
   width?: number
@@ -62,11 +62,26 @@ const computedOptions = computed(() => ({
     }
   ]
 }))
+
+const hasData = computed(() => {
+  return Array.isArray(props.series) &&
+         props.series.length > 0 &&
+         Array.isArray(props.labels) &&
+         props.labels.length > 0
+})
 </script>
 
 <template>
-  <div class="chart-container" id="circular-chart">
-    <apexchart type="donut" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
+  <div v-if="hasData">
+    <div class="chart-container" id="circular-chart">
+      <apexchart type="donut" :options="computedOptions" :series="series" :height="props.height" :width="props.width" />
+    </div>
+  </div>
+  <div v-else>
+    <div class="chart-container no-data" id="circular-chart">
+      <h3>{{props.title}}</h3>
+      <p>No hay datos suficientes</p>
+    </div>
   </div>
 </template>
 
@@ -76,6 +91,21 @@ const computedOptions = computed(() => ({
   padding: 2rem;
   background-color: var(--neutral-white);
   border-radius: 1rem;
+}
+
+.no-data {
+  min-height: 464px;
+  min-width: 664px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.no-data h3 {
+  font-weight: bold;
+  font-size: 1.5rem;
 }
 
 @media (max-width: 770px) {

@@ -5,51 +5,148 @@ import BarChart from '@/components/charts/BarChart.vue';
 import PieChart from '@/components/charts/PieChart.vue';
 import KpiCard from '@/components/charts/KpiCard.vue';
 import DriversTable from '@/components/Table.vue'
-import { ref, onMounted } from 'vue';
-import { getDriversReport } from '@/services/reportService';
-import type { DriverReport } from '@/types/reports';
+import { ref, onMounted, watch, nextTick } from 'vue';
+import { getCurrentKPIs, getDriversParticipationChart, getDriversReport, getKPIGoals, getPerformanceChart, getQuotationsPerMonth, getQuotationsPerStatus, updatePerformanceGoal } from '@/services/performanceReportService';
+import type { DriverReport, GraphData } from '@/types/reports';
+import html2pdf from 'html2pdf.js';
+import PerformanceReportPDF from './PerformanceReportPDF.vue';
 
 const activeTab = ref('left')
 const selectedMonth = ref<String>('Diciembre 2024')
 const driverReports = ref<DriverReport[]>([]);
+const quotationsPerMonth = ref<GraphData>();
+const quotationsPerStatus = ref<GraphData>();
+const driversPerformanceChart = ref<GraphData>();
+const driversDriversParticipationChart = ref<GraphData>();
 
-// Temporary dummy data
-const linealData = ref({
-  series: [
-    { name: 'Cotizaciones', data: [20, 40, 35, 48] },
+const ordersCompletedCurrently = ref(0);
+const ordersCompletedGoal = ref(0);
+
+const utilityCurrent = ref(0);
+const utilityGoal = ref(0);
+
+const avgOrderAmountCurrent = ref(0);
+const avgOrderAmountGoal = ref(0);
+
+const tripsCompletedCurrently = ref(0);
+const tripsCompletedGoal = ref(0);
+
+const deliveriesPerEmployeeCurrent = ref(0);
+const deliveriesPerEmployeeGoal = ref(0);
+
+const fulfillmentRateCurrent = ref(0);
+const fulfillmentRateGoal = ref(0);
+
+const showPDF = ref(false)
+
+const generateReport = async () => {
+  showPDF.value = true
+  await nextTick()
+  const element = document.getElementById('pdf-content')
+  const options = {
+    margin: 0.5,
+    filename: 'reporte-desempeño.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+  }
+  html2pdf().from(element).set(options).save()
+  setTimeout(() => {
+    showPDF.value = false
+  }, 1)
+}
+
+
+const saveAllGoals = async () => {
+  try {
+    const payload = {
+      orderGoal: ordersCompletedGoal.value,
+      utilityGoal: utilityGoal.value,
+      averagePerOrderGoal: avgOrderAmountGoal.value,
+      travelGoal: tripsCompletedGoal.value,
+      deliveryGoal: deliveriesPerEmployeeGoal.value,
+      achievementRateGoal: fulfillmentRateGoal.value,
+    }
+
+    await updatePerformanceGoal(payload)
+  } catch (error) {
+    console.error('Error updating performance goals:', error)
+  }
+}
+
+watch(
+  [
+    ordersCompletedGoal,
+    utilityGoal,
+    avgOrderAmountGoal,
+    tripsCompletedGoal,
+    deliveriesPerEmployeeGoal,
+    fulfillmentRateGoal
   ],
-  categories: ['Diciembre 2024', 'Enero 2025', 'Febrero 2025', 'Marzo 2025'],
-  title: 'Cotizaciones completadas'
-})
-
-const pieData = ref({
-  series: [50, 6.3, 12.5, 31.3],
-  labels: ['Completadas', 'Pendientes', 'Aprobadas', 'En progreso'],
-  title: 'Cotizaciones 2025'
-})
-
-const driversBarData = ref({
-  series: [
-    { name: 'Viajes completados', data: [52, 23, 42] },
-    { name: 'Calificación global (promedio)', data: [92, 88, 95] },
-    { name: 'Eficiencia combustible (km/L)', data: [3.1, 3.3, 3.2] }
-  ],
-  categories: ['Ene', 'Feb', 'Mar'],
-  title: 'Desempeño de Conductores'
-})
-
-const driversPieData = ref({
-  series: [400, 350, 300, 230],
-  labels: ['Conductor A', 'Conductor B', 'Conductor C', 'Conductor D'],
-  title: 'Participación en Viajes'
-})
+  async () => {
+    await saveAllGoals()
+  }
+)
 
 onMounted(async () => {
+  try {
+    const response = await getCurrentKPIs();
+    ordersCompletedCurrently.value = response.data.deliveredOrders
+    utilityCurrent.value = response.data.utility
+    avgOrderAmountCurrent.value = response.data.averagePerOrder
+    tripsCompletedCurrently.value = response.data.completedTrips
+    deliveriesPerEmployeeCurrent.value = response.data.deliveredOrders
+    fulfillmentRateCurrent.value = response.data.fulfillmentRate
+
+  } catch (error) {
+    console.error('Error fetching KPI:', error);
+  }
+
+  try {
+    const response = await getKPIGoals();
+    ordersCompletedGoal.value = response.data.orderGoal
+    utilityGoal.value = response.data.utilityGoal
+    avgOrderAmountGoal.value = response.data.averagePerOrderGoal
+    tripsCompletedGoal.value = response.data.travelGoal
+    deliveriesPerEmployeeGoal.value = response.data.deliveryGoal
+    fulfillmentRateGoal.value = response.data.achievementRateGoal
+
+  } catch (error) {
+    console.error('Error fetching KPI:', error);
+  }
   try {
     const response = await getDriversReport();
     driverReports.value = response.data
   } catch (error) {
     console.error('Error fetching drivers:', error);
+  }
+
+  try {
+    const response = await getQuotationsPerMonth()
+    quotationsPerMonth.value = response.data
+  } catch (error) {
+    console.error('Error fetching quotations per month:', error)
+  }
+
+  try {
+    const response = await getQuotationsPerStatus()
+    quotationsPerStatus.value = response.data
+  } catch (error) {
+    console.error('Error fetching quotations per status:', error)
+  }
+
+  try {
+    const response = await getPerformanceChart()
+    driversPerformanceChart.value = response.data
+  } catch (error) {
+    console.error('Error fetching drivers performance chart:', error)
+  }
+
+  try {
+    const response = await getDriversParticipationChart()
+    driversDriversParticipationChart.value = response.data
+  } catch (error) {
+    console.error('Error fetching drivers participation chart:', error)
   }
 });
 
@@ -57,11 +154,33 @@ onMounted(async () => {
 
 <template>
   <main>
+    <div v-if="showPDF" id="pdf-content">
+    <PerformanceReportPDF
+      :ordersCompleted="ordersCompletedCurrently"
+      :ordersCompletedGoal="ordersCompletedGoal"
+      :utility="utilityCurrent"
+      :utilityGoal="utilityGoal"
+      :avgOrderAmount="avgOrderAmountCurrent"
+      :avgOrderAmountGoal="avgOrderAmountGoal"
+      :tripsCompleted="tripsCompletedCurrently"
+      :tripsCompletedGoal="tripsCompletedGoal"
+      :deliveriesPerEmployee="deliveriesPerEmployeeCurrent"
+      :deliveriesPerEmployeeGoal="deliveriesPerEmployeeGoal"
+      :fulfillmentRate="fulfillmentRateCurrent"
+      :fulfillmentRateGoal="fulfillmentRateGoal"
+      :quotationsPerMonth="quotationsPerMonth"
+      :quotationsPerStatus="quotationsPerStatus"
+      :driversPerformance="driversPerformanceChart"
+      :driversParticipation="driversDriversParticipationChart"
+      :driverReports="driverReports"
+    />
+  </div>
     <header>
       <button class="btn-back" @click="$router.back()">
         <span class="material-symbols-outlined md-icon">arrow_back</span>
       </button>
       <h1>Reporte de desempeño</h1>
+      <button class="btn-primary" @click="generateReport">Descargar</button>
     </header>
     <div :class="['toggle-wrapper', activeTab === 'left' ? 'active-left' : 'active-right']">
       <div class="toggle-indicator"></div>
@@ -71,35 +190,35 @@ onMounted(async () => {
 
     <h2>Indicadores clave de desempeño (KPI)</h2>
     <div class="kpi-wrapper" v-if="activeTab == 'left'">
-      <KpiCard class="kpi" title="Ordenes completadas" :value=57 :last-month=71 :goal=80 />
-      <KpiCard class="kpi" title="Utilidad (Q)" :value=5342 :last-month=4971 :goal=5000 />
-      <KpiCard class="kpi" title="Monto promedio por orden (Q)" :value=345 :last-month=245 :goal=500 />
+      <KpiCard class="kpi" title="Ordenes completadas" :value="ordersCompletedCurrently" v-model:goal="ordersCompletedGoal" />
+      <KpiCard class="kpi" title="Utilidad (Q)" :value="utilityCurrent" v-model:goal="utilityGoal" />
+      <KpiCard class="kpi" title="Monto promedio por orden (Q)" :value="avgOrderAmountCurrent" v-model:goal="avgOrderAmountGoal" />
     </div>
     <div class="kpi-wrapper" v-if="activeTab == 'right'">
-      <KpiCard class="kpi" title="Viajes completados" :value=112 :last-month=100 :goal=150 />
-      <KpiCard class="kpi" title="Entregas por empleado" :value="12" :last-month="11" :goal="15" />
-      <KpiCard class="kpi" title="Tasa de cumplimiento (%)" :value="89" :last-month="97" :goal="100" 
+      <KpiCard class="kpi" title="Viajes completados" :value="tripsCompletedCurrently" v-model:goal="tripsCompletedGoal" />
+      <KpiCard class="kpi" title="Entregas por empleado" :value="deliveriesPerEmployeeCurrent" v-model:goal="deliveriesPerEmployeeGoal" />
+      <KpiCard class="kpi" title="Tasa de cumplimiento (%)" :value="fulfillmentRateCurrent" v-model:goal="fulfillmentRateGoal" 
     />
     </div>
 
     <section class="stats-header">
       <h2>Resumen estadístico</h2>
       <select v-model="selectedMonth" class="month-select">
-        <option v-for="(month, index) in linealData.categories" :key="index" :value="month">
+        <option v-for="(month, index) in quotationsPerMonth?.categories" :key="index" :value="month">
           {{ month }}
         </option>
       </select>
     </section>
     <section class="quotes" v-if="activeTab == 'left'">
       <div class="charts-wrapper">
-        <LineChart :categories="linealData.categories" :series="linealData.series" :title="linealData.title"/>
-        <CircularChart :labels="pieData.labels" :series="pieData.series" :title="pieData.title"/>
+        <LineChart :categories="quotationsPerMonth?.categories" :series="quotationsPerMonth?.series" :title="'Cotizaciones completadas'"/>
+        <CircularChart :labels="quotationsPerStatus?.categories" :series="quotationsPerStatus?.series" :title="'Estados de cotizaciones'"/>
       </div>
     </section>
     <section class="employees" v-if="activeTab == 'right'">
       <div class="charts-wrapper">
-        <BarChart :categories="driversBarData.categories" :series="driversBarData.series" :title="driversBarData.title"/>
-        <PieChart :labels="driversPieData.labels" :series="driversPieData.series" :title="driversPieData.title"/>
+        <BarChart :categories="driversPerformanceChart?.categories" :series="driversPerformanceChart?.series" :title="'Desempeño de conductores'"/>
+        <PieChart :labels="driversDriversParticipationChart?.categories" :series="driversDriversParticipationChart?.series" :title="'Participación en pedidos'"/>
       </div>
     </section>
     <div class="table-wrapper">
@@ -229,6 +348,18 @@ h2 {
   background: none;
   cursor: pointer;
 }
+
+.btn-primary {
+  background: var(--principal-primary);
+  color: var(--neutral-white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
 
 .btn-back:hover{
   background-color: var(--neutral-gray-200);

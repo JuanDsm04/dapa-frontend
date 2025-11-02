@@ -86,3 +86,14 @@ export const reorderQuestions = async (questionSourceId: number, questionTargetI
 
   return response
 }
+
+export const toggleRequiredQuestion = async (questionId: number) => {
+  const response = await handleResponse(
+    await fetch(`${API_URL}/api/form/questions/${questionId}/required`, {
+      method: 'PATCH',
+      headers: getHeaders()
+    })
+  )
+
+  return response
+}

@@ -36,7 +36,7 @@ onMounted(() => {
       <h1>De aquí para allá</h1>
       <p>Mudanzas, fletes y traslados</p>
       <nav>
-          <button @click="$router.push('/#')">Cotizar</button>
+          <button @click="$router.push('/dapa-form')">Cotizar</button>
       </nav>
     </div>
 

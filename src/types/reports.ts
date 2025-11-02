@@ -10,3 +10,8 @@ export interface DriverReport {
   totalOrders: number
   ordersPerWeek: number
 }
+
+export interface GraphData {
+  series: string[]
+  categories: string[]
+}

@@ -1,44 +1,84 @@
 <script setup lang="ts">
-const props = defineProps<{
+import { ref, computed, watch } from 'vue';
+
+const props = withDefaults(defineProps<{
   title: string
   value: number
-  lastMonth: number
   goal: number
-}>()
+  readonly?: boolean
+}>(), {
+  readonly: false
+})
 
-const lastMonthComparasion = props.value - props.lastMonth
-const lastMonthPercent = Math.abs(lastMonthComparasion) / props.lastMonth * 100
-const goalComparasion = Math.abs(props.goal - props.value) / props.goal * 100
+const emit = defineEmits(['update:goal'])
 
+const isEditingGoal = ref(false);
+const editableGoal = ref(props.goal);
+
+const goalComparison = computed(() => {
+  if (props.goal === 0 && props.value === 0) return 0;
+  if (props.goal === 0) return 0;
+  return Math.abs(props.goal - props.value) / props.goal * 100;
+});
+
+watch(() => props.goal, (newGoal) => {
+  editableGoal.value = newGoal;
+});
+
+const saveGoal = () => {
+  emit('update:goal', editableGoal.value);
+  isEditingGoal.value = false;
+};
 </script>
 
 <template>
   <div class="card">
     <header>
       <span class="title">{{ props.title }}</span>
+      <div class="edit-goal-controls" v-if="!readonly">
+        <button
+          v-if="!isEditingGoal"
+          @click="isEditingGoal = true"
+          class="edit-button"
+        >
+          <span class="material-symbols-outlined">edit</span>
+        </button>
+        <button
+          v-else
+          @click="saveGoal"
+          class="save-button"
+        >
+          <span class="material-symbols-outlined">save</span>
+        </button>
+      </div>
     </header>
     <span class="value">{{ props.value }}</span>
     <div class="metrics">
       <div class="metric">
-        <span>Mes pasado: {{ props.lastMonth }}</span>
+        <span>
+          Objetivo: 
+          <span v-if="!isEditingGoal">{{ props.goal }}</span>
+          <input
+            class="goal-input"
+            v-else
+            type="number"
+            v-model.number="editableGoal"
+            @keyup.enter="saveGoal"
+          />
+        </span>
         <div>
-          <span :class="lastMonthComparasion > 0 ? 'trend-up' : lastMonthComparasion < 0 ? 'trend-down' : 'trend-neutral'">
-            {{ lastMonthComparasion }} | {{ lastMonthPercent.toFixed(2) }}%
+          <span
+            :class="(props.value - props.goal) > 0
+              ? 'trend-up'
+              : (props.value - props.goal) < 0
+                ? 'trend-down'
+                : 'trend-neutral'"
+          >
+            {{ goalComparison.toFixed(2) }}%
           </span>
-          <span v-if="lastMonthComparasion > 0"> ▲</span>
-          <span v-else-if="lastMonthComparasion < 0"> ▼</span>
-          <span v-else> ||</span>
-        </div>
-      </div>
-      <div class="metric">
-        <span>Objetivo: {{ props.goal }}</span>
-        <div>
-          <span :class="(props.value - props.goal) > 0 ? 'trend-up' : (props.value - props.goal) < 0 ? 'trend-down' : 'trend-neutral'">
-            {{ goalComparasion.toFixed(2) }}%
-          </span>
-          <span v-if="(props.value - props.goal) > 0"> ▲</span>
-          <span v-else-if="(props.value - props.goal) < 0"> ▼</span>
-          <span v-else> ||</span>
+          <span v-if="(props.value - props.goal) > 0">▲</span>
+          <span v-else-if="(props.value - props.goal) < 0">▼</span>
+          <span v-else>||</span>
         </div>
       </div>
     </div>
@@ -54,6 +94,7 @@ const goalComparasion = Math.abs(props.goal - props.value) / props.goal * 100
   border-radius: 8px;
   flex-direction: column;
   background-color: var(--neutral-white);
+  position: relative;
 }
 
 header {
@@ -95,8 +136,40 @@ header {
 }
 
 .metric {
+  width: 100%;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+}
+
+.edit-goal-controls {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+.edit-button,
+.save-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--principal-primary-300);
+}
+
+.edit-button:hover,
+.save-button:hover {
+  color: var(--principal-primary-300);
+}
+
+.edit-button .material-symbols-outlined,
+.save-button .material-symbols-outlined {
+  font-size: 1.8rem;
+}
+
+.goal-input {
+  width: 80px;
 }
 
 @media (max-width: 770px) {
@@ -207,6 +280,13 @@ header {
 
   .trend-neutral {
     color: var(--neutral-gray-700);
+  }
+
+  @media (max-width: 770px) {
+    .edit-goal-controls {
+      top: 1.25rem;
+      right: 1.25rem;
+    }
   }
 }
 </style>

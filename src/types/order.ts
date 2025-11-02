@@ -3,6 +3,9 @@ export interface Order {
   submissionId: number
   userId?: number
   vehicleId?: number
+  helperId?: number
+  clientName?: string
+  clientPhone?: string
   origin: string
   destination: string
   totalAmount: number
@@ -23,11 +26,13 @@ export interface CreateOrderPayload {
   date: string
   userId?: number
   vehicleId?: number
+  helperId?: number
 }
 
 export interface UpdateOrderPayload {
   userId?: number
   vehicleId?: number
+  helperId?: number
   origin?: string
   destination?: string
   totalAmount?: number

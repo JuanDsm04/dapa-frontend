@@ -30,11 +30,13 @@ const formData = ref<{
   question: string,
   type: QuestionType | null,
   isActive: boolean,
+  isRequired: boolean,
   options: QuestionOption[]
 }>({
   question: '',
   type: null,
   isActive: true,
+  isRequired: true,
   options: []
 })
 
@@ -44,6 +46,7 @@ onMounted(() => {
       question: props.initialData.question || '',
       type: props.initialData.type || (props.questionTypes.length > 0 ? props.questionTypes[0] : null),
       isActive: props.initialData.isActive ?? true,
+      isRequired: props.initialData.isRequired ?? true,
       options: props.initialData.options ? deepClone(props.initialData.options) : []
     }
   } else {
@@ -58,6 +61,7 @@ watch(() => props.initialData, (newData) => {
       question: newData.question || '',
       type: newData.type,
       isActive: newData.isActive ?? true,
+      isRequired: newData.isRequired ?? true,
       options: newData.options ? deepClone(newData.options) : []
     }
     // Limpiar errores cuando se cargan nuevos datos
@@ -224,6 +228,7 @@ const handleSubmit = () => {
     description: null,
     typeId: selectedType.id,
     isActive: formData.value.isActive,
+    isRequired: formData.value.isRequired, 
     options: filteredOptions
   }
 
@@ -318,6 +323,17 @@ const hasErrors = computed(() => {
       </label>
       <div class="input-help">
         {{ formData.isActive ? 'La pregunta aparecerá en el formulario' : 'La pregunta estará oculta en el formulario' }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="toggle-switch">
+        <input v-model="formData.isRequired" type="checkbox" :disabled="loading" />
+        <div class="toggle-slider"></div>
+        <span class="toggle-text">Pregunta obligatoria</span>
+      </label>
+      <div class="input-help">
+        {{ formData.isRequired ? 'La pregunta es obligatoria' : 'La pregunta es opcional' }}
       </div>
     </div>
 

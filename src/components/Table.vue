@@ -28,11 +28,15 @@ const props = defineProps<{
   highlightFn?: (item: any) => HighlightConfig | undefined
   options?: any
   viewOnly?: boolean
+  showEdit?: boolean
+  showDelete?: boolean
+  showView?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'edit', item: any): void
   (e: 'delete', item: any): void
+  (e: 'view', item: any): void
 }>()
 
 const dt = ref()
@@ -43,6 +47,10 @@ const handleEdit = (item: any) => {
 
 const handleDelete = (item: any) => {
   emit('delete', item)
+}
+
+const handleView = (item: any) => {
+  emit('view', item)
 }
 
 const getHighlightStyles = (item: any) => {
@@ -69,7 +77,10 @@ const dtColumns = computed(() => {
     }))
   ];
 
-  if (!props.viewOnly) {
+  // Solo agregar columna de acciones si no es viewOnly o si hay algún botón configurado
+  const hasActions = props.showEdit || props.showDelete || props.showView;
+  
+  if (!props.viewOnly && hasActions) {
     columns.push({
       data: null,
       title: 'Acciones',
@@ -77,18 +88,43 @@ const dtColumns = computed(() => {
       searchable: false,
       render: (data: any, type: string, row: any, meta: any) => {
         const rowIndex = meta.row;
-        return `<div class="action-buttons">
-          <button class="btn-edit" type="button" data-row-index="${rowIndex}">
-            <span class="material-symbols-outlined icon md-icon">
-              edit_square
-            </span>
-          </button>
-          <button class="btn-delete" type="button" data-row-index="${rowIndex}">
-            <span class="material-symbols-outlined icon md-icon">
-              delete
-            </span>
-          </button>
-        </div>`
+        let buttonsHtml = '<div class="action-buttons">';
+        
+        // Botón de ver
+        if (props.showView) {
+          buttonsHtml += `
+            <button class="btn-view" type="button" data-row-index="${rowIndex}">
+              <span class="material-symbols-outlined icon md-icon">
+                visibility
+              </span>
+            </button>
+          `;
+        }
+        
+        // Botón de editar (por defecto true si no se especifica)
+        if (props.showEdit !== false) {
+          buttonsHtml += `
+            <button class="btn-edit" type="button" data-row-index="${rowIndex}">
+              <span class="material-symbols-outlined icon md-icon">
+                edit_square
+              </span>
+            </button>
+          `;
+        }
+        
+        // Botón de eliminar (por defecto true si no se especifica)
+        if (props.showDelete !== false) {
+          buttonsHtml += `
+            <button class="btn-delete" type="button" data-row-index="${rowIndex}">
+              <span class="material-symbols-outlined icon md-icon">
+                delete
+              </span>
+            </button>
+          `;
+        }
+        
+        buttonsHtml += '</div>';
+        return buttonsHtml;
       }
     });
   }
@@ -151,6 +187,8 @@ const onButtonClick = (e: Event) => {
     handleEdit(item)
   } else if (button.classList.contains('btn-delete')) {
     handleDelete(item)
+  } else if (button.classList.contains('btn-view')) {
+    handleView(item)
   }
 }
 
@@ -208,7 +246,7 @@ watch(() => dt.value, (newDt) => {
           <th v-for="col in columns" :key="col.field">
             {{ col.label }}
           </th>
-          <th v-if="!viewOnly">Acciones</th>
+          <th v-if="!viewOnly && (showEdit !== false || showDelete !== false || showView)">Acciones</th>
         </tr>
       </thead>
     </DataTable>
@@ -223,7 +261,7 @@ watch(() => dt.value, (newDt) => {
 :deep(.data-table) {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 1.25rem; /* 20px → rem */
+  margin-bottom: 1.25rem;
 }
 
 :deep(.data-table thead) {
@@ -233,10 +271,10 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.data-table thead th) {
-  padding: 1rem 1.5rem; /* 16px 24px → rem */
+  padding: 1rem 1.5rem;
   text-align: center;
   font-weight: 600;
-  letter-spacing: 0.03125rem; /* 0.5px → rem */
+  letter-spacing: 0.03125rem;
 }
 
 :deep(.data-table thead th:first-child) {
@@ -248,7 +286,7 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.data-table tbody td) {
-  padding: 0.75rem 1.125rem; /* 12px 18px → rem */
+  padding: 0.75rem 1.125rem;
   text-align: center;
   font-weight: 300;
   letter-spacing: 0.03125rem;
@@ -256,7 +294,7 @@ watch(() => dt.value, (newDt) => {
 }
 
 :deep(.data-table tbody tr) {
-  border-bottom: 0.1875rem solid var(--neutral-gray-50); /* 3px → rem */
+  border-bottom: 0.1875rem solid var(--neutral-gray-50);
   transition: all 0.2s ease;
 }
 
@@ -269,7 +307,7 @@ watch(() => dt.value, (newDt) => {
   justify-content: space-evenly;
   align-items: center;
   text-align: center;
-  gap: 0.625rem; /* 10px → rem */
+  gap: 0.625rem;
 }
 
 :deep(.action-buttons button) {
@@ -281,11 +319,23 @@ watch(() => dt.value, (newDt) => {
   text-align: center;
   background: none;
   cursor: pointer;
-  padding: 0.5rem; /* 8px → rem */
-  gap: 0.625rem; /* 10px → rem */
+  padding: 0.5rem;
+  gap: 0.625rem;
   font-weight: 500;
   text-transform: uppercase;
   border-radius: 10px;
+}
+
+:deep(.btn-view) {
+  background-color: var(--principal-primary-100);
+}
+
+:deep(.btn-view .icon) {
+  color: var(--principal-primary);
+}
+
+:deep(.btn-view:hover) {
+  background-color: var(--principal-primary-50);
 }
 
 :deep(.btn-edit) {
@@ -320,21 +370,21 @@ watch(() => dt.value, (newDt) => {
 :deep(.dataTables_filter),
 :deep(.dataTables_info),
 :deep(.dataTables_paginate) {
-  margin: 0.625rem 0; /* 10px → rem */
+  margin: 0.625rem 0;
 }
 
 :deep(.dataTables_filter input) {
   border: 1px solid var(--border-base);
   border-radius: 5px;
-  padding: 0.3125rem 0.625rem; /* 5px 10px → rem */
-  margin-left: 0.625rem; /* 10px → rem */
+  padding: 0.3125rem 0.625rem;
+  margin-left: 0.625rem;
 }
 
 :deep(.dt-paging-button) {
-  border: 0.0625rem solid var(--border-base) !important; /* 1px → rem */
+  border: 0.0625rem solid var(--border-base) !important;
   border-radius: 8px !important;
-  margin: 0 0.125rem !important; /* 2px → rem */
-  padding: 0.3125rem 0.625rem !important; /* 5px 10px → rem */
+  margin: 0 0.125rem !important;
+  padding: 0.3125rem 0.625rem !important;
   background: white !important;
 }
 
@@ -348,11 +398,10 @@ watch(() => dt.value, (newDt) => {
   color: var(--neutral-black) !important;
 }
 
-/* Estilos adicionales para mejor integración */
 :deep(.dataTables_wrapper .dataTables_length select) {
   border: 1px solid var(--border-base);
   border-radius: 5px;
-  padding: 0.125rem 0.3125rem; /* 2px 5px → rem */
+  padding: 0.125rem 0.3125rem;
 }
 
 :deep(.dataTables_wrapper .dataTables_filter label),
@@ -378,7 +427,7 @@ watch(() => dt.value, (newDt) => {
 :deep(table.dataTable.dtr-inline.collapsed > tbody > tr > td:first-child::before) {
   top: 50%;
   transform: translateY(-15%);
-  left: 0.3125rem; /* 5px → rem */
+  left: 0.3125rem;
 }
 
 :deep(.dt-search){
@@ -414,13 +463,11 @@ watch(() => dt.value, (newDt) => {
   gap: 0.5rem;
 }
 
-/* Hover y focus */
 :deep(.dt-button:hover),
 :deep(.dt-button:focus) {
   background-color: var(--principal-primary-hover);
 }
 
-/* Estado activo */
 :deep(.dt-button:active) {
   background-color: var(--principal-primary-800);
   transform: translateY(0);
@@ -429,5 +476,4 @@ watch(() => dt.value, (newDt) => {
 :deep(.dt-info){
   margin: 1rem;
 }
-
 </style>
