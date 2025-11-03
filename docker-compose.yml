@@ -24,9 +24,12 @@ services:
     container_name: dapa_backend
     ports:
       - "8080:8080"
+    volumes:
+      - ../dapa-database/migrations:/database/migrations
     env_file:
       - ../dapa-backend/.env
     environment:
+      - GIN_MODE=release
       - DB_HOST=database
       - DB_PORT=5432
     depends_on:
@@ -39,10 +42,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: dapa_frontend_builder
+    container_name: dapa_frontend
+    ports:
+      - "80:80"
     networks:
       - app-network
-    command: ["npm", "run", "build"]
 
 networks:
   app-network:
