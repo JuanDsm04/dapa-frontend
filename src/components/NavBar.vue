@@ -73,7 +73,7 @@ function closeMenu() {
 
       <li v-for="section in sections" :key="section.id">
         <router-link
-          v-if="section.auth.includes(loggedRole)"
+          v-if="section.auth.includes(loggedRole || '')"
           :to="'/' + section.id"
           class="nav-link"
           :class="{ active: activeSection === section.id }"

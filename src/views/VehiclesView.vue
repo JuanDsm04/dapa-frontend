@@ -76,7 +76,13 @@ const handleDeleteVehicle = (vehicle: Vehicle) => {
     loading.value = true;
 
     try {
-      await deleteVehicle(selectedVehicle.value.id);
+    if (!selectedVehicle.value || selectedVehicle.value.id === undefined) {
+      console.error("No vehicle selected or vehicle ID is undefined for deletion.");
+      toast.error('Error: No se pudo eliminar el vehículo. ID no encontrado.');
+      loading.value = false;
+      return;
+    }
+    await deleteVehicle(selectedVehicle.value.id);
       await loadVehicles();
       toast.info('Vehículo eliminado exitosamente');
     } catch (error) {

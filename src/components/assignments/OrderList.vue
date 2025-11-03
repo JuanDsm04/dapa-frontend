@@ -25,7 +25,7 @@ const filterWrapper = ref<HTMLElement | null>(null)
 
 // Manejar selección de orden
 const handleOrderClick = (order: Order) => {
-  selectedOrderId.value = order.id
+  selectedOrderId.value = order.id ?? null
   emit('order-selected', order)
 }
 

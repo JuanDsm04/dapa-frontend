@@ -23,8 +23,8 @@ const cargoTypeMap: Record<string, string> = {
 }
 
 // Función para obtener el tipo de carga en español
-const getCargoTypeInSpanish = (type: string) => {
-    if (props.mode === 'censored') return '---'
+const getCargoTypeInSpanish = (type: string | undefined) => {
+    if (!type || props.mode === 'censored') return '---'
     return cargoTypeMap[type] || 'No especificado'
 }
 

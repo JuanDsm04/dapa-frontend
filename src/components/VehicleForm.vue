@@ -68,8 +68,9 @@ const handleSubmit = () => {
     brand: brand.value,
     model: model.value,
     licensePlate: licensePlate.value.toUpperCase(),
-    capacityKg: capacityKg.value,
+    capacityKg: capacityKg.value ?? 0,
     isAvailable: true,
+    isActive: true,
     insuranceDate: isoDate!,
   })
 }

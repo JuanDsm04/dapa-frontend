@@ -12,6 +12,7 @@ import logo from '@/assets/images/logo_1.png'
 defineProps<{
   incomeSources: Income[]
   totalIncome: number
+  totalExpenses: number
   incomePerMonth?: GraphData
   expensesPerMonth?: GraphData
   expensesPerType?: GraphData
@@ -43,7 +44,7 @@ const currentTime = ref(new Date().toLocaleTimeString('es-ES'))
 
     <section class="report-section">
       <h2 class="section-title">TABLA RESUMEN</h2>
-      <TotalesFinancieros :ingresos="totalIncome" :egresos="0" :diferencia="totalIncome" />
+      <TotalesFinancieros :ingresos="totalIncome" :egresos="totalExpenses" :diferencia="totalIncome" />
     </section>
 
     <section class="report-section">

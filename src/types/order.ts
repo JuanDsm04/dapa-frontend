@@ -1,6 +1,6 @@
 export interface Order {
-  id: number
-  submissionId: number
+  id?: number
+  submissionId?: number
   userId?: number
   vehicleId?: number
   helperId?: number

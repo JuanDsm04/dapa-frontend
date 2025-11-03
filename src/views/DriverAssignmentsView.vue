@@ -139,6 +139,10 @@ const handleStartOrder = async (order: Order) => {
       return
     }
 
+    if (order.id === undefined) {
+      toast.error('Error: ID de orden no encontrado.');
+      return;
+    }
     // Actualizar el estado de la orden a 'pickup'
     await changeOrderStatus(order.id, 'pickup')
     

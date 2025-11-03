@@ -48,9 +48,14 @@ const copyTrackingLink = async () => {
     return
   }
 
+  if (!orderDetails.value || orderDetails.value.id === undefined) {
+    toast.error("No hay orden seleccionada o el ID de la orden es inválido.")
+    return
+  }
+
   try {
     // Obtener el token y crear el link
-    const token = await getOrderToken(orderDetails.value.id)
+    const token = await getOrderToken(orderDetails.value.id as number)
     const trackingUrl = `${window.location.origin}/tracking?token=${token}`
     
     // Copiar al portapapeles
@@ -95,7 +100,7 @@ const handleModalStateChange = (isOpen: boolean) => {
 
 // Watch para cambios en la orden seleccionada
 watch(() => props.selectedOrder, (newOrder) => {
-  if (newOrder) {
+  if (newOrder && newOrder.id !== undefined) {
     getOrderDetails(newOrder.id)
   } else {
     orderDetails.value = null

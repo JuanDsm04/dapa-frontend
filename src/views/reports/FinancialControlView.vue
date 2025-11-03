@@ -209,7 +209,6 @@ const myTable = {
               { label: 'Fecha', field: 'date' },
               { label: 'Tipo', field: 'type' },
               { label: 'Monto (Q)', field: 'amount' },
-              { label: 'Método de pago', field: 'paymentMethod' },
               { label: 'Responsable', field: 'responsable' },
               { label: 'Descripción', field: 'desc' }
             ]"
@@ -229,7 +228,6 @@ const myTable = {
               { label: 'ID', field: 'id' },
               { label: 'Fecha', field: 'date' },
               { label: 'Tipo', field: 'type' },
-              { label: 'E. Temporal', field: 'tempEmployee' },
               { label: 'Descripción', field: 'description' },
               { label: 'Costo', field: 'amount' }
             ]"

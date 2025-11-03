@@ -61,12 +61,16 @@ const generateReport = async () => {
   showPDF.value = true
   await nextTick()
   const element = document.getElementById('pdf-content')
+  if (!element) {
+    console.error('PDF content element not found.');
+    return;
+  }
   const options = {
     margin: 0.5,
     filename: 'reporte-financiero.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
+    image: { type: 'jpeg' as 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as 'portrait' },
   }
   html2pdf().from(element).set(options).save()
   setTimeout(() => {
@@ -147,6 +151,7 @@ const myTable = {
     <div v-if="showPDF" id="pdf-content">
       <FinancialReportPDF
         :incomeSources="incomeSources"
+        :totalExpenses="totalExpenses"
         :totalIncome="totalIncome"
         :incomePerMonth="incomePerMonth"
         :expensesPerMonth="expensesPerMonth"

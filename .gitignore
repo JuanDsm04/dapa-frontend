@@ -10,6 +10,7 @@ lerna-debug.log*
 .env
 node_modules
 .DS_Store
+postgres_data
 dist
 dist-ssr
 coverage

@@ -113,14 +113,14 @@ const closeFormResponsesModal = () => {
 
 // Asignar orden a conductor y vehículo
 const assignOrderToDriver = async () => {
-  if (!orderDetails.value || !selectedDriver.value || !selectedVehicle.value) {
-    toast.error("Selecciona un conductor y un vehículo")
+  if (!orderDetails.value || orderDetails.value.id === undefined || !selectedDriver.value || !selectedVehicle.value) {
+    toast.error("Selecciona un conductor y un vehículo, y asegúrate de que la orden tenga un ID válido.")
     return
   }
 
   try {
     await assignOrder(
-      orderDetails.value.id,
+      orderDetails.value.id as number,
       parseInt(selectedDriver.value),
       parseInt(selectedVehicle.value),
       parseInt(selectedHelper.value)

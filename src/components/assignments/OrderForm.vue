@@ -5,7 +5,7 @@ import { ref, watch, onMounted } from 'vue';
 // Props
 const props = defineProps<{
   isEdit?: boolean
-  orderData?: Order
+  orderData?: Partial<Order> | null
 }>()
 
 // Emitir evento para volver al componente padre

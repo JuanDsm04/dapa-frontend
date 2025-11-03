@@ -22,9 +22,17 @@ DataTable.use(DataTablesCore)
 DataTable.use(DataTablesResponsive)
 DataTable.use(Buttons)
 
+interface IDataTableColumn {
+  data: string | null;
+  title: string;
+  orderable?: boolean;
+  searchable?: boolean;
+  render?: (data: any, type: string, row: any, meta: any) => any;
+}
+
 const props = defineProps<{
   items: any[]
-  columns: { label: string, field: string, formatter?: (value: any, row: any) => string }[]
+  columns: { label: string, field: string | null, formatter?: (value: any, row: any, meta?: any) => string, orderable?: boolean, searchable?: boolean }[]
   highlightFn?: (item: any) => HighlightConfig | undefined
   options?: any
   viewOnly?: boolean
@@ -66,11 +74,13 @@ const getHighlightStyles = (item: any) => {
   }
 }
 
-const dtColumns = computed(() => {
-  const columns = [
+const dtColumns = computed<IDataTableColumn[]>(() => {
+  const columns: IDataTableColumn[] = [
     ...props.columns.map(col => ({
       data: col.field,
       title: col.label,
+      orderable: col.orderable ?? true, // Default to true if not specified
+      searchable: col.searchable ?? true, // Default to true if not specified
       render: (data: any, type: string, row: any) => {
         return col.formatter ? col.formatter(data, row) : data
       }
@@ -156,7 +166,9 @@ const dtOptions = computed(() => ({
     const highlightStyles = getHighlightStyles(item)
     if (highlightStyles.borderLeft) {
       row.style.borderLeft = highlightStyles.borderLeft
+    if (highlightStyles.paddingLeft) {
       row.style.paddingLeft = highlightStyles.paddingLeft
+    }
     }
     if (highlightStyles.backgroundColor) {
       row.style.backgroundColor = highlightStyles.backgroundColor
@@ -243,7 +255,7 @@ watch(() => dt.value, (newDt) => {
     >
       <thead>
         <tr>
-          <th v-for="col in columns" :key="col.field">
+          <th v-for="col in columns" :key="col.field || col.label">
             {{ col.label }}
           </th>
           <th v-if="!viewOnly && (showEdit !== false || showDelete !== false || showView)">Acciones</th>

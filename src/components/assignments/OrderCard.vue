@@ -25,7 +25,9 @@ const orderTypeMap = {
 }
 
 // Función para obtener el tipo de servicio en español
-const getOrderTypeInSpanish = (type: any) => {
+type OrderType = 'move' | 'cargo' | 'corporate';
+
+const getOrderTypeInSpanish = (type: OrderType) => {
   return orderTypeMap[type] || '----';
 }
 
