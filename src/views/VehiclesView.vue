@@ -98,9 +98,13 @@ const handleDeleteVehicle = (vehicle: Vehicle) => {
 
 // Obtener vehículos
 const loadVehicles = async () => {
-  loading.value = true;
+  const loadingTimeout = setTimeout(() => {
+    loading.value = true;
+  }, 200);
   try {
     const data: Vehicle[] = await fetchVehicles();
+    clearTimeout(loadingTimeout);
+    loading.value = false;
     vehicles.value = data;
 
     // Detectar seguros vencidos

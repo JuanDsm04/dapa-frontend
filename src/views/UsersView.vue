@@ -93,9 +93,13 @@ const handleDeleteUser = (user: User) => {
 
 // Obtener usuarios
 const loadUsers = async () => {
-  loading.value = true;
+  const loadingTimeout = setTimeout(() => {
+    loading.value = true;
+  }, 200);
   try {
-    const data: User[] = await fetchUsers();
+    const data = await fetchUsers();
+    clearTimeout(loadingTimeout);
+    loading.value = false;
     users.value = data;
 
     // Detectar licencias vencidas
