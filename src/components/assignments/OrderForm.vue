@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import type { Order, FrontendCargoType, BackendCargoType } from '@/types/order';
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 
 // Props
 const props = defineProps<{
   isEdit?: boolean
   orderData?: Partial<Order> | null
+  initialData?: Partial<Order> | null
 }>()
 
 // Emitir evento para volver al componente padre
-const emit = defineEmits(["volver", "submit"])
+const emit = defineEmits<{
+  (e: 'volver'): void
+  (e: 'submit', payload: Partial<Order>): void
+  (e: 'update:modelValue', payload: Partial<Order>): void
+}>()
 
 const clientName = ref('')
 const clientPhone = ref('')
@@ -35,24 +40,39 @@ const cargoTypeFrontendToBackend: Record<FrontendCargoType, BackendCargoType> = 
   empresarial: 'corporate'
 }
 
-
 // Tipo guard para BackendCargoType
 const isBackendCargoType = (v: any): v is BackendCargoType => {
   return v === 'move' || v === 'cargo' || v === 'corporate'
 }
 
-// Cargar datos si es edición
+// Computed para obtener el payload actual del formulario
+const currentFormData = computed(() => ({
+  clientName: clientName.value.trim(),
+  clientPhone: clientPhone.value.trim(),
+  totalAmount: parseFloat(price.value) || 0,
+  type: cargoTypeFrontendToBackend[cargoType.value],
+  origin: origin.value.trim(),
+  destination: destination.value.trim(),
+  details: details.value.trim()
+}))
+
+// Cargar datos si es edición o si hay initialData (borrador)
 const loadOrderData = () => {
-  if (props.orderData && props.isEdit) {
-    clientName.value = props.orderData.clientName || ''
-    clientPhone.value = props.orderData.clientPhone || ''
-    price.value = props.orderData.totalAmount ? props.orderData.totalAmount.toString() : ''
-    if (isBackendCargoType(props.orderData.type)) {
-      cargoType.value = cargoTypeBackendToFrontend[props.orderData.type]
+  // Prioridad: orderData (para edición) > initialData (borrador)
+  const dataSource = props.orderData || props.initialData
+  
+  if (dataSource) {
+    clientName.value = dataSource.clientName || ''
+    clientPhone.value = dataSource.clientPhone || ''
+    price.value = dataSource.totalAmount ? dataSource.totalAmount.toString() : ''
+    
+    if (isBackendCargoType(dataSource.type)) {
+      cargoType.value = cargoTypeBackendToFrontend[dataSource.type]
     }
-    origin.value = props.orderData.origin || ''
-    destination.value = props.orderData.destination || ''
-    details.value = props.orderData.details || ''
+    
+    origin.value = dataSource.origin || ''
+    destination.value = dataSource.destination || ''
+    details.value = dataSource.details || ''
   }
 }
 
@@ -95,19 +115,8 @@ const handleSubmit = async () => {
 
   if (Object.keys(errors.value).length > 0) return
 
-  // Construir payload
-  const payload = {
-    clientName: clientName.value.trim(),
-    clientPhone: clientPhone.value.trim(),
-    totalAmount: numericPrice,
-    type: cargoTypeFrontendToBackend[cargoType.value],
-    origin: origin.value.trim(),
-    destination: destination.value.trim(),
-    details: details.value.trim()
-  }
-
   // Emitir evento con los datos al componente padre
-  emit("submit", payload)
+  emit("submit", currentFormData.value)
 }
 
 // Filtrar el input de precio
@@ -124,9 +133,31 @@ const filterPhoneInput = (event: Event) => {
   clientPhone.value = input.value
 }
 
+// Watch para emitir cambios del formulario en tiempo real
+watch(
+  [clientName, clientPhone, price, cargoType, origin, destination, details],
+  () => {
+    // Solo emitir si hay algún dato (no emitir cuando está vacío)
+    if (clientName.value || clientPhone.value || price.value || 
+        origin.value || destination.value || details.value) {
+      emit('update:modelValue', currentFormData.value)
+    }
+  },
+  { deep: true }
+)
+
 // Watch para cambios en orderData
 watch(() => props.orderData, () => {
-  loadOrderData()
+  if (props.isEdit) {
+    loadOrderData()
+  }
+}, { immediate: true, deep: true })
+
+// Watch para cambios en initialData (borrador)
+watch(() => props.initialData, () => {
+  if (!props.isEdit && props.initialData) {
+    loadOrderData()
+  }
 }, { immediate: true, deep: true })
 
 // Cargar datos al montar el componente
@@ -204,7 +235,7 @@ onMounted(() => {
     <div v-if="!isEdit" class="action-container">
       <button type="button" @click="emit('volver')">
         <span class="material-symbols-outlined">arrow_back</span>
-        Cancelar
+        Volver
       </button>
       <button type="submit">
         <span class="material-symbols-outlined">check</span>

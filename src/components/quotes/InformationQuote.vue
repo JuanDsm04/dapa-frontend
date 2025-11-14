@@ -22,6 +22,9 @@ const emit = defineEmits<{
 // Estado que indica si se está en modo formulario
 const showOrderForm = ref(false);
 
+// Guardar los datos del formulario en progreso
+const formDraftData = ref<Partial<Order> | undefined>(undefined);
+
 // Estados para modals de confirmación
 const showConfirmModal = ref(false);
 const confirmTitle = ref('');
@@ -32,9 +35,13 @@ const cancelText = ref('Cancelar');
 
 // Watch para resetear el formulario cuando cambia la submission seleccionada
 watch(() => props.submission?.id, (newId, oldId) => {
-  if (newId !== oldId && showOrderForm.value) {
-    showOrderForm.value = false;
-    emit('interaction-state-change', false);
+  if (newId !== oldId) {
+    // Limpiar el borrador cuando cambias de submission
+    formDraftData.value = undefined;
+    if (showOrderForm.value) {
+      showOrderForm.value = false;
+      emit('interaction-state-change', false);
+    }
   }
 });
 
@@ -44,11 +51,14 @@ const aceptar = () => {
 };
 
 const volver = () => {
+    // No limpiar formDraftData, solo ocultar el formulario
     showOrderForm.value = false;
     emit('interaction-state-change', false);
 };
 
 const handleBackToList = () => {
+  // Limpiar el borrador cuando se regresa a la lista principal
+  formDraftData.value = undefined;
   emit('back-to-list')
 }
 
@@ -108,6 +118,8 @@ const handleReject = () => {
     try {
       await rejectSubmission(props.submission!.id);
       toast.info('Cotización rechazada');
+      // Limpiar borrador al rechazar
+      formDraftData.value = undefined;
       emit('back-to-list', { id: props.submission!.id, status: 'cancelled' });
     } catch (error) {
       console.error('Error al rechazar la cotización:', error);
@@ -117,6 +129,11 @@ const handleReject = () => {
   
   showConfirmModal.value = true;
   emit('modal-state-change', true);
+};
+
+// Guardar el borrador del formulario
+const handleFormUpdate = (payload: Partial<Order>) => {
+  formDraftData.value = payload;
 };
 
 const handleAccept = (payload: Partial<Order>) => {
@@ -136,6 +153,9 @@ const handleAccept = (payload: Partial<Order>) => {
       await acceptSubmission(props.submission!.id, createOrderPayload);
       toast.success('Cotización aceptada');
       showOrderForm.value = false;
+
+      // Limpiar borrador después de aceptar exitosamente
+      formDraftData.value = undefined;
       emit('interaction-state-change', false);
       emit('back-to-list', { id: props.submission!.id, status: 'approved' });
     } catch (error) {
@@ -200,7 +220,14 @@ const closeConfirmModal = () => {
 
         <!-- Formulario de información -->
         <section v-else-if="showOrderForm" class="order-form-container">
-            <OrderForm :isEdit="false" @volver="volver" @submit="handleAccept"/>
+            <!-- Pasar el borrador al formulario -->
+            <OrderForm 
+                :isEdit="false" 
+                :initialData="formDraftData"
+                @volver="volver" 
+                @submit="handleAccept"
+                @update:modelValue="handleFormUpdate"
+            />
         </section>
 
         <!-- Botones -->
