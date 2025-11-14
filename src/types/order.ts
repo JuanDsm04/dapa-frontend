@@ -13,6 +13,7 @@ export interface Order {
   status: string
   type: string
   date: string
+  meetingDate: string
 }
 
 export interface CreateOrderPayload {
@@ -27,6 +28,7 @@ export interface CreateOrderPayload {
   userId?: number
   vehicleId?: number
   helperId?: number
+  meetingDate: string
 }
 
 export interface UpdateOrderPayload {
@@ -40,6 +42,7 @@ export interface UpdateOrderPayload {
   status?: string
   type?: string
   date?: string
+  meetingDate?: string
 }
 
 export interface orderFilter {

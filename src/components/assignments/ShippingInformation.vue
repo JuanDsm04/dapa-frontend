@@ -218,6 +218,14 @@ onMounted(() => {
           <label>Para allá</label>
           <p><strong>{{ currentOrderData.destination || 'No especificado' }}</strong></p>
         </div>
+        <div class="info-item">
+          <label>Fecha de encuentro</label>
+          <p><strong>{{ currentOrderData.meetingDate?.slice(0,10) || 'No especificado' }}</strong></p>
+        </div>
+        <div class="info-item">
+          <label>Hora de encuentro</label>
+          <p><strong>{{ currentOrderData.meetingDate?.slice(11,-4) || 'No especificado' }}</strong></p>
+        </div>
         <div class="info-item full-width">
           <label>Observaciones</label>
           <p><strong>{{ currentOrderData.details || 'Sin observaciones adicionales' }}</strong></p>
