@@ -22,16 +22,18 @@ const questionTypeLabels: Record<string, string> = {
   area: 'Respuesta larga'
 };
 
+// Computed para verificar si la pregunta es inmutable
+const isMutable = computed(() => props.question.isMutable === true);
+
 // Computed para obtener las opciones como strings
 const optionsText = computed(() => {
   if (!props.question.options || props.question.options.length === 0) {
     return "";
   }
 
-  // Extraer solo el texto de las opciones
   return props.question.options
     .map((option) => option.option)
-    .filter((option) => option.trim() !== "") // Filtrar opciones vacías
+    .filter((option) => option.trim() !== "")
     .join(", ");
 });
 
@@ -60,9 +62,16 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     <div class="status-indicator" :class="{ 'inactive': !question.isActive }"></div>
 
     <div class="card-body">
-      <div class="drag-handle" title="Arrastrar para mover">
+      <!-- Drag handle - Solo visible si NO es inmutable -->
+      <div v-if="isMutable" class="drag-handle" title="Arrastrar para mover">
         <span class="material-symbols-outlined drag-icon md-icon">
           menu
+        </span>
+      </div>
+      
+      <div v-if="!isMutable" class="system-badge" title="Pregunta del sistema - No editable">
+        <span class="material-symbols-outlined md-icon">
+          lock
         </span>
       </div>
 
@@ -105,8 +114,8 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
           </div>
         </div>
 
-        <!-- Action buttons moved to bottom right -->
-        <div class="actions-container">
+        <!-- Action buttons - Solo visibles si NO es inmutable -->
+        <div v-if="isMutable" class="actions-container">
           <div class="actions">
             <button class="btn btn-required-toggle" @click="emit('toggle-required')"
               :title="question.isRequired ? 'Marcar como opcional' : 'Marcar como obligatoria'">
@@ -138,6 +147,14 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
               <span class="btn-text">Eliminar</span>
             </button>
           </div>
+        </div>
+        
+        <!-- Mensaje informativo para preguntas inmutables -->
+        <div v-else class="immutable-info">
+          <span class="material-symbols-outlined sm-icon">
+            info
+          </span>
+          <span>Esta pregunta no puede ser modificada o eliminada</span>
         </div>
       </div>
     </div>
@@ -198,6 +215,20 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .drag-handle:active {
   cursor: grabbing;
   transform: scale(0.95);
+}
+
+/* Badge de sistema para preguntas inmutables */
+.system-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--principal-primary-600);
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: var(--principal-primary-100);
+  border: 2px solid var(--principal-primary-300);
 }
 
 .card-content {
@@ -281,6 +312,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   font-weight: 600;
   white-space: nowrap;
   transition: all 0.2s ease;
+  width: fit-content;
 }
 
 .required-true {
@@ -291,6 +323,18 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
 .required-false {
   background: var(--neutral-gray-200);
   color: var(--neutral-gray-600);
+}
+
+/* Badge de pregunta inmutable */
+.immutable-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: clamp(0.7rem, 1.2vw, 0.8rem);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--principal-primary-100);
+  color: var(--principal-primary-700);
+  border: 1px solid var(--principal-primary-300);
 }
 
 .options-section {
@@ -305,10 +349,6 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-}
-
-.options-icon {
-  font-size: clamp(1rem, 1.5vw, 1.1rem);
 }
 
 .options-label {
@@ -359,13 +399,23 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   border-radius: 8px;
 }
 
-.warning-icon {
-  font-size: clamp(1rem, 2vw, 1.2rem);
-}
-
 .warning-text {
   margin: 0;
   color: var(--principal-error-600);
+  font-size: clamp(0.85rem, 1.8vw, 0.95rem);
+  font-weight: 500;
+}
+
+/* Mensaje informativo para preguntas inmutables */
+.immutable-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--principal-primary-25);
+  border: 1px solid var(--principal-primary-200);
+  border-radius: 8px;
+  color: var(--principal-primary-700);
   font-size: clamp(0.85rem, 1.8vw, 0.95rem);
   font-weight: 500;
 }
@@ -451,7 +501,6 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
   color: var(--neutral-white);
 }
 
-/* Botón toggle obligatorio */
 .btn-required-toggle {
   background: var(--neutral-white);
   color: var(--principal-primary-600);
@@ -476,7 +525,7 @@ const typeLabel = computed(() => getTypeLabel(props.question.type.type, props.qu
     align-self: center;
   }
 
-  .drag-handle {
+  .drag-handle, .system-badge {
     align-self: flex-start;
     width: 36px;
     height: 36px;

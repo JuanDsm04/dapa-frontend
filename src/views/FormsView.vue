@@ -22,13 +22,13 @@ import {
 } from '@/services/formService'
 
 /* Estados reactivos */
-const questions = ref<Question[]>([])            // Todas las preguntas
-const activeQuestions = ref<Question[]>([])      // Solo las activas
-const questionTypes = ref<QuestionType[]>([])    // Tipos de preguntas disponibles
-const loading = ref(false)                       // Estado de carga general
-const activeTab = ref<'left' | 'right'>('left')  // Pestaña activa (editor o preview)
-const questionSelected = ref<Question | undefined>(undefined) // Pregunta en edición
-const showModal = ref(false)                     // Estado modal de pregunta
+const questions = ref<Question[]>([])
+const activeQuestions = ref<Question[]>([])
+const questionTypes = ref<QuestionType[]>([])
+const loading = ref(false)
+const activeTab = ref<'left' | 'right'>('left')
+const questionSelected = ref<Question | undefined>(undefined)
+const showModal = ref(false)
 
 /* SortableJS */
 const sortableContainer = ref<HTMLElement | null>(null)
@@ -55,7 +55,7 @@ onUnmounted(() => {
   sortableInstance = null
 })
 
-/* Inicializar SortableJS */
+/* Inicializar SortableJS con restricciones */
 const initSortable = () => {
   if (!sortableContainer.value) return
 
@@ -67,31 +67,65 @@ const initSortable = () => {
     handle: '.drag-handle',
     fallbackOnBody: true,
     swapThreshold: 0.65,
+    
+    //Filtrar elementos inmutables del drag & drop
+    filter: '.immutable-item',
+    
+    //Validar antes de mover
+    onMove: (evt: any) => {
+      const draggedIndex = evt.dragged?.dataset?.index
+      const relatedIndex = evt.related?.dataset?.index
+      
+      if (draggedIndex === undefined || relatedIndex === undefined) {
+        return true
+      }
+      
+      const draggedQuestion = questions.value[parseInt(draggedIndex)]
+      const relatedQuestion = questions.value[parseInt(relatedIndex)]
+      
+      // Si la pregunta destino es inmutable, NO permitir el movimiento
+      if (relatedQuestion && relatedQuestion.isMutable === false) {
+        return false
+      }
+      
+      // Si la pregunta que se está moviendo es inmutable, NO permitir (por si acaso)
+      if (draggedQuestion && draggedQuestion.isMutable === false) {
+        return false
+      }
+      
+      return true
+    },
 
-    // Cuando el drag termina -> actualizar orden
     onEnd: async ({ oldIndex, newIndex }: any) => {
       if (oldIndex === undefined || newIndex === undefined || oldIndex === newIndex) return
 
       const source = questions.value[oldIndex]
       const target = questions.value[newIndex]
+      
+      // Validación extra: verificar que ambas preguntas sean mutables
+      if (!source?.isMutable || !target?.isMutable) {
+        toast.warning('No puedes mover preguntas del sistema')
+        await loadQuestions()
+        return
+      }
 
       try {
         await reorderQuestions(source.id, target.id)
         await loadQuestions()
+        toast.success('Orden actualizado correctamente')
       } catch (err) {
         const error = err as Error
         console.error('Error al reordenar preguntas:', error)
         toast.error(`Error al reordenar preguntas: ${error.message}`)
-
+        
         // Restaurar orden en caso de error
-        sortableInstance?.sort(questions.value.map((q) => q.id.toString()))
+        await loadQuestions()
       }
     }
   })
 }
 
 /* Watchers */
-// Reinicia SortableJS al volver al editor
 watch(activeTab, async (newTab) => {
   if (newTab === 'left') {
     await nextTick()
@@ -105,7 +139,6 @@ watch(activeTab, async (newTab) => {
 const loadQuestions = async () => {
   loading.value = true
   try {
-    // Se cargan todas las entidades necesarias en paralelo
     const [all, types] = await Promise.all([
       getQuestions(),
       getQuestionTypes()
@@ -130,8 +163,13 @@ const openModal = () => {
 const editQuestion = (index: number) => {
   const q = questions.value[index]
   if (!q) return
+  
+  //Verificar si la pregunta es inmutable
+  if (q.isMutable === false) {
+    toast.warning('Esta pregunta es parte del sistema y no puede ser editada')
+    return
+  }
 
-  // Copia profunda de la pregunta (para no mutar el estado original)
   questionSelected.value = {
     ...q,
     options: q.options ? [...q.options] : undefined
@@ -148,7 +186,6 @@ const handleAddOrEditQuestion = async (payload: Partial<Question>) => {
   loading.value = true
   try {
     if (payload.id) {
-      // Si ya existe → actualizar
       payload.options = payload.options?.map(opt => ({
         id: opt.id,
         option: opt.option,
@@ -157,7 +194,6 @@ const handleAddOrEditQuestion = async (payload: Partial<Question>) => {
       await updateQuestion(payload.id, payload)
       toast.info('Pregunta modificada exitosamente')
     } else {
-      // Si no existe → crear
       await createQuestion(payload)
       toast.success('Pregunta agregada correctamente')
     }
@@ -175,6 +211,12 @@ const handleAddOrEditQuestion = async (payload: Partial<Question>) => {
 const handleDeleteQuestion = async (index: number) => {
   const q = questions.value[index]
   if (!q) return
+  
+  //Verificar si la pregunta es inmutable
+  if (q.isMutable === false) {
+    toast.warning('Esta pregunta es parte del sistema y no puede ser eliminada')
+    return
+  }
 
   confirmTitle.value = 'Eliminar pregunta'
   confirmMessage.value = `¿Seguro que deseas eliminar la pregunta: "${q.question}"?`
@@ -201,6 +243,12 @@ const handleDeleteQuestion = async (index: number) => {
 const toggleQuestion = async (index: number) => {
   const q = questions.value[index]
   if (!q) return
+  
+  //Verificar si la pregunta es inmutable
+  if (q.isMutable === false) {
+    toast.warning('Esta pregunta es parte del sistema y no puede ser desactivada')
+    return
+  }
 
   try {
     await toggleActiveQuestion(q.id!)
@@ -216,6 +264,12 @@ const toggleQuestion = async (index: number) => {
 const toggleRequired = async (index: number) => {
   const q = questions.value[index]
   if (!q) return
+  
+  //Verificar si la pregunta es inmutable
+  if (q.isMutable === false) {
+    toast.warning('Esta pregunta es parte del sistema y no puede modificarse')
+    return
+  }
 
   try {
     await toggleRequiredQuestion(q.id!)
@@ -274,10 +328,22 @@ const toggleRequired = async (index: number) => {
 
         <div class="draggable-container">
           <div ref="sortableContainer" class="draggable-list">
-            <div v-for="(question, index) in questions" :key="`question-${question.id}`" class="sortable-item"
-              :data-id="question.id">
-              <QuestionCard :question="question" :question_types="questionTypes" @edit="editQuestion(index)"
-                @delete="handleDeleteQuestion(index)" @toggle="toggleQuestion(index)" @toggle-required="toggleRequired(index)" />
+            <div 
+              v-for="(question, index) in questions" 
+              :key="`question-${question.id}`" 
+              class="sortable-item"
+              :class="{ 'immutable-item': question.isMutable === false }"
+              :data-id="question.id"
+              :data-index="index"
+            >
+              <QuestionCard 
+                :question="question" 
+                :question_types="questionTypes" 
+                @edit="editQuestion(index)"
+                @delete="handleDeleteQuestion(index)" 
+                @toggle="toggleQuestion(index)" 
+                @toggle-required="toggleRequired(index)" 
+              />
             </div>
           </div>
 
@@ -307,8 +373,13 @@ const toggleRequired = async (index: number) => {
         </header>
 
         <section>
-          <QuestionForm :initialData="questionSelected" :question-types="questionTypes"
-            @submit="handleAddOrEditQuestion" :updating="!!questionSelected" :loading="loading" />
+          <QuestionForm 
+            :initialData="questionSelected" 
+            :question-types="questionTypes"
+            @submit="handleAddOrEditQuestion" 
+            :updating="!!questionSelected" 
+            :loading="loading" 
+          />
         </section>
       </article>
     </div>
@@ -415,29 +486,6 @@ const toggleRequired = async (index: number) => {
   cursor: not-allowed;
 }
 
-.btn-secondary {
-  background: var(--neutral-white);
-  color: var(--neutral-gray-600);
-  border: 0.125rem solid var(--border-light);
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: clamp(0.875rem, 0.5vw + 0.5rem, 1rem);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.btn-secondary:hover:not(:disabled) {
-  border-color: var(--principal-error);
-  color: var(--principal-error);
-  background: var(--principal-error-25);
-}
-
-.btn-secondary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .main-content {
   display: flex;
   flex-direction: column;
@@ -461,7 +509,7 @@ const toggleRequired = async (index: number) => {
 }
 
 .spinner {
-  width: 2.5rem; /* 40px → rem */
+  width: 2.5rem;
   height: 2.5rem;
   border: 0.25rem solid var(--border-light);
   border-top: 0.25rem solid var(--principal-primary);
@@ -476,7 +524,7 @@ const toggleRequired = async (index: number) => {
 
 .column {
   width: 100%;
-  max-width: 50rem; /* 800px → rem */
+  max-width: 50rem;
   padding: 2rem;
   background-color: var(--neutral-white);
   border-radius: 8px;
@@ -534,19 +582,24 @@ const toggleRequired = async (index: number) => {
 }
 
 .draggable-container {
-  min-height: 12.5rem; /* 200px → rem */
+  min-height: 12.5rem;
 }
 
 .draggable-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  min-height: 6.25rem; /* 100px → rem */
+  min-height: 6.25rem;
 }
 
 .sortable-item {
   position: relative;
   margin-bottom: 0.5rem;
+}
+
+/* ✅ Estilo para items inmutables que no se pueden mover */
+.immutable-item {
+  cursor: not-allowed;
 }
 
 .empty-state {
@@ -564,18 +617,17 @@ const toggleRequired = async (index: number) => {
   opacity: 0.8;
 }
 
-/* Toggle Styles */
 .toggle-wrapper {
   display: flex;
   background-color: var(--neutral-gray-200);
   border-radius: 10px;
   position: relative;
-  width: 18.75rem; /* 300px → rem */
-  height: 3.75rem; /* 60px → rem */
-  padding: 0.375rem; /* 6px → rem */
+  width: 18.75rem;
+  height: 3.75rem;
+  padding: 0.375rem;
   font-family: sans-serif;
   font-weight: bold;
-  margin-bottom: 0.375rem; /* 6px → rem */
+  margin-bottom: 0.375rem;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
 }
 
@@ -595,7 +647,7 @@ const toggleRequired = async (index: number) => {
 .toggle-button {
   flex: 1;
   text-align: center;
-  line-height: 3rem; /* 48px → rem */
+  line-height: 3rem;
   cursor: pointer;
   z-index: 2;
   user-select: none;
@@ -604,7 +656,6 @@ const toggleRequired = async (index: number) => {
 .active-left .toggle-indicator { left: 0.375rem; }
 .active-right .toggle-indicator { left: 50%; }
 
-/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -621,7 +672,7 @@ const toggleRequired = async (index: number) => {
 article {
   background: var(--neutral-white);
   border-radius: 10px;
-  max-width: 37.5rem; /* 600px → rem */
+  max-width: 37.5rem;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -664,7 +715,6 @@ article section { padding: 1.5rem; }
   color: var(--close-btn-hover, var(--neutral-gray-700));
 }
 
-/* Drag & Drop Styles (sortablejs) */
 :deep(.sortable-ghost) { 
   opacity: 0.4; 
   background: var(--principal-primary-50); 
@@ -673,41 +723,43 @@ article section { padding: 1.5rem; }
   padding: 0.25rem;
   border: 2px dashed var(--principal-primary-500); 
 }
+
 :deep(.sortable-chosen) {
   border-radius: 16px;
   opacity: 0.8; 
   background: var(--principal-primary-50); 
 }
+
 :deep(.sortable-drag) { 
   opacity: 0.9; 
   background: var(--neutral-gray-100); 
   box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.25); 
-  transform: rotate(1deg); border: 2px solid var(--principal-primary-100); 
+  transform: rotate(1deg); 
+  border: 2px solid var(--principal-primary-100); 
   z-index: 1000; 
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) { /* 1024px → rem */
+@media (max-width: 1024px) {
   .form-builder { padding: 1rem; }
   .header { flex-direction: column; align-items: stretch; text-align: center; }
   .header-content { margin-bottom: 1rem; }
   .stats { justify-content: center; }
   .header-actions { justify-content: center; }
-  .toggle-wrapper { width: 15.625rem; } /* 250px → rem */
+  .toggle-wrapper { width: 15.625rem; }
 }
 
-@media (max-width: 770px) { /* 768px → rem */
+@media (max-width: 770px) {
   .header-content h1 { font-size: 1.5rem; }
   .stats { gap: 1rem; }
   .stat-number { font-size: 1.5rem; }
   .header-actions { flex-direction: column; }
-  .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+  .btn-primary { width: 100%; justify-content: center; }
   .column-header { flex-direction: column; gap: 0.5rem; align-items: flex-start; }
-  .toggle-wrapper { width: 12.5rem; } /* 200px → rem */
+  .toggle-wrapper { width: 12.5rem; }
   article { margin: 1rem; max-width: calc(100% - 2rem); }
 }
 
-@media (max-width: 30rem) { /* 480px → rem */
+@media (max-width: 30rem) {
   .form-builder { padding: 0.5rem; }
   .header { padding: 1rem; }
   .stats { flex-direction: column; gap: 0.5rem; }
