@@ -99,7 +99,7 @@ const handleSubmit = () => {
 
         <div class="field">
             <label for="CapacityKg">Capacidad (Kg)</label>
-            <input type="number" id="CapacityKg" name="CapacityKg" v-model="capacityKg" min="0" />
+            <input type="number" id="CapacityKg" name="CapacityKg" v-model="capacityKg" min="0" step="any" />
             <p v-if="errors.capacityKg" class="error">{{ errors.capacityKg }}</p>
         </div>
         
