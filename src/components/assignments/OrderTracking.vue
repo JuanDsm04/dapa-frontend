@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue'
 import { toast } from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
-import { getOrderById, getOrderToken } from '@/services/orderService'
+import { changeOrderStatus, getOrderById, getOrderToken } from '@/services/orderService'
 import OrderSteps from './OrderSteps.vue'
 import ShippingInformation from './ShippingInformation.vue'
 import FormResponseModal from './FormResponseModal.vue'
@@ -82,6 +82,15 @@ const showFormResponses = async () => {
   }
 }
 
+// Función para cancelar orden en progreso
+const cancelOrder = async () => {
+  if (orderDetails.value?.id) {
+    await changeOrderStatus(orderDetails.value.id, 'pending')
+  } else {
+    toast.error("No es posible cancelar esta orden")
+  }
+}
+
 // Función para cerrar el modal
 const closeFormResponsesModal = () => {
   showFormResponsesModal.value = false
@@ -143,6 +152,9 @@ const handleBackToList = () => {
         </div>
 
         <div class="header-buttons">
+          <button class="action-btn" @click="cancelOrder" title="Cancelar orden en progreso">
+            <span class="material-symbols-outlined">cancel</span>
+          </button>
           <button class="action-btn" @click="copyTrackingLink" title="Copiar link de rastreo">
             <span class="material-symbols-outlined">link</span>
           </button>
