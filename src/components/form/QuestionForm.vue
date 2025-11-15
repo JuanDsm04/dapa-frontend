@@ -138,8 +138,8 @@ const validateForm = (): boolean => {
   } else if (formData.value.question.trim().length < 3) {
     errors.value.question = 'El texto de la pregunta debe tener al menos 3 caracteres'
     isValid = false
-  } else if (formData.value.question.trim().length > 50) {
-    errors.value.question = 'El texto de la pregunta no puede exceder 50 caracteres'
+  } else if (formData.value.question.trim().length > 100) {
+    errors.value.question = 'El texto de la pregunta no puede exceder 100 caracteres'
     isValid = false
   }
 
@@ -162,8 +162,8 @@ const validateForm = (): boolean => {
       if (!trimmedOption) {
         errors.value.options![index] = 'Esta opción no puede estar vacía'
         isValid = false
-      } else if (trimmedOption.length > 50) {
-        errors.value.options![index] = 'Esta opción no puede exceder 50 caracteres'
+      } else if (trimmedOption.length > 75) {
+        errors.value.options![index] = 'Esta opción no puede exceder 75 caracteres'
         isValid = false
       } else if (optionTexts.includes(trimmedOption.toLowerCase())) {
         errors.value.options![index] = 'Esta opción está duplicada'
@@ -284,14 +284,14 @@ const hasErrors = computed(() => {
         class="form-input" 
         :class="{ 'error': showErrors && errors.question }"
         :disabled="loading" 
-        maxlength="50"
+        maxlength="100"
         required 
       />
       <div v-if="showErrors && errors.question" class="error-message">
         {{ errors.question }}
       </div>
       <div class="input-help">
-        {{ formData.question.length }}/50 caracteres
+        {{ formData.question.length }}/100 caracteres
       </div>
     </div>
 
@@ -352,14 +352,14 @@ const hasErrors = computed(() => {
               class="form-input option-input" 
               :class="{ 'error': showErrors && errors.options && errors.options[index] }"
               :disabled="loading"
-              maxlength="200"
+              maxlength="75"
               @input="clearOptionError(index)"
             />
             <div v-if="showErrors && errors.options && errors.options[index]" class="error-message">
               {{ errors.options[index] }}
             </div>
             <div class="option-help">
-              {{ option.option.length }}/50 caracteres
+              {{ option.option.length }}/75 caracteres
             </div>
           </div>
           <button 

@@ -30,16 +30,9 @@ const validateEmail = () => {
 const handleForgotButton = async () => {
 	if (!validateEmail()) return
 
-	try {
-		const result = await forgotPassword(email.value)
-		toast.success('Se ha enviado un correo con las instrucciones para restablecer tu contraseña')
-		emailSent.value = true
-
-	} catch (err) {
-		const error = err as Error
-		console.error('Error enviando email de recuperación:', error.message)
-		toast.error('No se pudo enviar el correo. Intenta nuevamente más tarde.')
-	}
+	toast.success('Se ha enviado un correo con las instrucciones para restablecer tu contraseña')
+	emailSent.value = true
+	const result = await forgotPassword(email.value)
 }
 </script>
 

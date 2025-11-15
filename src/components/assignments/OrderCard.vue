@@ -33,9 +33,9 @@ const getOrderTypeInSpanish = (type: OrderType) => {
 
 // Formatear fecha para mostrar
 const formattedDate = computed(() => {
-  if (!props.order.date) return '----'
+  if (!props.order.meetingDate) return '----'
   
-  const date = new Date(props.order.date)
+  const date = new Date(props.order.meetingDate)
   return date.toLocaleDateString('es-ES', {
     year: 'numeric',
     month: '2-digit',
@@ -64,7 +64,7 @@ const formattedDate = computed(() => {
         <p>{{ getOrderTypeInSpanish(order.type) }}</p>
       </div>
       <div class="field">
-        <label>Fecha de cotización</label>
+        <label>Fecha de encuentro</label>
         <p>{{ formattedDate }}</p>
       </div>
     </div>

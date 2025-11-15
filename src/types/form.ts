@@ -18,6 +18,7 @@ export interface Question {
   isActive: boolean;
   position: number;
   isRequired: boolean;
+  isMutable: boolean;
 }
 
 export interface Answer {

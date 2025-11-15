@@ -1,15 +1,13 @@
 <script setup>
 import { RouterView, useRoute } from 'vue-router'
 import NavBar from './components/NavBar.vue'
-import { computed } from 'vue'
 
 const route = useRoute()
-const showNavbar = computed(() => !route.meta.hideNavbar)
 </script>
 
 <template>
-  <NavBar v-if="showNavbar" />
-  <div :class="['content', { 'with-navbar': showNavbar }]">
+  <NavBar v-show="!route.meta.hideNavbar" />
+  <div :class="['content', { 'with-navbar': !route.meta.hideNavbar }]">
     <RouterView />
   </div>
 </template>

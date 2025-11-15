@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import type { Order, FrontendCargoType, BackendCargoType } from '@/types/order';
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 
 // Props
 const props = defineProps<{
   isEdit?: boolean
   orderData?: Partial<Order> | null
+  initialData?: Partial<Order> | null
 }>()
 
 // Emitir evento para volver al componente padre
-const emit = defineEmits(["volver", "submit"])
+const emit = defineEmits<{
+  (e: 'volver'): void
+  (e: 'submit', payload: Partial<Order>): void
+  (e: 'update:modelValue', payload: Partial<Order>): void
+}>()
 
 const clientName = ref('')
 const clientPhone = ref('')
@@ -17,7 +22,11 @@ const price = ref('')
 const cargoType = ref<FrontendCargoType>('mudanza')
 const origin = ref('')
 const destination = ref('')
+const meetingDate = ref('')
+const meetingHour = ref('')
 const details = ref('')
+const hasUserEdited = ref(false)
+
 
 const errors = ref<Record<string, string>>({})
 
@@ -35,24 +44,53 @@ const cargoTypeFrontendToBackend: Record<FrontendCargoType, BackendCargoType> = 
   empresarial: 'corporate'
 }
 
-
 // Tipo guard para BackendCargoType
 const isBackendCargoType = (v: any): v is BackendCargoType => {
   return v === 'move' || v === 'cargo' || v === 'corporate'
 }
 
-// Cargar datos si es edición
+// Computed para obtener el payload actual del formulario
+const currentFormData = computed(() => ({
+  clientName: clientName.value.trim(),
+  clientPhone: clientPhone.value.trim(),
+  totalAmount: parseFloat(price.value) || 0,
+  type: cargoTypeFrontendToBackend[cargoType.value],
+  origin: origin.value.trim(),
+  destination: destination.value.trim(),
+  meetingDate: meetingDate.value.trim(),
+  details: details.value.trim()
+}))
+
+// Cargar datos si es edición o si hay initialData (borrador)
 const loadOrderData = () => {
-  if (props.orderData && props.isEdit) {
-    clientName.value = props.orderData.clientName || ''
-    clientPhone.value = props.orderData.clientPhone || ''
-    price.value = props.orderData.totalAmount ? props.orderData.totalAmount.toString() : ''
-    if (isBackendCargoType(props.orderData.type)) {
-      cargoType.value = cargoTypeBackendToFrontend[props.orderData.type]
+  // Prioridad: orderData (para edición) > initialData (borrador)
+  const dataSource = props.orderData || props.initialData
+
+  if (dataSource) {
+    clientName.value = dataSource.clientName || ''
+    clientPhone.value = dataSource.clientPhone || ''
+    price.value = dataSource.totalAmount ? dataSource.totalAmount.toString() : ''
+
+    if (isBackendCargoType(dataSource.type)) {
+      cargoType.value = cargoTypeBackendToFrontend[dataSource.type]
     }
-    origin.value = props.orderData.origin || ''
-    destination.value = props.orderData.destination || ''
-    details.value = props.orderData.details || ''
+
+    origin.value = dataSource.origin || ''
+    destination.value = dataSource.destination || ''
+    if (dataSource.meetingDate) {
+      const raw = dataSource.meetingDate;
+
+      const [datePart, timePart] = raw.split("T");
+
+      meetingDate.value = datePart; // YYYY-MM-DD
+
+      if (timePart) {
+        meetingHour.value = timePart.slice(0, 5); // HH:mm
+        console.log("Extracted meetingHour:", meetingHour.value);
+      }
+    }
+
+    details.value = dataSource.details || ''
   }
 }
 
@@ -89,25 +127,45 @@ const handleSubmit = async () => {
     errors.value.destination = 'El destino es requerido *'
   }
 
+  if (!meetingDate.value.trim()) {
+    errors.value.meetingDate = 'La fecha de encuentro es requerida *'
+  } else {
+    const selected = new Date(meetingDate.value)
+    const today = new Date()
+
+    // Normalizar "hoy" para evitar errores por zona horaria
+    today.setHours(0, 0, 0, 0)
+    selected.setHours(0, 0, 0, 0)
+
+    if (selected < today) {
+      errors.value.meetingDate = 'La fecha no puede ser anterior a hoy *'
+    }
+  }
+
+  if (!meetingHour.value.trim()) {
+    errors.value.meetingHour = 'La hora de encuentro es requerida *'
+  } else {
+    const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/
+    if (!timePattern.test(meetingHour.value.trim())) {
+      errors.value.meetingHour = 'La hora debe tener un formato válido HH:mm *'
+    }
+  }
+
   if (!details.value.trim()) {
     errors.value.details = 'Los detalles son requeridos *'
   }
 
   if (Object.keys(errors.value).length > 0) return
 
-  // Construir payload
-  const payload = {
-    clientName: clientName.value.trim(),
-    clientPhone: clientPhone.value.trim(),
-    totalAmount: numericPrice,
-    type: cargoTypeFrontendToBackend[cargoType.value],
-    origin: origin.value.trim(),
-    destination: destination.value.trim(),
-    details: details.value.trim()
+  // Corregir formato de fecha antes de enviar
+  const combined = combineDateTime(meetingDate.value, meetingHour.value);
+  if (!combined) {
+    errors.value.meetingDate = "Debes seleccionar fecha y hora *";
+    return;
   }
-
-  // Emitir evento con los datos al componente padre
-  emit("submit", payload)
+  currentFormData.value.meetingDate = combined;
+  console.log("Combined meetingDate:", combined);
+  emit("submit", currentFormData.value)
 }
 
 // Filtrar el input de precio
@@ -124,15 +182,44 @@ const filterPhoneInput = (event: Event) => {
   clientPhone.value = input.value
 }
 
+// Watch para emitir cambios del formulario en tiempo real
+watch(
+  [clientName, clientPhone, price, cargoType, origin, destination, meetingDate, details],
+  () => {
+    hasUserEdited.value = true
+
+    emit('update:modelValue', currentFormData.value)
+  },
+  { deep: true }
+)
+
 // Watch para cambios en orderData
 watch(() => props.orderData, () => {
-  loadOrderData()
-}, { immediate: true, deep: true })
+  if (props.isEdit && !hasUserEdited.value) {
+    loadOrderData()
+  }
+}, { immediate: true })
+
+
+// Watch para cambios en initialData (borrador)
+watch(() => props.initialData, () => {
+  if (!props.isEdit && props.initialData && !hasUserEdited.value) {
+    loadOrderData()
+  }
+}, { immediate: true })
+
 
 // Cargar datos al montar el componente
 onMounted(() => {
   loadOrderData()
 })
+
+const combineDateTime = (date: string, time: string) => {
+  if (!date || !time) return null;
+  return `${date}T${time}:00Z`; // formato sin timezone
+};
+
+
 </script>
 
 <template>
@@ -190,6 +277,21 @@ onMounted(() => {
       <p v-if="errors.destination" class="error">{{ errors.destination }}</p>
     </div>
 
+    <div class="field-group">
+      <!-- Fecha de encuentro -->
+      <div class="field">
+        <label for="meetingDate">Fecha de encuentro</label>
+        <input type="date" id="meetingDate" v-model="meetingDate" :min="new Date().toISOString().split('T')[0]" />
+        <p v-if="errors.meetingDate" class="error">{{ errors.meetingDate }}</p>
+      </div>
+      <!-- Hora de encuentro -->
+      <div class="field">
+        <label for="meetingHour">Hora de encuentro</label>
+        <input type="time" id="meetingHour" v-model="meetingHour" />
+        <p v-if="errors.meetingHour" class="error">{{ errors.meetingHour }}</p>
+      </div>
+    </div>
+
     <!-- Detalles -->
     <div class="field">
       <label for="details">Observaciones</label>
@@ -204,7 +306,7 @@ onMounted(() => {
     <div v-if="!isEdit" class="action-container">
       <button type="button" @click="emit('volver')">
         <span class="material-symbols-outlined">arrow_back</span>
-        Cancelar
+        Volver
       </button>
       <button type="submit">
         <span class="material-symbols-outlined">check</span>

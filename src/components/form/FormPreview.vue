@@ -158,6 +158,8 @@ const resetForm = () => {
     questionErrors.value = {}
     formKey.value++
 }
+
+// Retirar los comentarios innecesarios entre v-if y v-else
 </script>
 
 <template>
@@ -182,9 +184,7 @@ const resetForm = () => {
                         }}
                     </p>
                 </div>
-
-                <!-- Preguntas -->
-                <div v-else class="questions-container" :key="formKey">
+                <div v-if="questions.length>0" class="questions-container" :key="formKey">
                     <QuestionPreview v-for="question in questions" :key="question.id" :question="question"
                         :value="formData[question.id]" :error="questionErrors[question.id]" :readOnly="isReadOnly"
                         @change="handleQuestionChange" />
